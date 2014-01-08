@@ -42,6 +42,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // STL
 #include <cmath>
 
+//YP new: Constructor
+template <typename TImage>
+ImageGraphCut3D<TImage>::ImageGraphCut3D()
+{
+  Sigma = 5.0f;
+  UseRegionTermBasedOnHistogram = false;
+  Lambda = 1.0f;
+  NumberOfHistogramBins = 10;
+}
+
 template <typename TImage>
 void ImageGraphCut3D<TImage>::SetImage(TImage* const image)
 {
@@ -127,7 +137,8 @@ void ImageGraphCut3D<TImage>::PerformSegmentation()
 
   while(!nodeImageIterator.IsAtEnd())
   {
-    nodeImageIterator.Set(nullptr);
+    //YP was: nodeImageIterator.Set(nullptr);
+    nodeImageIterator.Set(NULL);
     ++nodeImageIterator;
   }
 

@@ -47,7 +47,8 @@ class ImageGraphCut3D
 {
 public:
 
-  ImageGraphCut3D(){}
+  //YP constructor now in .hpp; was: ImageGraphCut3D(){}
+  ImageGraphCut3D();
 
   /** This is the results image as uchar. */
   typedef itk::Image<unsigned char, 3> ResultImageType;
@@ -116,16 +117,20 @@ protected:
   IndexContainer Sinks;
 
   /** Noise in boundary term */
-  float Sigma = 5.0f;
+  // YP was: float Sigma = 5.0f;
+  float Sigma;
 
   /** Use the region term based on log histogram values */
-  bool UseRegionTermBasedOnHistogram = false;
+  // YP was: bool UseRegionTermBasedOnHistogram = false;
+  bool UseRegionTermBasedOnHistogram;
 
   /** The weighting between region and boundary terms */
-  float Lambda = 1.0f;
+  // YP was: float Lambda = 1.0f;
+  float Lambda;
 
   /** The number of bins per dimension of the foreground and background histograms */
-  int NumberOfHistogramBins = 10;
+  // YP was: int NumberOfHistogramBins = 10;
+  int NumberOfHistogramBins;
 
   /** An image which keeps tracks of the mapping between pixel index and graph node id */
   NodeImageType::Pointer NodeImage;
@@ -153,8 +158,12 @@ protected:
   typename SampleType::Pointer BackgroundSample;
 
   /** The histograms. */
-  const HistogramType* ForegroundHistogram = nullptr;
-  const HistogramType* BackgroundHistogram = nullptr;
+  // YP was:
+  //const HistogramType* ForegroundHistogram = nullptr;
+  //const HistogramType* BackgroundHistogram = nullptr;
+  const HistogramType* ForegroundHistogram;
+  const HistogramType* BackgroundHistogram;
+
 
   /** ITK filters to create histograms. */
   typename SampleToHistogramFilterType::Pointer ForegroundHistogramFilter;
