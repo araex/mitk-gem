@@ -1,6 +1,8 @@
 /*
 Author: Yves Pauchard, yves.pauchard@zhaw.ch
 Date: Nov 5, 2013
+Modified: Jan 21+22, 2014: Now exposes new option of the graphCut class.
+
 Description: Adaptation of the 2D RGB version by David Doria to 3D single value images.
 
 
@@ -57,9 +59,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 int main(int argc, char*argv[])
 {
   // Verify arguments
-  if(argc != 6)
+  if(argc != 10)
     {
-    std::cerr << "Required: image.mhd foregroundMask.mhd backgroundMask.mhd output.mhd sigma" << std::endl;
+    std::cerr << "Required: image.mhd foregroundMask.mhd backgroundMask.mhd output.mhd sigma boundaryDirection lambda regionTerm regionTermOpt" << std::endl;
     std::cerr << "image.mhd:           3D image in Hounsfield Units -1024 to 3071" << std::endl;
     std::cerr << "foregroundMask.mhd:  3D image non-zero pixels indicating foreground and 0 elsewhere" << std::endl;
     std::cerr << "backgroundMask.mhd:  3D image non-zero pixels indicating background and 0 elsewhere" << std::endl;
@@ -67,6 +69,13 @@ int main(int argc, char*argv[])
     std::cerr << "                     Foreground as 127 and Background as 255" << std::endl;
     std::cerr << "sigma                estimated noise in boundary term, try 50.0" << std::endl;
     std::cerr << "                     if negative value is entered, automatically estimated." << std::endl;
+    std::cerr << "boundaryDirection    0->bidirectional; 1->bright to dark; 2->dark to bright" << std::endl;
+    std::cerr << "lambda               Weight for region term, try 0.1" << std::endl;
+    std::cerr << "regionTerm           0->none; 1->histogram; 2->threshold" << std::endl;
+    std::cerr << "regionTermOpt        if regionTerm = 0->ignored"<< std::endl;
+    std::cerr << "                     if regionTerm = 1->Number of Histogram bins, try 256"<< std::endl;
+    std::cerr << "                     if regionTerm = 2->Region threshold [HU], try 200"<< std::endl;
+    
     return EXIT_FAILURE;
     }
 
@@ -82,13 +91,28 @@ int main(int argc, char*argv[])
   std::string outputFilename = argv[4]; // Output has Foreground as 127 and Background as 255
   
   float sigma = atof(argv[5]); //Noise parameter
+  
+  int boundaryDirection = atoi(argv[6]); //0->bidirectional; 1->bright to dark; 2->dark to bright
+  
+  float lambda = atof(argv[7]); //Region term weight
+  
+  int regionTerm = atoi(argv[8]); //0->none; 1->histogram; 2->threshold
+  int regionTermOpt = atoi(argv[9]); //either number of histogram bins (regionTerm=1)
+                                     //or region term threshold (regionTerm=2)
+  
+  
+  
 
   // Output arguments
   std::cout << "imageFilename: " << imageFilename << std::endl
             << "foregroundFilename: " << foregroundFilename << std::endl
             << "backgroundFilename: " << backgroundFilename << std::endl
             << "outputFilename: " << outputFilename << std::endl
-	    << "sigma: " << sigma << std::endl;
+	          << "sigma: " << sigma << std::endl
+	          << "boundaryDirection: " << boundaryDirection << std::endl
+	          << "lambda: " << lambda << std::endl
+	          << "regionTerm: " << regionTerm << std::endl
+	          << "regionTermOpt: " << regionTermOpt << std::endl;
 
   // The type of the image to segment
   typedef itk::Image<short, 3> ImageType;
@@ -131,14 +155,42 @@ foregroundMaskReader = NULL;
   backgroundMaskReader = NULL;
 
 
-  // Perform the cut
+  // Set up and Perform the cut
 std::cout << "*** Performing Graph Cut ***"<< std::endl;
   Graph3DType GraphCut;
   GraphCut.SetImage(reader->GetOutput());
   reader = NULL;
-  GraphCut.SetNumberOfHistogramBins(20);
-  //Not needed GraphCut.SetLambda(0.01);
+  
+  //Boundary Term
+  switch(boundaryDirection){
+    case 1:
+      GraphCut.SetBoundaryDirectionTypeToBrightDark(); 
+      break;
+    case 2:
+      GraphCut.SetBoundaryDirectionTypeToDarkBright(); 
+      break;
+    default:
+      GraphCut.SetBoundaryDirectionTypeToNoDirection(); 
+  }
   GraphCut.SetSigma(sigma);
+  
+  //Region Term
+  switch(regionTerm){
+    case 1:
+      GraphCut.UseRegionTermBasedOnHistogramOn(); 
+      GraphCut.SetNumberOfHistogramBins(regionTermOpt);
+      break;
+    case 2:
+      GraphCut.UseRegionTermBasedOnThresholdOn(); 
+      GraphCut.SetRegionThreshold(regionTermOpt);
+      break;
+    default:
+      GraphCut.UseRegionTermBasedOnHistogramOff();
+      GraphCut.UseRegionTermBasedOnThresholdOff(); 
+  }
+  GraphCut.SetLambda(lambda);
+  
+  //Hard constraints
   GraphCut.SetSources(foregroundPixels);
   GraphCut.SetSinks(backgroundPixels);
   GraphCut.PerformSegmentation();
