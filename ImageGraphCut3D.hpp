@@ -1,6 +1,9 @@
 /*
 Author: Yves Pauchard, yves.pauchard@zhaw.ch
 Date: Nov 5, 2013
+Modified: Jan 21, 2014: * Added option to use directed boundary term
+                        * Added option to use threshold based region term
+
 Description: Adaptation of the 2D RGB version by David Doria to 3D single value images.
 Todo:
 * DONE Output image should get Origin and Spacing from input image
@@ -48,8 +51,11 @@ ImageGraphCut3D<TImage>::ImageGraphCut3D()
 {
   Sigma = 5.0f;
   UseRegionTermBasedOnHistogram = false;
+  UseRegionTermBasedOnThreshold = false;
   Lambda = 1.0f;
   NumberOfHistogramBins = 10;
+  RegionThreshold = 200;
+  SetBoundaryDirectionTypeToNoDirection();
 }
 
 template <typename TImage>
@@ -255,6 +261,13 @@ void ImageGraphCut3D<TImage>::CreateGraph()
   ////////// Create n-edges and set n-edge weights
   ////////// (links between image nodes)
    std::cout << "    - Setting n-edges"<< std::endl;
+   if(m_BoundaryDirectionType == BrightDark)
+     std::cout << "       Using Bright to Dark direction"<< std::endl;
+   else if(m_BoundaryDirectionType == DarkBright)
+     std::cout << "       Using Dark to Bright direction"<< std::endl;
+   else   
+     std::cout << "       Using no direction, i.e. equal weights"<< std::endl;
+  
   // We are only using a 6-connected structure,
   // so the kernel (iteration neighborhood) must only be
   // 3x3x3 (specified by a radius of 1)
@@ -308,9 +321,23 @@ void ImageGraphCut3D<TImage>::CreateGraph()
       // Add the edge to the graph
       void* node1 = this->NodeImage->GetPixel(iterator.GetIndex(center));
       void* node2 = this->NodeImage->GetPixel(iterator.GetIndex(neighbors[i]));
-      this->Graph->add_edge(node1, node2, weight, weight);
+      
+      //Determine which direction is used
+      if(m_BoundaryDirectionType == BrightDark){
+        if(centerPixel>neighborPixel)
+          this->Graph->add_edge(node1, node2, weight, 1.0);
+        else
+          this->Graph->add_edge(node1, node2, 1.0, weight);
+      }else if(m_BoundaryDirectionType == DarkBright){
+        if(centerPixel>neighborPixel)
+          this->Graph->add_edge(node1, node2, 1.0, weight);
+        else
+          this->Graph->add_edge(node1, node2, weight, 1.0);
+      }else{
+        this->Graph->add_edge(node1, node2, weight, weight);
       }
     }
+  }
 
   ////////// Add t-edges and set t-edge weights (links from image nodes to virtual background and virtual foreground node) //////////
 
@@ -383,9 +410,45 @@ void ImageGraphCut3D<TImage>::CreateGraph()
   }
 
   }
+  else if(UseRegionTermBasedOnThreshold)
+  {
+    std::cout << "    - UseRegionTermBasedOnThreshold ON"<< std::endl;
+    std::cout << "      adding region terms, lambda = "<<this->Lambda<< std::endl;
+    itk::ImageRegionIterator<TImage>
+      imageIterator(this->Image,
+                    this->Image->GetLargestPossibleRegion());
+    itk::ImageRegionIterator<NodeImageType>
+      nodeIterator(this->NodeImage,
+                   this->NodeImage->GetLargestPossibleRegion());
+    imageIterator.GoToBegin();
+    nodeIterator.GoToBegin();
+    
+    float probabilityObjectIfDark = 0.6; 
+    float probabilityObjectIfBright = 1.0 - probabilityObjectIfDark;
+    float probabilityBackgroundIfDark = 0.9; 
+    float probabilityBackgroundIfBright = 1.0 - probabilityBackgroundIfDark;
+    
+    while(!imageIterator.IsAtEnd())
+    {
+      PixelType pixel = imageIterator.Get();
+      
+      //check if pixel bright or dark
+      if(pixel>this->RegionThreshold){//bright
+        this->Graph->add_tweights(nodeIterator.Get(),
+                              -this->Lambda*log(probabilityBackgroundIfBright),
+                              -this->Lambda*log(probabilityObjectIfBright));
+      }else{//dark
+        this->Graph->add_tweights(nodeIterator.Get(),
+                              -this->Lambda*log(probabilityBackgroundIfDark),
+                              -this->Lambda*log(probabilityObjectIfDark));
+      }
+      ++imageIterator;
+      ++nodeIterator;
+    }
+  }
   else
   {
-    std::cout << "    - UseRegionTermBasedOnHistogram OFF"<< std::endl;
+    std::cout << "    - No region term"<< std::endl;
     std::cout << "      Without Histogram, just hard constraints, lambda = "<<this->Lambda<< std::endl;
   }
 
@@ -480,12 +543,28 @@ template <typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOn()
 {
   this->UseRegionTermBasedOnHistogram = true;
+  if(this->UseRegionTermBasedOnThreshold == true)
+    this->UseRegionTermBasedOnThreshold = false;
 }
 
 template <typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOff()
 {
   this->UseRegionTermBasedOnHistogram = false;
+}
+
+template <typename TImage>
+void ImageGraphCut3D<TImage>::UseRegionTermBasedOnThresholdOn()
+{
+  this->UseRegionTermBasedOnThreshold = true;
+  if(this->UseRegionTermBasedOnHistogram == true)
+    this->UseRegionTermBasedOnHistogram = false;
+}
+
+template <typename TImage>
+void ImageGraphCut3D<TImage>::UseRegionTermBasedOnThresholdOff()
+{
+  this->UseRegionTermBasedOnThreshold = false;
 }
 
 template <typename TImage>
@@ -504,6 +583,12 @@ template <typename TImage>
 void ImageGraphCut3D<TImage>::SetNumberOfHistogramBins(int bins)
 {
   this->NumberOfHistogramBins = bins;
+}
+
+template <typename TImage>
+void ImageGraphCut3D<TImage>::SetRegionThreshold(PixelType th)
+{
+  this->RegionThreshold = th;
 }
 
 template <typename TImage>
