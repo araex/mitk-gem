@@ -1,0 +1,5 @@
+set(Plugin-Name "Graphcut")
+set(Plugin-Version "0.1")
+set(Plugin-Vendor "ZHAW")
+set(Plugin-ContactAddress "")
+set(Require-Plugin org.mitk.gui.qt.common)

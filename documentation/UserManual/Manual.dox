@@ -1,0 +1,18 @@
+/**
+\page ch_zhaw_graphcut Graphcut
+
+\image html icon.xpm "Icon of Graphcut"
+
+Available sections:
+  - \ref ch_zhaw_graphcutOverview
+
+\section ch_zhaw_graphcutOverview
+Describe the features of your awesome plugin here
+<ul>
+<li>Increases productivity
+<li>Creates beautiful images
+<li>Generates PhD thesis
+<li>Brings world peace
+</ul>
+
+*/
