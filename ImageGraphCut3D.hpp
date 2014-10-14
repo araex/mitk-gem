@@ -510,8 +510,9 @@ typename ImageGraphCut3D<TImage>::IndexContainer ImageGraphCut3D<TImage>::GetSou
 template<typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOn() {
     this->UseRegionTermBasedOnHistogram = true;
-    if (this->UseRegionTermBasedOnThreshold == true)
+    if (this->UseRegionTermBasedOnThreshold) {
         this->UseRegionTermBasedOnThreshold = false;
+    }
 }
 
 template<typename TImage>
@@ -522,8 +523,9 @@ void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOff() {
 template<typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnThresholdOn() {
     this->UseRegionTermBasedOnThreshold = true;
-    if (this->UseRegionTermBasedOnHistogram == true)
+    if (this->UseRegionTermBasedOnHistogram) {
         this->UseRegionTermBasedOnHistogram = false;
+    }
 }
 
 template<typename TImage>
