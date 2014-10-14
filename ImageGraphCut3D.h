@@ -192,8 +192,8 @@ protected:
     void CutGraph();
 
     /** The ITK data structure for storing the values that we will compute the histogram of. */
-    typename SampleType::Pointer ForegroundSample;
-    typename SampleType::Pointer BackgroundSample;
+    typename SampleType::Pointer m_ForegroundSample;
+    typename SampleType::Pointer m_BackgroundSample;
 
     /** The histograms. */
     // YP was:

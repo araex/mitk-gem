@@ -59,59 +59,57 @@ ImageGraphCut3D<TImage>::ImageGraphCut3D()
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetImage(TImage *const image) {
-    this->m_Image = image;
+    m_Image = image;
     //this->Image = TImage::New();
     //DeepCopy(image, this->Image.GetPointer());
 
-
-
     // Setup the image to store the node ids
-    this->m_NodeImage = NodeImageType::New();
-    this->m_NodeImage->SetRegions(this->m_Image->GetLargestPossibleRegion());
-    this->m_NodeImage->Allocate();
+    m_NodeImage = NodeImageType::New();
+    m_NodeImage->SetRegions(m_Image->GetLargestPossibleRegion());
+    m_NodeImage->Allocate();
 
     // Initializations
-    this->ForegroundSample = SampleType::New();
-    this->BackgroundSample = SampleType::New();
+    m_ForegroundSample = SampleType::New();
+    m_BackgroundSample = SampleType::New();
 
-    this->m_ForegroundHistogramFilter = SampleToHistogramFilterType::New();
-    this->m_BackgroundHistogramFilter = SampleToHistogramFilterType::New();
+    m_ForegroundHistogramFilter = SampleToHistogramFilterType::New();
+    m_BackgroundHistogramFilter = SampleToHistogramFilterType::New();
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::CutGraph() {
     // Compute max-flow
-    this->m_Graph->maxflow();
+    m_Graph->maxflow();
 
 // Setup the output (mask) image
-    this->m_ResultingSegments = ResultImageType::New();
-    this->m_ResultingSegments->SetRegions(this->m_Image->GetLargestPossibleRegion());
-    this->m_ResultingSegments->SetOrigin(this->m_Image->GetOrigin());
-    this->m_ResultingSegments->SetSpacing(this->m_Image->GetSpacing());
-    this->m_ResultingSegments->SetDirection(this->m_Image->GetDirection());
-    this->m_ResultingSegments->Allocate();
+    m_ResultingSegments = ResultImageType::New();
+    m_ResultingSegments->SetRegions(m_Image->GetLargestPossibleRegion());
+    m_ResultingSegments->SetOrigin(m_Image->GetOrigin());
+    m_ResultingSegments->SetSpacing(m_Image->GetSpacing());
+    m_ResultingSegments->SetDirection(m_Image->GetDirection());
+    m_ResultingSegments->Allocate();
 //Fill with zeros
-    this->m_ResultingSegments->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero);
+    m_ResultingSegments->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero);
 
 
     // Iterate over the node image, querying the Kolmorogov graph object for the association of each pixel and storing them as the output mask
     itk::ImageRegionConstIterator<NodeImageType>
-            nodeImageIterator(this->m_NodeImage, this->m_NodeImage->GetLargestPossibleRegion());
+            nodeImageIterator(m_NodeImage, m_NodeImage->GetLargestPossibleRegion());
     nodeImageIterator.GoToBegin();
 
     while (!nodeImageIterator.IsAtEnd()) {
         //Foreground is 127
-        if (this->m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SOURCE) {
-            this->m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), 127);
+        if (m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SOURCE) {
+            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), 127);
         }
             //Background is 255
-        else if (this->m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SINK) {
-            this->m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), 255);
+        else if (m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SINK) {
+            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), 255);
         }
         ++nodeImageIterator;
     }
 
-    delete this->m_Graph;
+    delete m_Graph;
 }
 
 template<typename TImage>
@@ -119,18 +117,18 @@ void ImageGraphCut3D<TImage>::PerformSegmentation() {
     // This function performs some initializations and then creates and cuts the graph
 
     // Ensure at least one pixel has been specified for both the foreground and background
-    if ((this->m_Sources.size() <= 0) || (this->m_Sinks.size() <= 0)) {
+    if ((m_Sources.size() <= 0) || (m_Sinks.size() <= 0)) {
         std::cerr << "At least one source (foreground) pixel and one sink (background) "
                 "pixel must be specified!" << std::endl;
-        std::cerr << "Currently there are " << this->m_Sources.size()
-                << " and " << this->m_Sinks.size() << " sinks." << std::endl;
+        std::cerr << "Currently there are " << m_Sources.size()
+                << " and " << m_Sinks.size() << " sinks." << std::endl;
         return;
     }
 
     // Blank the NodeImage
     itk::ImageRegionIterator<NodeImageType>
-            nodeImageIterator(this->m_NodeImage,
-            this->m_NodeImage->GetLargestPossibleRegion());
+            nodeImageIterator(m_NodeImage,
+            m_NodeImage->GetLargestPossibleRegion());
     nodeImageIterator.GoToBegin();
 
     while (!nodeImageIterator.IsAtEnd()) {
@@ -180,69 +178,69 @@ for(unsigned int i = 0; i < numberOfComponentsPerPixel; i++)
 
     typename SampleToHistogramFilterType::HistogramSizeType
             histogramSize(numberOfComponentsPerPixel);
-    histogramSize.Fill(this->m_NumberOfHistogramBins);
+    histogramSize.Fill(m_NumberOfHistogramBins);
 
     // Create foreground samples and histogram
-    this->ForegroundSample->Clear();
-    this->ForegroundSample->SetMeasurementVectorSize(numberOfComponentsPerPixel);
+    m_ForegroundSample->Clear();
+    m_ForegroundSample->SetMeasurementVectorSize(numberOfComponentsPerPixel);
     //std::cout << "Measurement vector size: " << this->ForegroundSample->GetMeasurementVectorSize() << std::endl;
     //std::cout << "Pixel size: " << this->Image->GetPixel(this->Sources[0]).GetNumberOfElements() << std::endl;
 
-    for (unsigned int i = 0; i < this->m_Sources.size(); i++) {
-        this->ForegroundSample->PushBack(this->m_Image->GetPixel(this->m_Sources[i]));
+    for (unsigned int i = 0; i < m_Sources.size(); i++) {
+        m_ForegroundSample->PushBack(m_Image->GetPixel(m_Sources[i]));
     }
 
-    this->m_ForegroundHistogramFilter->SetHistogramSize(histogramSize);
-    this->m_ForegroundHistogramFilter->SetHistogramBinMinimum(binMinimum);
-    this->m_ForegroundHistogramFilter->SetHistogramBinMaximum(binMaximum);
-    this->m_ForegroundHistogramFilter->SetAutoMinimumMaximum(false);
-    this->m_ForegroundHistogramFilter->SetInput(this->ForegroundSample);
-    this->m_ForegroundHistogramFilter->Modified();
-    this->m_ForegroundHistogramFilter->ReleaseDataFlagOn();
-    this->m_ForegroundHistogramFilter->Update();
+    m_ForegroundHistogramFilter->SetHistogramSize(histogramSize);
+    m_ForegroundHistogramFilter->SetHistogramBinMinimum(binMinimum);
+    m_ForegroundHistogramFilter->SetHistogramBinMaximum(binMaximum);
+    m_ForegroundHistogramFilter->SetAutoMinimumMaximum(false);
+    m_ForegroundHistogramFilter->SetInput(m_ForegroundSample);
+    m_ForegroundHistogramFilter->Modified();
+    m_ForegroundHistogramFilter->ReleaseDataFlagOn();
+    m_ForegroundHistogramFilter->Update();
 
-    this->m_ForegroundHistogram = this->m_ForegroundHistogramFilter->GetOutput();
+    m_ForegroundHistogram = m_ForegroundHistogramFilter->GetOutput();
 
     // Create background samples and histogram
-    this->BackgroundSample->Clear();
-    this->BackgroundSample->SetMeasurementVectorSize(numberOfComponentsPerPixel);
-    for (unsigned int i = 0; i < this->m_Sinks.size(); i++) {
-        this->BackgroundSample->PushBack(this->m_Image->GetPixel(this->m_Sinks[i]));
+    m_BackgroundSample->Clear();
+    m_BackgroundSample->SetMeasurementVectorSize(numberOfComponentsPerPixel);
+    for (unsigned int i = 0; i < m_Sinks.size(); i++) {
+        m_BackgroundSample->PushBack(m_Image->GetPixel(m_Sinks[i]));
     }
 
-    this->m_BackgroundHistogramFilter->SetHistogramSize(histogramSize);
-    this->m_BackgroundHistogramFilter->SetHistogramBinMinimum(binMinimum);
-    this->m_BackgroundHistogramFilter->SetHistogramBinMaximum(binMaximum);
-    this->m_BackgroundHistogramFilter->SetAutoMinimumMaximum(false);
-    this->m_BackgroundHistogramFilter->SetInput(this->BackgroundSample);
-    this->m_BackgroundHistogramFilter->Modified();
-    this->m_BackgroundHistogramFilter->ReleaseDataFlagOn();
-    this->m_BackgroundHistogramFilter->Update();
+    m_BackgroundHistogramFilter->SetHistogramSize(histogramSize);
+    m_BackgroundHistogramFilter->SetHistogramBinMinimum(binMinimum);
+    m_BackgroundHistogramFilter->SetHistogramBinMaximum(binMaximum);
+    m_BackgroundHistogramFilter->SetAutoMinimumMaximum(false);
+    m_BackgroundHistogramFilter->SetInput(m_BackgroundSample);
+    m_BackgroundHistogramFilter->Modified();
+    m_BackgroundHistogramFilter->ReleaseDataFlagOn();
+    m_BackgroundHistogramFilter->Update();
 
-    this->m_BackgroundHistogram = m_BackgroundHistogramFilter->GetOutput();
+    m_BackgroundHistogram = m_BackgroundHistogramFilter->GetOutput();
 
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::CreateGraph() {
     // Form the graph
-    this->m_Graph = new GraphType;
+    m_Graph = new GraphType;
 
     // Add all of the nodes to the graph and store their IDs in a "node image"
-    itk::ImageRegionIterator<NodeImageType> nodeImageIterator(this->m_NodeImage, this->m_NodeImage->GetLargestPossibleRegion());
+    itk::ImageRegionIterator<NodeImageType> nodeImageIterator(m_NodeImage, m_NodeImage->GetLargestPossibleRegion());
     nodeImageIterator.GoToBegin();
 
     while (!nodeImageIterator.IsAtEnd()) {
-        nodeImageIterator.Set(this->m_Graph->add_node());
+        nodeImageIterator.Set(m_Graph->add_node());
         ++nodeImageIterator;
     }
 
     // Estimate the "camera noise"
-    if (this->m_Sigma < 0) {
+    if (m_Sigma < 0) {
         std::cout << "    - Computing Noise" << std::endl;
-        this->m_Sigma = this->ComputeNoise();
+        m_Sigma = this->ComputeNoise();
     }
-    std::cout << "    - using sigma = " << this->m_Sigma << std::endl;
+    std::cout << "    - using sigma = " << m_Sigma << std::endl;
 
     ////////// Create n-edges and set n-edge weights
     ////////// (links between image nodes)
@@ -277,7 +275,7 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
     typename IteratorType::OffsetType center = {{0, 0, 0}};
 
-    IteratorType iterator(radius, this->m_Image, this->m_Image->GetLargestPossibleRegion());
+    IteratorType iterator(radius, m_Image, m_Image->GetLargestPossibleRegion());
     iterator.ClearActiveList();
     iterator.ActivateOffset(bottom);
     iterator.ActivateOffset(right);
@@ -298,26 +296,26 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
             PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
 
             // Compute the edge weight
-            double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->m_Sigma * this->m_Sigma));
+            double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * m_Sigma * m_Sigma));
             assert(weight >= 0);
 
             // Add the edge to the graph
-            void *node1 = this->m_NodeImage->GetPixel(iterator.GetIndex(center));
-            void *node2 = this->m_NodeImage->GetPixel(iterator.GetIndex(neighbors[i]));
+            void *node1 = m_NodeImage->GetPixel(iterator.GetIndex(center));
+            void *node2 = m_NodeImage->GetPixel(iterator.GetIndex(neighbors[i]));
 
             //Determine which direction is used
             if (m_BoundaryDirectionType == BrightDark) {
                 if (centerPixel > neighborPixel)
-                    this->m_Graph->add_edge(node1, node2, weight, 1.0);
+                    m_Graph->add_edge(node1, node2, weight, 1.0);
                 else
-                    this->m_Graph->add_edge(node1, node2, 1.0, weight);
+                    m_Graph->add_edge(node1, node2, 1.0, weight);
             } else if (m_BoundaryDirectionType == DarkBright) {
                 if (centerPixel > neighborPixel)
-                    this->m_Graph->add_edge(node1, node2, 1.0, weight);
+                    m_Graph->add_edge(node1, node2, 1.0, weight);
                 else
-                    this->m_Graph->add_edge(node1, node2, weight, 1.0);
+                    m_Graph->add_edge(node1, node2, weight, 1.0);
             } else {
-                this->m_Graph->add_edge(node1, node2, weight, weight);
+                m_Graph->add_edge(node1, node2, weight, weight);
             }
         }
     }
@@ -328,15 +326,15 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
     if (m_UseRegionTermBasedOnHistogram) {
         std::cout << "    - UseRegionTermBasedOnHistogram ON" << std::endl;
         std::cout << "      Creating Histogram Samples" << std::endl;
-        std::cout << "      adding region terms, lambda = " << this->m_Lambda << std::endl;
+        std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
         CreateSamples();
 
         itk::ImageRegionIterator<TImage>
-                imageIterator(this->m_Image,
-                this->m_Image->GetLargestPossibleRegion());
+                imageIterator(m_Image,
+                m_Image->GetLargestPossibleRegion());
         itk::ImageRegionIterator<NodeImageType>
-                nodeIterator(this->m_NodeImage,
-                this->m_NodeImage->GetLargestPossibleRegion());
+                nodeIterator(m_NodeImage,
+                m_NodeImage->GetLargestPossibleRegion());
         imageIterator.GoToBegin();
         nodeIterator.GoToBegin();
 
@@ -353,23 +351,23 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
 
             HistogramType::IndexType backgroundIndex;
-            this->m_BackgroundHistogram->GetIndex(measurementVector, backgroundIndex);
+            m_BackgroundHistogram->GetIndex(measurementVector, backgroundIndex);
             float sinkHistogramValue =
-                    this->m_BackgroundHistogram->GetFrequency(backgroundIndex);
+                    m_BackgroundHistogram->GetFrequency(backgroundIndex);
 
             HistogramType::IndexType foregroundIndex;
-            this->m_ForegroundHistogram->GetIndex(measurementVector, foregroundIndex);
+            m_ForegroundHistogram->GetIndex(measurementVector, foregroundIndex);
             float sourceHistogramValue =
-                    this->m_ForegroundHistogram->GetFrequency(foregroundIndex);
+                    m_ForegroundHistogram->GetFrequency(foregroundIndex);
 
             // Conver the histogram value/frequency to make it as if it came from a normalized histogram
-            if (this->m_BackgroundHistogram->GetTotalFrequency() == 0 ||
-                    this->m_ForegroundHistogram->GetTotalFrequency() == 0) {
+            if (m_BackgroundHistogram->GetTotalFrequency() == 0 ||
+                    m_ForegroundHistogram->GetTotalFrequency() == 0) {
                 throw std::runtime_error("The foreground or background histogram TotalFrequency is 0!");
             }
 
-            sinkHistogramValue /= this->m_BackgroundHistogram->GetTotalFrequency();
-            sourceHistogramValue /= this->m_ForegroundHistogram->GetTotalFrequency();
+            sinkHistogramValue /= m_BackgroundHistogram->GetTotalFrequency();
+            sourceHistogramValue /= m_ForegroundHistogram->GetTotalFrequency();
 
             if (sinkHistogramValue <= 0) {
                 sinkHistogramValue = tinyValue;
@@ -380,9 +378,9 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
             // Add the edge to the graph and set its weight
             // log() is the natural log
-            this->m_Graph->add_tweights(nodeIterator.Get(),
-                    -this->m_Lambda * log(sinkHistogramValue),
-                    -this->m_Lambda * log(sourceHistogramValue));
+            m_Graph->add_tweights(nodeIterator.Get(),
+                    -m_Lambda * log(sinkHistogramValue),
+                    -m_Lambda * log(sourceHistogramValue));
             ++imageIterator;
             ++nodeIterator;
         }
@@ -390,13 +388,13 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
     }
     else if (m_UseRegionTermBasedOnThreshold) {
         std::cout << "    - UseRegionTermBasedOnThreshold ON" << std::endl;
-        std::cout << "      adding region terms, lambda = " << this->m_Lambda << std::endl;
+        std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
         itk::ImageRegionIterator<TImage>
-                imageIterator(this->m_Image,
-                this->m_Image->GetLargestPossibleRegion());
+                imageIterator(m_Image,
+                m_Image->GetLargestPossibleRegion());
         itk::ImageRegionIterator<NodeImageType>
-                nodeIterator(this->m_NodeImage,
-                this->m_NodeImage->GetLargestPossibleRegion());
+                nodeIterator(m_NodeImage,
+                m_NodeImage->GetLargestPossibleRegion());
         imageIterator.GoToBegin();
         nodeIterator.GoToBegin();
 
@@ -409,14 +407,14 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
             PixelType pixel = imageIterator.Get();
 
             //check if pixel bright or dark
-            if (pixel > this->m_RegionThreshold) {//bright
-                this->m_Graph->add_tweights(nodeIterator.Get(),
-                        -this->m_Lambda * log(probabilityBackgroundIfBright),
-                        -this->m_Lambda * log(probabilityObjectIfBright));
+            if (pixel > m_RegionThreshold) {//bright
+                m_Graph->add_tweights(nodeIterator.Get(),
+                        -m_Lambda * log(probabilityBackgroundIfBright),
+                        -m_Lambda * log(probabilityObjectIfBright));
             } else {//dark
-                this->m_Graph->add_tweights(nodeIterator.Get(),
-                        -this->m_Lambda * log(probabilityBackgroundIfDark),
-                        -this->m_Lambda * log(probabilityObjectIfDark));
+                m_Graph->add_tweights(nodeIterator.Get(),
+                        -m_Lambda * log(probabilityBackgroundIfDark),
+                        -m_Lambda * log(probabilityObjectIfDark));
             }
             ++imageIterator;
             ++nodeIterator;
@@ -424,26 +422,26 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
     }
     else {
         std::cout << "    - No region term" << std::endl;
-        std::cout << "      Without Histogram, just hard constraints, lambda = " << this->m_Lambda << std::endl;
+        std::cout << "      Without Histogram, just hard constraints, lambda = " << m_Lambda << std::endl;
     }
 
     //We don't need the histograms anymore
-    this->m_ForegroundHistogram = NULL;
-    this->m_BackgroundHistogram = NULL;
+    m_ForegroundHistogram = NULL;
+    m_BackgroundHistogram = NULL;
 
 
     // Set very high source weights for the pixels that were
     // selected as foreground by the user
-    for (unsigned int i = 0; i < this->m_Sources.size(); i++) {
-        this->m_Graph->add_tweights(this->m_NodeImage->GetPixel(this->m_Sources[i]),
-                this->m_Lambda * std::numeric_limits<float>::max(), 0);
+    for (unsigned int i = 0; i < m_Sources.size(); i++) {
+        m_Graph->add_tweights(m_NodeImage->GetPixel(m_Sources[i]),
+                m_Lambda * std::numeric_limits<float>::max(), 0);
     }
 
     // Set very high sink weights for the pixels that
     // were selected as background by the user
-    for (unsigned int i = 0; i < this->m_Sinks.size(); i++) {
-        this->m_Graph->add_tweights(this->m_NodeImage->GetPixel(this->m_Sinks[i]),
-                0, this->m_Lambda * std::numeric_limits<float>::max());
+    for (unsigned int i = 0; i < m_Sinks.size(); i++) {
+        m_Graph->add_tweights(m_NodeImage->GetPixel(m_Sinks[i]),
+                0, m_Lambda * std::numeric_limits<float>::max());
     }
 }
 
@@ -467,7 +465,7 @@ double ImageGraphCut3D<TImage>::ComputeNoise() {
 
     typename IteratorType::OffsetType center = {{0, 0, 0}};
 
-    IteratorType iterator(radius, this->m_Image, this->m_Image->GetLargestPossibleRegion());
+    IteratorType iterator(radius, m_Image, m_Image->GetLargestPossibleRegion());
     iterator.ClearActiveList();
     iterator.ActivateOffset(bottom);
     iterator.ActivateOffset(right);
@@ -504,78 +502,78 @@ double ImageGraphCut3D<TImage>::ComputeNoise() {
 
 template<typename TImage>
 typename ImageGraphCut3D<TImage>::IndexContainer ImageGraphCut3D<TImage>::GetSources() {
-    return this->m_Sources;
+    return m_Sources;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOn() {
-    this->m_UseRegionTermBasedOnHistogram = true;
-    if (this->m_UseRegionTermBasedOnThreshold) {
-        this->m_UseRegionTermBasedOnThreshold = false;
+    m_UseRegionTermBasedOnHistogram = true;
+    if (m_UseRegionTermBasedOnThreshold) {
+        m_UseRegionTermBasedOnThreshold = false;
     }
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOff() {
-    this->m_UseRegionTermBasedOnHistogram = false;
+    m_UseRegionTermBasedOnHistogram = false;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnThresholdOn() {
-    this->m_UseRegionTermBasedOnThreshold = true;
-    if (this->m_UseRegionTermBasedOnHistogram) {
-        this->m_UseRegionTermBasedOnHistogram = false;
+    m_UseRegionTermBasedOnThreshold = true;
+    if (m_UseRegionTermBasedOnHistogram) {
+        m_UseRegionTermBasedOnHistogram = false;
     }
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::UseRegionTermBasedOnThresholdOff() {
-    this->m_UseRegionTermBasedOnThreshold = false;
+    m_UseRegionTermBasedOnThreshold = false;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetLambda(const float lambda) {
-    this->m_Lambda = lambda;
+    m_Lambda = lambda;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetSigma(const double sigma) {
-    this->m_Sigma = sigma;
+    m_Sigma = sigma;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetNumberOfHistogramBins(int bins) {
-    this->m_NumberOfHistogramBins = bins;
+    m_NumberOfHistogramBins = bins;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetRegionThreshold(PixelType th) {
-    this->m_RegionThreshold = th;
+    m_RegionThreshold = th;
 }
 
 template<typename TImage>
 ImageGraphCut3D<TImage>::ResultImageType::Pointer ImageGraphCut3D<TImage>::GetSegmentMask() {
-    return this->m_ResultingSegments;
+    return m_ResultingSegments;
 }
 
 template<typename TImage>
 typename ImageGraphCut3D<TImage>::IndexContainer ImageGraphCut3D<TImage>::GetSinks() {
-    return this->m_Sinks;
+    return m_Sinks;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetSources(const IndexContainer &sources) {
-    this->m_Sources = sources;
+    m_Sources = sources;
 }
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetSinks(const IndexContainer &sinks) {
-    this->m_Sinks = sinks;
+    m_Sinks = sinks;
 }
 
 template<typename TImage>
 TImage *ImageGraphCut3D<TImage>::GetImage() {
-    return this->m_Image;
+    return m_Image;
 }
 
 template<typename TImage>
