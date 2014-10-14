@@ -210,6 +210,10 @@ protected:
     /** The image to be segmented */
     typename TImage::Pointer m_Image;
 
+private:
+    const typename ResultImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
+    const typename ResultImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
+
 };
 
 #include "ImageGraphCut3D.hpp"

@@ -48,7 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //YP new: Constructor
 template<typename TImage>
 ImageGraphCut3D<TImage>::ImageGraphCut3D()
-        : m_Sigma(5.0f),
+        : RESULT_FOREGROUND_PIXEL_VALUE(127),
+          RESULT_BACKGROUND_PIXEL_VALUE(255),
+          m_Sigma(5.0f),
           m_UseRegionTermBasedOnHistogram(false),
           m_UseRegionTermBasedOnThreshold(false),
           m_Lambda(1.0f),
@@ -81,16 +83,14 @@ void ImageGraphCut3D<TImage>::CutGraph() {
     // Compute max-flow
     m_Graph->maxflow();
 
-// Setup the output (mask) image
+    // Setup the output (mask) image
     m_ResultingSegments = ResultImageType::New();
     m_ResultingSegments->SetRegions(m_Image->GetLargestPossibleRegion());
     m_ResultingSegments->SetOrigin(m_Image->GetOrigin());
     m_ResultingSegments->SetSpacing(m_Image->GetSpacing());
     m_ResultingSegments->SetDirection(m_Image->GetDirection());
     m_ResultingSegments->Allocate();
-//Fill with zeros
-    m_ResultingSegments->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero);
-
+    m_ResultingSegments->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero); // fill with zeros
 
     // Iterate over the node image, querying the Kolmorogov graph object for the association of each pixel and storing them as the output mask
     itk::ImageRegionConstIterator<NodeImageType>
@@ -98,13 +98,11 @@ void ImageGraphCut3D<TImage>::CutGraph() {
     nodeImageIterator.GoToBegin();
 
     while (!nodeImageIterator.IsAtEnd()) {
-        //Foreground is 127
         if (m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SOURCE) {
-            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), 127);
+            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), RESULT_FOREGROUND_PIXEL_VALUE);
         }
-            //Background is 255
         else if (m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SINK) {
-            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), 255);
+            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), RESULT_BACKGROUND_PIXEL_VALUE);
         }
         ++nodeImageIterator;
     }
