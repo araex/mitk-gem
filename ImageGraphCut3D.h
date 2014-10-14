@@ -211,6 +211,8 @@ protected:
     typename TImage::Pointer m_Image;
 
 private:
+    // in-class initializations of dependent types is only possible in >=C++11.
+    // to ensure backward compatibility, the initialization is done in the constructors initialization list
     const typename ResultImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
     const typename ResultImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
 

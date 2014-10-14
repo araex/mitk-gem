@@ -141,13 +141,12 @@ void ImageGraphCut3D<TImage>::PerformSegmentation() {
     this->CutGraph();
 }
 
-//--- yp this could be adjusted because the images are assumed to have only one component.
+// TODO: this could be adjusted because the images are assumed to have only one component.
 template<typename TImage>
 void ImageGraphCut3D<TImage>::CreateSamples() {
     // This function creates ITK samples from the scribbled pixels and then computes the foreground and background histograms
 
-    unsigned int numberOfComponentsPerPixel = 1;
-
+    const unsigned int numberOfComponentsPerPixel = 1;
 
     // We want the histogram bins to take values from -1024 to 3071 in HU
     HistogramType::MeasurementVectorType binMinimum(numberOfComponentsPerPixel);
@@ -155,27 +154,7 @@ void ImageGraphCut3D<TImage>::CreateSamples() {
     binMinimum.Fill(-1024);
     binMaximum.Fill(3071);
 
-/* yp: old code
-for(unsigned int i = 0; i < numberOfComponentsPerPixel; i++)
-  {
-    // If one channel (often, the alpha channel) is all 255, for example, then however
-    // the ITK histogram constructs the bins with range (0,255) does not include the 255 pixels,
-    // and therefore none of the pixels are included in the histogram at all!
-    // Using slightly less than 0 (-.5) and slightly more than 255 (255.5) as the bin limits
-    // fixes this problem
-//    binMinimum[i] = 0;
-//    binMaximum[i] = 255;
-    binMinimum[i] = -0.5f;
-    binMaximum[i] = 255.5f;
-  }
-
-  // Setup the histogram size
-  std::cout << "Image components per pixel: "
-            << numberOfComponentsPerPixel << std::endl;
-*/
-
-    typename SampleToHistogramFilterType::HistogramSizeType
-            histogramSize(numberOfComponentsPerPixel);
+    typename SampleToHistogramFilterType::HistogramSizeType histogramSize(numberOfComponentsPerPixel);
     histogramSize.Fill(m_NumberOfHistogramBins);
 
     // Create foreground samples and histogram
@@ -240,15 +219,16 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
     }
     std::cout << "    - using sigma = " << m_Sigma << std::endl;
 
-    ////////// Create n-edges and set n-edge weights
-    ////////// (links between image nodes)
+    // Create n-edges and set n-edge weights
+    // (links between image nodes)
     std::cout << "    - Setting n-edges" << std::endl;
-    if (m_BoundaryDirectionType == BrightDark)
+    if (m_BoundaryDirectionType == BrightDark) {
         std::cout << "       Using Bright to Dark direction" << std::endl;
-    else if (m_BoundaryDirectionType == DarkBright)
+    } else if (m_BoundaryDirectionType == DarkBright) {
         std::cout << "       Using Dark to Bright direction" << std::endl;
-    else
+    } else {
         std::cout << "       Using no direction, i.e. equal weights" << std::endl;
+    }
 
     // We are only using a 6-connected structure,
     // so the kernel (iteration neighborhood) must only be
