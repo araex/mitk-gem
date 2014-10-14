@@ -298,7 +298,7 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
             PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
 
             // Compute the edge weight
-            float weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->Sigma * this->Sigma));
+            double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->Sigma * this->Sigma));
             assert(weight >= 0);
 
             // Add the edge to the graph
