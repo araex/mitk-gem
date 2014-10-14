@@ -47,13 +47,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //YP new: Constructor
 template<typename TImage>
-ImageGraphCut3D<TImage>::ImageGraphCut3D() {
-    m_Sigma = 5.0f;
-    m_UseRegionTermBasedOnHistogram = false;
-    m_UseRegionTermBasedOnThreshold = false;
-    m_Lambda = 1.0f;
-    m_NumberOfHistogramBins = 10;
-    m_RegionThreshold = 200;
+ImageGraphCut3D<TImage>::ImageGraphCut3D()
+        : m_Sigma(5.0f),
+          m_UseRegionTermBasedOnHistogram(false),
+          m_UseRegionTermBasedOnThreshold(false),
+          m_Lambda(1.0f),
+          m_NumberOfHistogramBins(10),
+          m_RegionThreshold(200) {
     SetBoundaryDirectionTypeToNoDirection();
 }
 
