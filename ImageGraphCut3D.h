@@ -105,7 +105,7 @@ public:
     void SetLambda(const float);
 
     /** Set sigma for boundary term. */
-    void SetSigma(const float);
+    void SetSigma(const double);
 
     /** Set the number of bins per dimension of the foreground and background histograms. */
     void SetNumberOfHistogramBins(const int);
@@ -149,7 +149,7 @@ protected:
 
     /** Noise in boundary term */
     // YP was: float Sigma = 5.0f;
-    float Sigma;
+    double Sigma;
 
     /** Use the region term based on log histogram values */
     // YP was: bool UseRegionTermBasedOnHistogram = false;

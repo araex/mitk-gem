@@ -539,7 +539,7 @@ void ImageGraphCut3D<TImage>::SetLambda(const float lambda) {
 }
 
 template<typename TImage>
-void ImageGraphCut3D<TImage>::SetSigma(const float sigma) {
+void ImageGraphCut3D<TImage>::SetSigma(const double sigma) {
     this->Sigma = sigma;
 }
 
