@@ -26,7 +26,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <QMessageBox>
 
 // Graphcut
-#include "lib/GraphCut/ImageGraphCut3D.h"
+#include "lib/GraphCut3D/ImageGraphCut3D.h"
 
 
 const std::string GraphcutView::VIEW_ID = "org.mitk.views.imagegraphcut3dsegmentation";
