@@ -156,8 +156,8 @@ void ImageGraphCut3D<TImage>::CreateSamples() {
     // We want the histogram bins to take values from -1024 to 3071 in HU
     HistogramType::MeasurementVectorType binMinimum(numberOfComponentsPerPixel);
     HistogramType::MeasurementVectorType binMaximum(numberOfComponentsPerPixel);
-    binMinimum.Fill(-1024.f);
-    binMaximum.Fill(3071.f);
+    binMinimum.Fill(-1024);
+    binMaximum.Fill(3071);
 
 /* yp: old code
 for(unsigned int i = 0; i < numberOfComponentsPerPixel; i++)
