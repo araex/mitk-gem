@@ -121,17 +121,11 @@ public:
         NoDirection, BrightDark, DarkBright
     } BoundaryDirectionType;
 
-    void SetBoundaryDirectionTypeToNoDirection() {
-        m_BoundaryDirectionType = NoDirection;
-    }
+    void SetBoundaryDirectionTypeToNoDirection();
 
-    void SetBoundaryDirectionTypeToBrightDark() {
-        m_BoundaryDirectionType = BrightDark;
-    }
+    void SetBoundaryDirectionTypeToBrightDark();
 
-    void SetBoundaryDirectionTypeToDarkBright() {
-        m_BoundaryDirectionType = DarkBright;
-    }
+    void SetBoundaryDirectionTypeToDarkBright();
 
 protected:
 

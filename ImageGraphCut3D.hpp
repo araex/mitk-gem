@@ -569,5 +569,20 @@ void ImageGraphCut3D<TImage>::DeepCopy(TImage *input, TImage *output) {
     }
 }
 
+template<typename TImage>
+void ImageGraphCut3D<TImage>::SetBoundaryDirectionTypeToNoDirection() {
+    m_BoundaryDirectionType = NoDirection;
+}
+
+template<typename TImage>
+void ImageGraphCut3D<TImage>::SetBoundaryDirectionTypeToBrightDark() {
+    m_BoundaryDirectionType = BrightDark;
+}
+
+template<typename TImage>
+void ImageGraphCut3D<TImage>::SetBoundaryDirectionTypeToDarkBright() {
+    m_BoundaryDirectionType = DarkBright;
+}
+
 
 #endif
