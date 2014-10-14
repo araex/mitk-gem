@@ -1,0 +1,3 @@
+[submodule "src/internal/lib/GraphCut3D"]
+	path = src/internal/lib/GraphCut3D
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/ImageGraphCut3DSegmentation.git
