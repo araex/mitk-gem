@@ -133,9 +133,6 @@ public:
         m_BoundaryDirectionType = DarkBright;
     }
 
-    void Modified() {
-    }//called by the enum macro
-
 protected:
 
     /** A Kolmogorov graph object */
