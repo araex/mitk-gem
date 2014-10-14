@@ -15,25 +15,25 @@ See LICENSE.txt or http://www.mitk.org for details.
 ===================================================================*/
 
 
-#ifndef graphcut_h
-#define graphcut_h
+#ifndef GraphcutView_h
+#define GraphcutView_h
 
 #include <berryISelectionListener.h>
 
 #include <QmitkAbstractView.h>
 
-#include "ui_graphcutControls.h"
+#include "ui_GraphcutViewControls.h"
 
 
 /**
-  \brief graphcut
+  \brief GraphcutView
 
   \warning  This class is not yet documented. Use "git blame" and ask the author to provide basic documentation.
 
   \sa QmitkAbstractView
   \ingroup ${plugin_target}_internal
 */
-class graphcut : public QmitkAbstractView
+class GraphcutView : public QmitkAbstractView
 {
   // this is needed for all Qt objects that should have a Qt meta-object
   // (everything that derives from QObject and wants to have signal/slots)
@@ -58,8 +58,8 @@ class graphcut : public QmitkAbstractView
     virtual void OnSelectionChanged( berry::IWorkbenchPart::Pointer source,
                                      const QList<mitk::DataNode::Pointer>& nodes );
 
-    Ui::graphcutControls m_Controls;
+    Ui::GraphcutViewControls m_Controls;
 
 };
 
-#endif // graphcut_h
+#endif // GraphcutView_h

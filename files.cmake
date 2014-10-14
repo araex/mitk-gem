@@ -4,16 +4,16 @@ set(SRC_CPP_FILES
 
 set(INTERNAL_CPP_FILES
   ch_zhaw_graphcut_Activator.cpp
-  graphcut.cpp
+  GraphcutView.cpp
 )
 
 set(UI_FILES
-  src/internal/graphcutControls.ui
+  src/internal/GraphcutViewControls.ui
 )
 
 set(MOC_H_FILES
   src/internal/ch_zhaw_graphcut_Activator.h
-  src/internal/graphcut.h
+  src/internal/GraphcutView.h
 )
 
 # list of resource files which can be used by the plug-in

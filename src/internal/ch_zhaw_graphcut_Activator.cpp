@@ -19,13 +19,13 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <QtPlugin>
 
-#include "graphcut.h"
+#include "GraphcutView.h"
 
 namespace mitk {
 
 void ch_zhaw_graphcut_Activator::start(ctkPluginContext* context)
 {
-  BERRY_REGISTER_EXTENSION_CLASS(graphcut, context)
+  BERRY_REGISTER_EXTENSION_CLASS(GraphcutView, context)
 }
 
 void ch_zhaw_graphcut_Activator::stop(ctkPluginContext* context)

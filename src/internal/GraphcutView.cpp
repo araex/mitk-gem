@@ -20,27 +20,30 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <berryIWorkbenchWindow.h>
 
 // Qmitk
-#include "graphcut.h"
+#include "GraphcutView.h"
 
 // Qt
 #include <QMessageBox>
 
+// Graphcut
+#include "lib/GraphCut/ImageGraphCut3D.h"
 
-const std::string graphcut::VIEW_ID = "org.mitk.views.imagegraphcut3dsegmentation";
 
-void graphcut::SetFocus()
+const std::string GraphcutView::VIEW_ID = "org.mitk.views.imagegraphcut3dsegmentation";
+
+void GraphcutView::SetFocus()
 {
   m_Controls.buttonPerformImageProcessing->setFocus();
 }
 
-void graphcut::CreateQtPartControl( QWidget *parent )
+void GraphcutView::CreateQtPartControl( QWidget *parent )
 {
   // create GUI widgets from the Qt Designer's .ui file
   m_Controls.setupUi( parent );
   connect( m_Controls.buttonPerformImageProcessing, SIGNAL(clicked()), this, SLOT(DoImageProcessing()) );
 }
 
-void graphcut::OnSelectionChanged( berry::IWorkbenchPart::Pointer /*source*/,
+void GraphcutView::OnSelectionChanged( berry::IWorkbenchPart::Pointer /*source*/,
                                              const QList<mitk::DataNode::Pointer>& nodes )
 {
   // iterate all selected objects, adjust warning visibility
@@ -59,7 +62,7 @@ void graphcut::OnSelectionChanged( berry::IWorkbenchPart::Pointer /*source*/,
 }
 
 
-void graphcut::DoImageProcessing()
+void GraphcutView::DoImageProcessing()
 {
   QList<mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
   if (nodes.empty()) return;
