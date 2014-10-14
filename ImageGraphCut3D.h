@@ -121,20 +121,16 @@ public:
         NoDirection, BrightDark, DarkBright
     } BoundaryDirectionType;
 
-    itkSetEnumMacro(BoundaryDirectionType, BoundaryDirectionType);
-
-    itkGetEnumMacro(BoundaryDirectionType, BoundaryDirectionType);
-
     void SetBoundaryDirectionTypeToNoDirection() {
-        this->SetBoundaryDirectionType(NoDirection);
+        m_BoundaryDirectionType = NoDirection;
     }
 
     void SetBoundaryDirectionTypeToBrightDark() {
-        this->SetBoundaryDirectionType(BrightDark);
+        m_BoundaryDirectionType = BrightDark;
     }
 
     void SetBoundaryDirectionTypeToDarkBright() {
-        this->SetBoundaryDirectionType(DarkBright);
+        m_BoundaryDirectionType = DarkBright;
     }
 
     void Modified() {
