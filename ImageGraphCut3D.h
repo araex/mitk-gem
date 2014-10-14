@@ -136,43 +136,43 @@ public:
 protected:
 
     /** A Kolmogorov graph object */
-    GraphType *Graph;
+    GraphType *m_Graph;
 
     /** The output segmentation */
-    ResultImageType::Pointer ResultingSegments;
+    ResultImageType::Pointer m_ResultingSegments;
 
     /** User specified foreground points */
-    IndexContainer Sources;
+    IndexContainer m_Sources;
 
     /** User specified background points */
-    IndexContainer Sinks;
+    IndexContainer m_Sinks;
 
     /** Noise in boundary term */
     // YP was: float Sigma = 5.0f;
-    double Sigma;
+    double m_Sigma;
 
     /** Use the region term based on log histogram values */
     // YP was: bool UseRegionTermBasedOnHistogram = false;
-    bool UseRegionTermBasedOnHistogram;
+    bool m_UseRegionTermBasedOnHistogram;
     /** Use the region term based simple threshold probablity (see sect. 2.3 in Boykov and Funka-Lea 2006) */
-    bool UseRegionTermBasedOnThreshold;
+    bool m_UseRegionTermBasedOnThreshold;
 
     /** The weighting between region and boundary terms */
     // YP was: float Lambda = 1.0f;
-    float Lambda;
+    float m_Lambda;
 
     /** The number of bins per dimension of the foreground and background histograms */
     // YP was: int NumberOfHistogramBins = 10;
-    int NumberOfHistogramBins;
+    int m_NumberOfHistogramBins;
 
     /** Threshold for threshold based region term */
-    PixelType RegionThreshold;
+    PixelType m_RegionThreshold;
 
     /** Direction of the Boundary term */
     BoundaryDirectionType m_BoundaryDirectionType;
 
     /** An image which keeps tracks of the mapping between pixel index and graph node id */
-    NodeImageType::Pointer NodeImage;
+    NodeImageType::Pointer m_NodeImage;
 
     // Typedefs
     typedef itk::Vector<PixelType, 1> ListSampleMeasurementVectorType;
@@ -199,16 +199,16 @@ protected:
     // YP was:
     //const HistogramType* ForegroundHistogram = nullptr;
     //const HistogramType* BackgroundHistogram = nullptr;
-    const HistogramType *ForegroundHistogram;
-    const HistogramType *BackgroundHistogram;
+    const HistogramType *m_ForegroundHistogram;
+    const HistogramType *m_BackgroundHistogram;
 
 
     /** ITK filters to create histograms. */
-    typename SampleToHistogramFilterType::Pointer ForegroundHistogramFilter;
-    typename SampleToHistogramFilterType::Pointer BackgroundHistogramFilter;
+    typename SampleToHistogramFilterType::Pointer m_ForegroundHistogramFilter;
+    typename SampleToHistogramFilterType::Pointer m_BackgroundHistogramFilter;
 
     /** The image to be segmented */
-    typename TImage::Pointer Image;
+    typename TImage::Pointer m_Image;
 
 };
 
