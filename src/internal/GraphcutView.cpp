@@ -20,10 +20,18 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <berryIWorkbenchWindow.h>
 
 // Qmitk
+#include <QmitkDataStorageComboBox.h>
 #include "GraphcutView.h"
+
+// MITK
+#include <mitkNodePredicateDataType.h>
+#include <mitkNodePredicateOr.h>
 
 // Qt
 #include <QMessageBox>
+
+// Utils
+#include "lib/WorkbenchUtils/WorkbenchUtils.h"
 
 // Graphcut
 #include "lib/GraphCut3D/ImageGraphCut3D.h"
@@ -32,65 +40,43 @@ See LICENSE.txt or http://www.mitk.org for details.
 const std::string GraphcutView::VIEW_ID = "org.mitk.views.imagegraphcut3dsegmentation";
 
 void GraphcutView::SetFocus() {
-    m_Controls.buttonPerformImageProcessing->setFocus();
 }
 
 void GraphcutView::CreateQtPartControl(QWidget *parent) {
     // create GUI widgets from the Qt Designer's .ui file
     m_Controls.setupUi(parent);
-    connect(m_Controls.buttonPerformImageProcessing, SIGNAL(clicked()), this, SLOT(DoImageProcessing()));
+
+    // init image selectors
+    initializeImageSelector(m_Controls.greyscaleImageSelector);
+    initializeImageSelector(m_Controls.foregroundImageSelector);
+    initializeImageSelector(m_Controls.backgroundImageSelector);
+
+    // set predicates to filter which images are selectable
+    m_Controls.greyscaleImageSelector->SetPredicate(WorkbenchUtils::createIsImageTypePredicate());
+    m_Controls.foregroundImageSelector->SetPredicate(WorkbenchUtils::createIsBinaryImageTypePredicate());
+    m_Controls.backgroundImageSelector->SetPredicate(WorkbenchUtils::createIsBinaryImageTypePredicate());
+
+    // setup signals
+    connect(m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonPressed()));
+    connect(m_Controls.greyscaleImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
+    connect(m_Controls.foregroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
+    connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
 }
 
-void GraphcutView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/,
+void GraphcutView::OnSelectionChanged(berry::IWorkbenchPart::Pointer,
         const QList <mitk::DataNode::Pointer> &nodes) {
-    // iterate all selected objects, adjust warning visibility
-    foreach(mitk::DataNode::Pointer
-    node, nodes )
-    {
-        if (node.IsNotNull() && dynamic_cast<mitk::Image *>(node->GetData())) {
-            m_Controls.labelWarning->setVisible(false);
-            m_Controls.buttonPerformImageProcessing->setEnabled(true);
-            return;
-        }
-    }
-
-    m_Controls.labelWarning->setVisible(true);
-    m_Controls.buttonPerformImageProcessing->setEnabled(false);
+    MITK_DEBUG("ch.zhaw.graphcut") << "selection changed";
 }
 
+void GraphcutView::startButtonPressed() {
+    MITK_DEBUG("ch.zhaw.graphcut") << "start button pressed";
+}
 
-void GraphcutView::DoImageProcessing() {
-    QList <mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
-    if (nodes.empty()) return;
+void GraphcutView::imageSelectionChanged() {
+    MITK_DEBUG("ch.zhaw.graphcut") << "selector changed image";
+}
 
-    mitk::DataNode *node = nodes.front();
-
-    if (!node) {
-        // Nothing selected. Inform the user and return
-        QMessageBox::information(NULL, "Template", "Please load and select an image before starting image processing.");
-        return;
-    }
-
-    // here we have a valid mitk::DataNode
-
-    // a node itself is not very useful, we need its data item (the image)
-    mitk::BaseData *data = node->GetData();
-    if (data) {
-        // test if this data item is an image or not (could also be a surface or something totally different)
-        mitk::Image *image = dynamic_cast<mitk::Image *>( data );
-        if (image) {
-            std::stringstream message;
-            std::string name;
-            message << "Performing image processing for image ";
-            if (node->GetName(name)) {
-                // a property called "name" was found for this DataNode
-                message << "'" << name << "'";
-            }
-            message << ".";
-            MITK_INFO << message.str();
-
-            // actually do something here...
-
-        }
-    }
+void GraphcutView::initializeImageSelector(QmitkDataStorageComboBox *selector){
+    selector->SetDataStorage(this->GetDataStorage());
+    selector->SetAutoSelectNewItems(false);
 }

@@ -42,18 +42,15 @@ public:
 
     static const std::string VIEW_ID;
 
-protected
-    slots:
+protected slots:
 
-    /// \brief Called when the user clicks the GUI button
-    void
+    void startButtonPressed();
+    void imageSelectionChanged();
 
-    DoImageProcessing();
 
 protected:
 
     virtual void CreateQtPartControl(QWidget *parent);
-
     virtual void SetFocus();
 
     /// \brief called by QmitkFunctionality when DataManager's selection has changed
@@ -62,6 +59,8 @@ protected:
 
     Ui::GraphcutViewControls m_Controls;
 
+private:
+    void initializeImageSelector(QmitkDataStorageComboBox *);
 };
 
 #endif // GraphcutView_h
