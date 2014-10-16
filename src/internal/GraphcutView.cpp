@@ -63,13 +63,24 @@ void GraphcutView::CreateQtPartControl(QWidget *parent) {
     connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
 }
 
-void GraphcutView::OnSelectionChanged(berry::IWorkbenchPart::Pointer,
-        const QList <mitk::DataNode::Pointer> &nodes) {
+void GraphcutView::OnSelectionChanged(berry::IWorkbenchPart::Pointer, const QList <mitk::DataNode::Pointer> &) {
     MITK_DEBUG("ch.zhaw.graphcut") << "selection changed";
 }
 
 void GraphcutView::startButtonPressed() {
     MITK_DEBUG("ch.zhaw.graphcut") << "start button pressed";
+
+    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
+    mitk::DataNode *foregroundMaskNode = m_Controls.foregroundImageSelector->GetSelectedNode();
+    mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
+
+    if(isValidSelection()){
+        mitk::Image* greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode);
+        mitk::Image* foregroundMask = dynamic_cast<mitk::Image *>(foregroundMaskNode);
+        mitk::Image* backgroundMask = dynamic_cast<mitk::Image *>(backgroundMaskNode);
+
+        // TODO: do the work...
+    }
 }
 
 void GraphcutView::imageSelectionChanged() {
@@ -79,4 +90,31 @@ void GraphcutView::imageSelectionChanged() {
 void GraphcutView::initializeImageSelector(QmitkDataStorageComboBox *selector){
     selector->SetDataStorage(this->GetDataStorage());
     selector->SetAutoSelectNewItems(false);
+}
+
+void GraphcutView::setMandatoryField(QWidget *widget, bool bMandatory){
+    widget->setProperty("mandatoryField", bMandatory);
+    widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
+    widget->style()->polish(widget);
+    widget->update();
+}
+
+bool GraphcutView::isValidSelection() {
+    // get the nodes selected
+    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
+    mitk::DataNode *foregroundMaskNode = m_Controls.foregroundImageSelector->GetSelectedNode();
+    mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
+
+    // set the mandatory field based on whether or not the nodes are NULL
+    setMandatoryField(m_Controls.greyscaleSelector, (greyscaleImageNode==NULL));
+    setMandatoryField(m_Controls.foregroundSelector, (foregroundMaskNode==NULL));
+    setMandatoryField(m_Controls.backgroundSelector, (backgroundMaskNode==NULL));
+
+    if(greyscaleImageNode && foregroundMaskNode && backgroundMaskNode){
+        MITK_DEBUG("ch.zhaw.graphcut") << "valid selection";
+        return true;
+    } else{
+        MITK_DEBUG("ch.zhaw.graphcut") << "invalid selection";
+        return false;
+    }
 }

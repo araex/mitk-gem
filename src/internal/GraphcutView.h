@@ -61,6 +61,8 @@ protected:
 
 private:
     void initializeImageSelector(QmitkDataStorageComboBox *);
+    void setMandatoryField(QWidget *, bool);
+    bool isValidSelection();
 };
 
 #endif // GraphcutView_h
