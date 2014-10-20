@@ -26,6 +26,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 // MITK
 #include <mitkNodePredicateDataType.h>
 #include <mitkNodePredicateOr.h>
+#include <mitkImageCast.h>
 
 // Qt
 #include <QMessageBox>
@@ -75,12 +76,72 @@ void GraphcutView::startButtonPressed() {
     mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
 
     if(isValidSelection()){
-        mitk::Image* greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode);
-        mitk::Image* foregroundMask = dynamic_cast<mitk::Image *>(foregroundMaskNode);
-        mitk::Image* backgroundMask = dynamic_cast<mitk::Image *>(backgroundMaskNode);
+        MITK_INFO("ch.zhaw.graphcut") << "processing input";
 
-        // TODO: do the work...
+        // gather input images
+        mitk::Image::Pointer greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
+        mitk::Image::Pointer foregroundMask = dynamic_cast<mitk::Image *>(foregroundMaskNode->GetData());
+        mitk::Image::Pointer backgroundMask = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
+
+        // get pixel indices
+        std::vector<itk::Index<3> > foregroundPixels = getNonZeroPixelIndices(foregroundMask);
+        MITK_INFO("ch.zhaw.graphcut") << "found " <<foregroundPixels.size()<<" pixels";
+        std::vector<itk::Index<3> > backgroundPixels = getNonZeroPixelIndices(backgroundMask);
+        MITK_INFO("ch.zhaw.graphcut") << "found " <<backgroundPixels.size()<<" pixels";
+
+        // perform graph cut
+        MITK_INFO("ch.zhaw.graphcut") << "performing graph cut";
+
+        typedef itk::Image<unsigned short, 3> TImage;
+        typedef ImageGraphCut3D<TImage> Graph3DType;
+        Graph3DType GraphCut;
+        TImage::Pointer greyscaleImageItk;
+        mitk::CastToItkImage(greyscaleImage, greyscaleImageItk);
+        GraphCut.SetImage(greyscaleImageItk);
+        GraphCut.SetNumberOfHistogramBins(20);
+        GraphCut.SetSigma(0.05);
+        GraphCut.SetSources(foregroundPixels);
+        GraphCut.SetSinks(backgroundPixels);
+        GraphCut.PerformSegmentation();
+
+        // Get the output
+        mitk::Image::Pointer resultImage;
+        Graph3DType::ResultImageType::Pointer resultImageItk = GraphCut.GetSegmentMask();
+        mitk::CastToMitkImage(resultImageItk,resultImage);
+        mitk::DataNode::Pointer newNode = mitk::DataNode::New();
+        newNode->SetData( resultImage );
+
+        // set some properties
+        newNode->SetProperty("binary", mitk::BoolProperty::New(true));
+        newNode->SetProperty("name", mitk::StringProperty::New("graphcut segmentation"));
+        newNode->SetProperty("color", mitk::ColorProperty::New(1.0,0.0,0.0));
+        newNode->SetProperty("volumerendering", mitk::BoolProperty::New(true));
+        newNode->SetProperty("layer", mitk::IntProperty::New(1));
+        newNode->SetProperty("opacity", mitk::FloatProperty::New(0.5));
+
+        // add result to data tree
+        this->GetDataStorage()->Add( newNode );
+        mitk::RenderingManager::GetInstance()->RequestUpdateAll();
     }
+}
+
+std::vector<itk::Index<3> > GraphcutView::getNonZeroPixelIndices(mitk::Image::Pointer mitkImage) {
+    // cast mitk to itk image (copies memory, will get freed once itkImg gets out of scope)
+    typedef itk::Image<unsigned short, 3> TImage;
+    TImage::Pointer itkImage = TImage::New();
+    mitk::CastToItkImage(mitkImage, itkImage);
+
+    std::vector<itk::Index<3> > nonZeroPixelIndices;
+
+    itk::ImageRegionConstIterator<TImage> regionIterator(itkImage, itkImage->GetLargestPossibleRegion());
+    while(!regionIterator.IsAtEnd()) {
+        if(regionIterator.Get() > itk::NumericTraits<typename TImage::PixelType>::Zero) {
+            nonZeroPixelIndices.push_back(regionIterator.GetIndex());
+        }
+        ++regionIterator;
+    }
+
+    return nonZeroPixelIndices;
 }
 
 void GraphcutView::imageSelectionChanged() {

@@ -5,6 +5,9 @@ set(SRC_CPP_FILES
 set(INTERNAL_CPP_FILES
   ch_zhaw_graphcut_Activator.cpp
   GraphcutView.cpp
+  lib/GraphCut3D/ImageGraphCut3D.hpp
+  lib/GraphCut3D/Kolmogorov/graph.cpp
+  lib/GraphCut3D/Kolmogorov/maxflow.cpp
 )
 
 set(UI_FILES

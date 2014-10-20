@@ -155,7 +155,7 @@ QScrollArea{
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+              <widget class="QDoubleSpinBox" name="paramSigmaSpinBox"/>
              </item>
             </layout>
            </widget>
