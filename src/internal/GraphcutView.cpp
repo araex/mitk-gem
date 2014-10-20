@@ -27,8 +27,10 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <mitkNodePredicateDataType.h>
 #include <mitkNodePredicateOr.h>
 #include <mitkImageCast.h>
+#include <mitkITKImageImport.h>
 
 // Qt
+#include <QThreadPool>
 #include <QMessageBox>
 
 // Utils
@@ -36,6 +38,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 // Graphcut
 #include "lib/GraphCut3D/ImageGraphCut3D.h"
+#include "GraphcutWorker.h"
 
 
 const std::string GraphcutView::VIEW_ID = "org.mitk.views.imagegraphcut3dsegmentation";
@@ -75,7 +78,7 @@ void GraphcutView::startButtonPressed() {
     mitk::DataNode *foregroundMaskNode = m_Controls.foregroundImageSelector->GetSelectedNode();
     mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
 
-    if(isValidSelection()){
+    if (isValidSelection()) {
         MITK_INFO("ch.zhaw.graphcut") << "processing input";
 
         // gather input images
@@ -83,65 +86,59 @@ void GraphcutView::startButtonPressed() {
         mitk::Image::Pointer foregroundMask = dynamic_cast<mitk::Image *>(foregroundMaskNode->GetData());
         mitk::Image::Pointer backgroundMask = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
 
-        // get pixel indices
-        std::vector<itk::Index<3> > foregroundPixels = getNonZeroPixelIndices(foregroundMask);
-        MITK_INFO("ch.zhaw.graphcut") << "found " <<foregroundPixels.size()<<" pixels";
-        std::vector<itk::Index<3> > backgroundPixels = getNonZeroPixelIndices(backgroundMask);
-        MITK_INFO("ch.zhaw.graphcut") << "found " <<backgroundPixels.size()<<" pixels";
+        // create worker. QThreadPool will take care of the deletion of the worker once it has finished
+        GraphcutWorker *worker = new GraphcutWorker();
 
-        // perform graph cut
-        MITK_INFO("ch.zhaw.graphcut") << "performing graph cut";
-
-        typedef itk::Image<unsigned short, 3> TImage;
-        typedef ImageGraphCut3D<TImage> Graph3DType;
-        Graph3DType GraphCut;
-        TImage::Pointer greyscaleImageItk;
+        // cast the images
+        typename GraphcutWorker::InputImageType::Pointer greyscaleImageItk;
+        typename GraphcutWorker::MaskImageType::Pointer foregroundMaskItk;
+        typename GraphcutWorker::MaskImageType::Pointer backgroundMaskItk;
         mitk::CastToItkImage(greyscaleImage, greyscaleImageItk);
-        GraphCut.SetImage(greyscaleImageItk);
-        GraphCut.SetNumberOfHistogramBins(20);
-        GraphCut.SetSigma(0.05);
-        GraphCut.SetSources(foregroundPixels);
-        GraphCut.SetSinks(backgroundPixels);
-        GraphCut.PerformSegmentation();
+        mitk::CastToItkImage(foregroundMask, foregroundMaskItk);
+        mitk::CastToItkImage(backgroundMask, backgroundMaskItk);
 
-        // Get the output
-        mitk::Image::Pointer resultImage;
-        Graph3DType::ResultImageType::Pointer resultImageItk = GraphCut.GetSegmentMask();
-        mitk::CastToMitkImage(resultImageItk,resultImage);
-        mitk::DataNode::Pointer newNode = mitk::DataNode::New();
-        newNode->SetData( resultImage );
+        // set images
+        worker->setInputImage(greyscaleImageItk);
+        worker->setForegroundMask(foregroundMaskItk);
+        worker->setBackgroundMask(backgroundMaskItk);
 
-        // set some properties
-        newNode->SetProperty("binary", mitk::BoolProperty::New(true));
-        newNode->SetProperty("name", mitk::StringProperty::New("graphcut segmentation"));
-        newNode->SetProperty("color", mitk::ColorProperty::New(1.0,0.0,0.0));
-        newNode->SetProperty("volumerendering", mitk::BoolProperty::New(true));
-        newNode->SetProperty("layer", mitk::IntProperty::New(1));
-        newNode->SetProperty("opacity", mitk::FloatProperty::New(0.5));
+        // TODO: set parameters
 
-        // add result to data tree
-        this->GetDataStorage()->Add( newNode );
-        mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+        // set up signals
+        qRegisterMetaType<itk::DataObject::Pointer>("itk::DataObject::Pointer");
+        QObject::connect(worker, SIGNAL(started(unsigned int)), this, SLOT(workerHasStarted(unsigned int)));
+        QObject::connect(worker, SIGNAL(finished(itk::DataObject::Pointer, unsigned int)), this, SLOT(workerIsDone(itk::DataObject::Pointer, unsigned int)));
+
+        QThreadPool::globalInstance()->start(worker);
     }
 }
 
-std::vector<itk::Index<3> > GraphcutView::getNonZeroPixelIndices(mitk::Image::Pointer mitkImage) {
-    // cast mitk to itk image (copies memory, will get freed once itkImg gets out of scope)
-    typedef itk::Image<unsigned short, 3> TImage;
-    TImage::Pointer itkImage = TImage::New();
-    mitk::CastToItkImage(mitkImage, itkImage);
+void GraphcutView::workerHasStarted(unsigned int workerId) {
+    MITK_DEBUG("ch.zhaw.graphcut") << "worker " << workerId << " started";
+}
 
-    std::vector<itk::Index<3> > nonZeroPixelIndices;
+void GraphcutView::workerIsDone(itk::DataObject::Pointer data, unsigned int workerId){
+    MITK_DEBUG("ch.zhaw.graphcut") << "worker " << workerId << " finished";
 
-    itk::ImageRegionConstIterator<TImage> regionIterator(itkImage, itkImage->GetLargestPossibleRegion());
-    while(!regionIterator.IsAtEnd()) {
-        if(regionIterator.Get() > itk::NumericTraits<typename TImage::PixelType>::Zero) {
-            nonZeroPixelIndices.push_back(regionIterator.GetIndex());
-        }
-        ++regionIterator;
-    }
+    // cast the image back to mitk
+    GraphcutWorker::OutputImageType *resultImageItk = dynamic_cast<GraphcutWorker::OutputImageType *>(data.GetPointer());
+    mitk::Image::Pointer resultImage = mitk::GrabItkImageMemory(resultImageItk);
 
-    return nonZeroPixelIndices;
+    // create the node
+    mitk::DataNode::Pointer newNode = mitk::DataNode::New();
+    newNode->SetData(resultImage);
+
+    // set some properties
+    newNode->SetProperty("binary", mitk::BoolProperty::New(true));
+    newNode->SetProperty("name", mitk::StringProperty::New("graphcut segmentation"));
+    newNode->SetProperty("color", mitk::ColorProperty::New(1.0,0.0,0.0));
+    newNode->SetProperty("volumerendering", mitk::BoolProperty::New(true));
+    newNode->SetProperty("layer", mitk::IntProperty::New(1));
+    newNode->SetProperty("opacity", mitk::FloatProperty::New(0.5));
+
+    // add result to data tree
+    this->GetDataStorage()->Add( newNode );
+    mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
 void GraphcutView::imageSelectionChanged() {

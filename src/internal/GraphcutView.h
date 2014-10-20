@@ -26,6 +26,8 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include "itkIndex.h"
 
+#include "GraphcutWorker.h"
+
 
 /**
 \brief GraphcutView
@@ -48,6 +50,8 @@ protected slots:
 
     void startButtonPressed();
     void imageSelectionChanged();
+    void workerHasStarted(unsigned int);
+    void workerIsDone(itk::DataObject::Pointer, unsigned int);
 
 
 protected:
@@ -65,7 +69,6 @@ private:
     void initializeImageSelector(QmitkDataStorageComboBox *);
     void setMandatoryField(QWidget *, bool);
     bool isValidSelection();
-    std::vector<itk::Index<3> > getNonZeroPixelIndices(mitk::Image::Pointer);
 };
 
 #endif // GraphcutView_h

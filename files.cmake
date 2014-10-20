@@ -8,6 +8,7 @@ set(INTERNAL_CPP_FILES
   lib/GraphCut3D/ImageGraphCut3D.hpp
   lib/GraphCut3D/Kolmogorov/graph.cpp
   lib/GraphCut3D/Kolmogorov/maxflow.cpp
+  GraphcutWorker.cpp
 )
 
 set(UI_FILES
@@ -17,6 +18,7 @@ set(UI_FILES
 set(MOC_H_FILES
   src/internal/ch_zhaw_graphcut_Activator.h
   src/internal/GraphcutView.h
+  src/internal/Worker.h
 )
 
 # list of resource files which can be used by the plug-in
