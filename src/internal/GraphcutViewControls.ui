@@ -155,7 +155,14 @@ QScrollArea{
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="paramSigmaSpinBox"/>
+              <widget class="QDoubleSpinBox" name="paramSigmaSpinBox">
+               <property name="maximum">
+                <double>1000.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>50.000000000000000</double>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>

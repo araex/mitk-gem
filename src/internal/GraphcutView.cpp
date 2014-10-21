@@ -74,22 +74,24 @@ void GraphcutView::OnSelectionChanged(berry::IWorkbenchPart::Pointer, const QLis
 void GraphcutView::startButtonPressed() {
     MITK_DEBUG("ch.zhaw.graphcut") << "start button pressed";
 
-    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
-    mitk::DataNode *foregroundMaskNode = m_Controls.foregroundImageSelector->GetSelectedNode();
-    mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
 
     if (isValidSelection()) {
         MITK_INFO("ch.zhaw.graphcut") << "processing input";
+
+        // get the nodes
+        mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
+        mitk::DataNode *foregroundMaskNode = m_Controls.foregroundImageSelector->GetSelectedNode();
+        mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
 
         // gather input images
         mitk::Image::Pointer greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
         mitk::Image::Pointer foregroundMask = dynamic_cast<mitk::Image *>(foregroundMaskNode->GetData());
         mitk::Image::Pointer backgroundMask = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
 
-        // create worker. QThreadPool will take care of the deletion of the worker once it has finished
+        // create worker. QThreadPool will take care of the deconstruction of the worker once it has finished
         GraphcutWorker *worker = new GraphcutWorker();
 
-        // cast the images
+        // cast the images to ITK
         typename GraphcutWorker::InputImageType::Pointer greyscaleImageItk;
         typename GraphcutWorker::MaskImageType::Pointer foregroundMaskItk;
         typename GraphcutWorker::MaskImageType::Pointer backgroundMaskItk;
@@ -97,12 +99,13 @@ void GraphcutView::startButtonPressed() {
         mitk::CastToItkImage(foregroundMask, foregroundMaskItk);
         mitk::CastToItkImage(backgroundMask, backgroundMaskItk);
 
-        // set images
+        // set images in worker
         worker->setInputImage(greyscaleImageItk);
         worker->setForegroundMask(foregroundMaskItk);
         worker->setBackgroundMask(backgroundMaskItk);
 
-        // TODO: set parameters
+        // set parameters
+        worker->setSigma(m_Controls.paramSigmaSpinBox->value());
 
         // set up signals
         qRegisterMetaType<itk::DataObject::Pointer>("itk::DataObject::Pointer");

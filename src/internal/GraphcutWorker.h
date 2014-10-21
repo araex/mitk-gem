@@ -50,18 +50,24 @@ public:
         m_background = mask;
     }
 
+    void setSigma(double d){
+        m_Sigma = d;
+    }
+
     unsigned int id;
 
-    InputImageType::Pointer m_input;
-    MaskImageType::Pointer m_foreground;
-    MaskImageType::Pointer m_background;
-    OutputImageType::Pointer m_output;
 private:
+
     void preparePipeline();
     std::vector<itk::Index<3> > getNonZeroPixelIndices(MaskImageType::Pointer);
 
     // member variables
+    InputImageType::Pointer m_input;
+    MaskImageType::Pointer m_foreground;
+    MaskImageType::Pointer m_background;
+    OutputImageType::Pointer m_output;
     Graph3DType *m_graphCut;
+    double m_Sigma;
 };
 
 #endif // __GraphcutWorker_h__

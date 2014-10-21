@@ -3,6 +3,7 @@
 
 GraphcutWorker::GraphcutWorker()
         : id(WorkbenchUtils::getId())
+        , m_Sigma(50)
 {
 }
 
@@ -11,13 +12,9 @@ void GraphcutWorker::preparePipeline() {
 
     m_graphCut = new Graph3DType();
     m_graphCut->SetImage(m_input);
-
-    //TODO: params from gui
-    m_graphCut->SetNumberOfHistogramBins(20);
-    m_graphCut->SetSigma(0.05);
-
     m_graphCut->SetSources(getNonZeroPixelIndices(m_foreground));
     m_graphCut->SetSinks(getNonZeroPixelIndices(m_background));
+    m_graphCut->SetSigma(m_Sigma);
 
     MITK_DEBUG("ch.zhaw.graphcut") << "... pipeline prepared";
 }
