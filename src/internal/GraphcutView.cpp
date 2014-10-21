@@ -65,6 +65,10 @@ void GraphcutView::CreateQtPartControl(QWidget *parent) {
     connect(m_Controls.greyscaleImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.foregroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
+
+    // init defaults
+    m_currentlyActiveWorkerCount = 0;
+    lockGui(false);
 }
 
 void GraphcutView::OnSelectionChanged(berry::IWorkbenchPart::Pointer, const QList <mitk::DataNode::Pointer> &) {
@@ -119,6 +123,8 @@ void GraphcutView::startButtonPressed() {
 
 void GraphcutView::workerHasStarted(unsigned int workerId) {
     MITK_DEBUG("ch.zhaw.graphcut") << "worker " << workerId << " started";
+    m_currentlyActiveWorkerCount++;
+    lockGui(true);
 }
 
 void GraphcutView::workerIsDone(itk::DataObject::Pointer data, unsigned int workerId){
@@ -142,6 +148,11 @@ void GraphcutView::workerIsDone(itk::DataObject::Pointer data, unsigned int work
 
     // add result to data tree
     this->GetDataStorage()->Add( newNode );
+
+    // update gui
+    if(--m_currentlyActiveWorkerCount == 0){ // no more active workers
+        lockGui(false);
+    }
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
@@ -179,4 +190,9 @@ bool GraphcutView::isValidSelection() {
         MITK_DEBUG("ch.zhaw.graphcut") << "invalid selection";
         return false;
     }
+}
+
+void GraphcutView::lockGui(bool b) {
+    m_Controls.parentWidget->setEnabled(!b);
+    mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }

@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>GraphcutViewControls</class>
  <widget class="QWidget" name="GraphcutViewControls">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>282</width>
-    <height>384</height>
+    <width>324</width>
+    <height>544</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -47,16 +50,22 @@ QScrollArea{
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
+     <widget class="QWidget" name="parentWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>264</width>
-        <height>366</height>
+        <width>306</width>
+        <height>526</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">

@@ -69,6 +69,9 @@ private:
     void initializeImageSelector(QmitkDataStorageComboBox *);
     void setMandatoryField(QWidget *, bool);
     bool isValidSelection();
+    void lockGui(bool);
+
+    unsigned int m_currentlyActiveWorkerCount;
 };
 
 #endif // GraphcutView_h
