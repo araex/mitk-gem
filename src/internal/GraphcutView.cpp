@@ -184,15 +184,23 @@ bool GraphcutView::isValidSelection() {
     setMandatoryField(m_Controls.backgroundSelector, (backgroundMaskNode==NULL));
 
     if(greyscaleImageNode && foregroundMaskNode && backgroundMaskNode){
+        if(foregroundMaskNode->GetName() == backgroundMaskNode->GetName()){
+            setMandatoryField(m_Controls.foregroundSelector, true);
+            setMandatoryField(m_Controls.backgroundSelector, true);
+            MITK_INFO("ch.zhaw.graphcut") << "invalid selection: foreground and background seem to be the same image.";
+            return false;
+        }
         MITK_DEBUG("ch.zhaw.graphcut") << "valid selection";
         return true;
     } else{
-        MITK_DEBUG("ch.zhaw.graphcut") << "invalid selection";
+        MITK_INFO("ch.zhaw.graphcut") << "invalid selection: missing input.";
         return false;
     }
 }
 
 void GraphcutView::lockGui(bool b) {
     m_Controls.parentWidget->setEnabled(!b);
+    m_Controls.progressBar->setVisible(b);
+    m_Controls.startButton->setVisible(!b);
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
