@@ -17,9 +17,17 @@
 class GraphcutWorker : public Worker {
 
 public:
+    enum BoundaryDirection{
+        BIDIRECTIONAL = 0,
+        BRIGHT_TO_DARK = 1,
+        DARK_TO_BRIGHT = 2,
+        BoundaryDirection_MAX_VALUE = DARK_TO_BRIGHT
+    };
+
     ~GraphcutWorker(){
         delete m_graphCut;
     }
+
     // image typedefs
     typedef typename itk::Image<short, 3> InputImageType;
     typedef typename itk::Image<unsigned char, 3> MaskImageType;
@@ -54,6 +62,12 @@ public:
         m_Sigma = d;
     }
 
+    void setBoundaryDirection(BoundaryDirection i){
+        m_boundaryDirection = i;
+    }
+
+
+
     unsigned int id;
 
 private:
@@ -68,6 +82,7 @@ private:
     OutputImageType::Pointer m_output;
     Graph3DType *m_graphCut;
     double m_Sigma;
+    BoundaryDirection m_boundaryDirection;
 };
 
 #endif // __GraphcutWorker_h__

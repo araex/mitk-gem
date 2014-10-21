@@ -16,6 +16,18 @@ void GraphcutWorker::preparePipeline() {
     m_graphCut->SetSinks(getNonZeroPixelIndices(m_background));
     m_graphCut->SetSigma(m_Sigma);
 
+    switch (m_boundaryDirection) {
+        case 0:
+            m_graphCut->SetBoundaryDirectionTypeToNoDirection();
+            break;
+        case 1:
+            m_graphCut->SetBoundaryDirectionTypeToBrightDark();
+            break;
+        case 2:
+            m_graphCut->SetBoundaryDirectionTypeToDarkBright();
+            break;
+    }
+
     MITK_DEBUG("ch.zhaw.graphcut") << "... pipeline prepared";
 }
 

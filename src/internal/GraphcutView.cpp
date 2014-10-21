@@ -106,6 +106,7 @@ void GraphcutView::startButtonPressed() {
 
         // set parameters
         worker->setSigma(m_Controls.paramSigmaSpinBox->value());
+        worker->setBoundaryDirection((GraphcutWorker::BoundaryDirection) m_Controls.paramBoundaryDirectionComboBox->currentIndex());
 
         // set up signals
         qRegisterMetaType<itk::DataObject::Pointer>("itk::DataObject::Pointer");
