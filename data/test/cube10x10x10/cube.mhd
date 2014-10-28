@@ -10,4 +10,4 @@ AnatomicalOrientation = RAI
 ElementSpacing = 1.0 1.0 1.0
 DimSize = 10 10 10
 ElementType = MET_UCHAR
-ElementDataFile = testCube10x10x10Noisy_0p01.raw
+ElementDataFile = cube.raw
