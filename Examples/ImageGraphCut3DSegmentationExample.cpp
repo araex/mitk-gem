@@ -55,7 +55,7 @@ std::vector<itk::Index<3> > GetPixelsWithValueLargerThanZero(const TImage *const
 */
 int main(int argc, char *argv[]) {
     // Verify arguments
-    if (argc != 10) {
+    if (argc != 8) {
         std::cerr << "Required: image.mhd foregroundMask.mhd backgroundMask.mhd output.mhd sigma boundaryDirection lambda regionTerm regionTermOpt" << std::endl;
         std::cerr << "image.mhd:           3D image in Hounsfield Units -1024 to 3071" << std::endl;
         std::cerr << "foregroundMask.mhd:  3D image non-zero pixels indicating foreground and 0 elsewhere" << std::endl;
@@ -66,10 +66,6 @@ int main(int argc, char *argv[]) {
         std::cerr << "                     if negative value is entered, automatically estimated." << std::endl;
         std::cerr << "boundaryDirection    0->bidirectional; 1->bright to dark; 2->dark to bright" << std::endl;
         std::cerr << "lambda               Weight for region term, try 0.1" << std::endl;
-        std::cerr << "regionTerm           0->none; 1->histogram; 2->threshold" << std::endl;
-        std::cerr << "regionTermOpt        if regionTerm = 0->ignored" << std::endl;
-        std::cerr << "                     if regionTerm = 1->Number of Histogram bins, try 256" << std::endl;
-        std::cerr << "                     if regionTerm = 2->Region threshold [HU], try 200" << std::endl;
 
         return EXIT_FAILURE;
     }
@@ -91,13 +87,6 @@ int main(int argc, char *argv[]) {
 
     float lambda = atof(argv[7]); //Region term weight
 
-    int regionTerm = atoi(argv[8]); //0->none; 1->histogram; 2->threshold
-    int regionTermOpt = atoi(argv[9]); //either number of histogram bins (regionTerm=1)
-    //or region term threshold (regionTerm=2)
-
-
-
-
     // Output arguments
     std::cout << "imageFilename: " << imageFilename << std::endl
             << "foregroundFilename: " << foregroundFilename << std::endl
@@ -105,9 +94,7 @@ int main(int argc, char *argv[]) {
             << "outputFilename: " << outputFilename << std::endl
             << "sigma: " << sigma << std::endl
             << "boundaryDirection: " << boundaryDirection << std::endl
-            << "lambda: " << lambda << std::endl
-            << "regionTerm: " << regionTerm << std::endl
-            << "regionTermOpt: " << regionTermOpt << std::endl;
+            << "lambda: " << lambda << std::endl;
 
     // The type of the image to segment
     typedef itk::Image<short, 3> ImageType;
@@ -169,20 +156,6 @@ int main(int argc, char *argv[]) {
     }
     GraphCut.SetSigma(sigma);
 
-    //Region Term
-    switch (regionTerm) {
-        case 1:
-            GraphCut.UseRegionTermBasedOnHistogramOn();
-            GraphCut.SetNumberOfHistogramBins(regionTermOpt);
-            break;
-        case 2:
-            GraphCut.UseRegionTermBasedOnThresholdOn();
-            GraphCut.SetRegionThreshold(regionTermOpt);
-            break;
-        default:
-            GraphCut.UseRegionTermBasedOnHistogramOff();
-            GraphCut.UseRegionTermBasedOnThresholdOff();
-    }
     GraphCut.SetLambda(lambda);
 
     //Hard constraints

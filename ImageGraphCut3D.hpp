@@ -49,11 +49,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 template<typename TImage>
 ImageGraphCut3D<TImage>::ImageGraphCut3D() :
           m_Sigma(5.0f),
-          m_UseRegionTermBasedOnHistogram(false),
-          m_UseRegionTermBasedOnThreshold(false),
           m_Lambda(1.0f),
           m_NumberOfHistogramBins(10),
-          m_RegionThreshold(200),
           RESULT_FOREGROUND_PIXEL_VALUE(255),
           RESULT_BACKGROUND_PIXEL_VALUE(0),
           m_LogToStd(false)
@@ -315,117 +312,6 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
         }
     }
 
-    ////////// Add t-edges and set t-edge weights (links from image nodes to virtual background and virtual foreground node) //////////
-
-    // Compute the histograms of the selected foreground and background pixels
-    if (m_UseRegionTermBasedOnHistogram) {
-        if(m_LogToStd) {
-            std::cout << "    - UseRegionTermBasedOnHistogram ON" << std::endl;
-            std::cout << "      Creating Histogram Samples" << std::endl;
-            std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
-        }
-        CreateSamples();
-
-        itk::ImageRegionIterator<TImage>
-                imageIterator(m_Image,
-                m_Image->GetLargestPossibleRegion());
-        itk::ImageRegionIterator<NodeImageType>
-                nodeIterator(m_NodeImage,
-                m_NodeImage->GetLargestPossibleRegion());
-        imageIterator.GoToBegin();
-        nodeIterator.GoToBegin();
-
-        // Since the t-weight function takes the log of the histogram value,
-        // we must handle bins with frequency = 0 specially (because log(0) = -inf)
-        // For empty histogram bins we use tinyValue instead of 0.
-        float tinyValue = 1e-10;
-
-        while (!imageIterator.IsAtEnd()) {
-            PixelType pixel = imageIterator.Get();
-
-            HistogramType::MeasurementVectorType measurementVector(1);
-            measurementVector[0] = pixel;
-
-
-            HistogramType::IndexType backgroundIndex;
-            m_BackgroundHistogram->GetIndex(measurementVector, backgroundIndex);
-            float sinkHistogramValue =
-                    m_BackgroundHistogram->GetFrequency(backgroundIndex);
-
-            HistogramType::IndexType foregroundIndex;
-            m_ForegroundHistogram->GetIndex(measurementVector, foregroundIndex);
-            float sourceHistogramValue =
-                    m_ForegroundHistogram->GetFrequency(foregroundIndex);
-
-            // Conver the histogram value/frequency to make it as if it came from a normalized histogram
-            if (m_BackgroundHistogram->GetTotalFrequency() == 0 ||
-                    m_ForegroundHistogram->GetTotalFrequency() == 0) {
-                throw std::runtime_error("The foreground or background histogram TotalFrequency is 0!");
-            }
-
-            sinkHistogramValue /= m_BackgroundHistogram->GetTotalFrequency();
-            sourceHistogramValue /= m_ForegroundHistogram->GetTotalFrequency();
-
-            if (sinkHistogramValue <= 0) {
-                sinkHistogramValue = tinyValue;
-            }
-            if (sourceHistogramValue <= 0) {
-                sourceHistogramValue = tinyValue;
-            }
-
-            // Add the edge to the graph and set its weight
-            // log() is the natural log
-            m_Graph->add_tweights(nodeIterator.Get(),
-                    -m_Lambda * log(sinkHistogramValue),
-                    -m_Lambda * log(sourceHistogramValue));
-            ++imageIterator;
-            ++nodeIterator;
-        }
-
-    }
-    else if (m_UseRegionTermBasedOnThreshold) {
-        if(m_LogToStd) {
-            std::cout << "    - UseRegionTermBasedOnThreshold ON" << std::endl;
-            std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
-        }
-        itk::ImageRegionIterator<TImage>
-                imageIterator(m_Image,
-                m_Image->GetLargestPossibleRegion());
-        itk::ImageRegionIterator<NodeImageType>
-                nodeIterator(m_NodeImage,
-                m_NodeImage->GetLargestPossibleRegion());
-        imageIterator.GoToBegin();
-        nodeIterator.GoToBegin();
-
-        float probabilityObjectIfDark = 0.6;
-        float probabilityObjectIfBright = 1.0 - probabilityObjectIfDark;
-        float probabilityBackgroundIfDark = 0.9;
-        float probabilityBackgroundIfBright = 1.0 - probabilityBackgroundIfDark;
-
-        while (!imageIterator.IsAtEnd()) {
-            PixelType pixel = imageIterator.Get();
-
-            //check if pixel bright or dark
-            if (pixel > m_RegionThreshold) {//bright
-                m_Graph->add_tweights(nodeIterator.Get(),
-                        -m_Lambda * log(probabilityBackgroundIfBright),
-                        -m_Lambda * log(probabilityObjectIfBright));
-            } else {//dark
-                m_Graph->add_tweights(nodeIterator.Get(),
-                        -m_Lambda * log(probabilityBackgroundIfDark),
-                        -m_Lambda * log(probabilityObjectIfDark));
-            }
-            ++imageIterator;
-            ++nodeIterator;
-        }
-    }
-    else {
-        if(m_LogToStd){
-            std::cout << "    - No region term" << std::endl;
-            std::cout << "      Without Histogram, just hard constraints, lambda = " << m_Lambda << std::endl;
-        }
-    }
-
     //We don't need the histograms anymore
     m_ForegroundHistogram = NULL;
     m_BackgroundHistogram = NULL;
@@ -507,32 +393,6 @@ typename ImageGraphCut3D<TImage>::IndexContainer ImageGraphCut3D<TImage>::GetSou
 }
 
 template<typename TImage>
-void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOn() {
-    m_UseRegionTermBasedOnHistogram = true;
-    if (m_UseRegionTermBasedOnThreshold) {
-        m_UseRegionTermBasedOnThreshold = false;
-    }
-}
-
-template<typename TImage>
-void ImageGraphCut3D<TImage>::UseRegionTermBasedOnHistogramOff() {
-    m_UseRegionTermBasedOnHistogram = false;
-}
-
-template<typename TImage>
-void ImageGraphCut3D<TImage>::UseRegionTermBasedOnThresholdOn() {
-    m_UseRegionTermBasedOnThreshold = true;
-    if (m_UseRegionTermBasedOnHistogram) {
-        m_UseRegionTermBasedOnHistogram = false;
-    }
-}
-
-template<typename TImage>
-void ImageGraphCut3D<TImage>::UseRegionTermBasedOnThresholdOff() {
-    m_UseRegionTermBasedOnThreshold = false;
-}
-
-template<typename TImage>
 void ImageGraphCut3D<TImage>::SetLambda(const float lambda) {
     m_Lambda = lambda;
 }
@@ -545,11 +405,6 @@ void ImageGraphCut3D<TImage>::SetSigma(const double sigma) {
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetNumberOfHistogramBins(int bins) {
     m_NumberOfHistogramBins = bins;
-}
-
-template<typename TImage>
-void ImageGraphCut3D<TImage>::SetRegionThreshold(PixelType th) {
-    m_RegionThreshold = th;
 }
 
 template<typename TImage>

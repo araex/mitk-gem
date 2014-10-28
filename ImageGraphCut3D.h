@@ -88,19 +88,6 @@ public:
     /** Get the output of the segmentation. */
     ResultImageType::Pointer GetSegmentMask();
 
-    /** Use the region term based on threshold. */
-    void UseRegionTermBasedOnThresholdOn();
-
-    /** DON'T use the region term based on threshold (default). */
-    void UseRegionTermBasedOnThresholdOff();
-
-
-    /** Use the region term based on log histogram. */
-    void UseRegionTermBasedOnHistogramOn();
-
-    /** DON'T use the region term based on log histogram (default). */
-    void UseRegionTermBasedOnHistogramOff();
-
     /** Set the weight between the regional and boundary terms. */
     void SetLambda(const float);
 
@@ -109,9 +96,6 @@ public:
 
     /** Set the number of bins per dimension of the foreground and background histograms. */
     void SetNumberOfHistogramBins(const int);
-
-    /** Set threshold for threshold based region term */
-    void SetRegionThreshold(PixelType);
 
     /** Enums used to specify Boundary term direction */
     typedef enum {
@@ -140,10 +124,7 @@ protected:
     // parameters
     double m_Sigma;                         // noise in boundary term
     float m_Lambda;                         // weighting between region and boundary terms
-    bool m_UseRegionTermBasedOnHistogram;
-    bool m_UseRegionTermBasedOnThreshold;   // simple threshold probablity (see sect. 2.3 in Boykov and Funka-Lea 2006)
     int m_NumberOfHistogramBins;            // number of bins per dimension of the foreground and background histograms
-    PixelType m_RegionThreshold;            // Threshold for threshold based region term
     BoundaryDirectionType m_BoundaryDirectionType; // Direction of the Boundary term
 
     // member functions
