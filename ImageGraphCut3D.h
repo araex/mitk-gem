@@ -140,7 +140,6 @@ protected:
     BoundaryDirectionType                           m_BoundaryDirectionType;
 
     // member functions
-    double ComputeNoise();      // Estimate the "camera noise"
     void CreateSamples();       // create histograms from the users selections
     void CreateGraph();         // Create a Kolmogorov graph structure from the image and selections
     void CutGraph();            // Perform the s-t min cut

@@ -63,7 +63,6 @@ int main(int argc, char *argv[]) {
         std::cerr << "output.mhd:          3D image resulting segmentation" << std::endl;
         std::cerr << "                     Foreground as 127 and Background as 255" << std::endl;
         std::cerr << "sigma                estimated noise in boundary term, try 50.0" << std::endl;
-        std::cerr << "                     if negative value is entered, automatically estimated." << std::endl;
         std::cerr << "boundaryDirection    0->bidirectional; 1->bright to dark; 2->dark to bright" << std::endl;
         std::cerr << "lambda               Weight for region term, try 0.1" << std::endl;
 

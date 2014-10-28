@@ -43,7 +43,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ImageGraphCut3D() :
+ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>
+::ImageGraphCut3D() :
           m_Sigma(5.0f),
           m_Lambda(1.0f),
           m_NumberOfHistogramBins(10),
@@ -61,7 +62,8 @@ ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ImageGraphCut3D() :
 }
 
 template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CutGraph() {
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>
+::CutGraph() {
     // Compute max-flow
     m_Graph->maxflow();
 
@@ -93,7 +95,8 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CutGraph() {
 }
 
 template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::PerformSegmentation() {
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>
+::PerformSegmentation() {
     // This function performs some initializations and then creates and cuts the graph
 
     // Ensure at least one pixel has been specified for both the foreground and background
@@ -117,7 +120,8 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::PerformSegmenta
 
 // TODO: this could be adjusted because the images are assumed to have only one component.
 template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateSamples() {
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>
+::CreateSamples() {
     // This function creates ITK samples from the scribbled pixels and then computes the foreground and background histograms
 
     const unsigned int numberOfComponentsPerPixel = 1;
@@ -171,7 +175,8 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateSamples()
 }
 
 template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>
+::CreateGraph() {
     // Form the graph
     m_Graph = new GraphType;
 
@@ -182,11 +187,6 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
     while (!nodeImageIterator.IsAtEnd()) {
         nodeImageIterator.Set(m_Graph->add_node());
         ++nodeImageIterator;
-    }
-
-    // Estimate the "camera noise"
-    if (m_Sigma < 0) {
-        m_Sigma = this->ComputeNoise();
     }
 
     // We are only using a 6-connected structure,
@@ -272,61 +272,6 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
         // TODO: figure out some good values
         m_Graph->add_tweights(m_NodeImage->GetPixel(m_Sinks[i]), 0, m_Lambda * std::numeric_limits<float>::max());
     }
-}
-
-template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-double ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ComputeNoise() {
-    // Compute an estimate of the "camera noise". This is used in the N-weight function.
-
-    // Since we use a 6-connected neighborhood, the kernel must be 3x3x3 (a rectangular radius of 1 creates a kernel side length of 3)
-    itk::Size<3> radius;
-    radius.Fill(1);
-
-    typedef itk::ShapedNeighborhoodIterator<InputImageType> IteratorType;
-
-    std::vector<typename IteratorType::OffsetType> neighbors;
-    typename IteratorType::OffsetType bottom = {{0, 1, 0}};
-    neighbors.push_back(bottom);
-    typename IteratorType::OffsetType right = {{1, 0, 0}};
-    neighbors.push_back(right);
-    typename IteratorType::OffsetType front = {{0, 0, 1}};
-    neighbors.push_back(front);
-
-    typename IteratorType::OffsetType center = {{0, 0, 0}};
-
-    IteratorType iterator(radius, m_InputImage, m_InputImage->GetLargestPossibleRegion());
-    iterator.ClearActiveList();
-    iterator.ActivateOffset(bottom);
-    iterator.ActivateOffset(right);
-    iterator.ActivateOffset(front);
-    iterator.ActivateOffset(center);
-
-    double sigma = 0.0;
-    int numberOfEdges = 0;
-
-    // Traverse the image collecting the differences between neighboring pixel intensities
-    for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator) {
-        typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
-
-        for (unsigned int i = 0; i < neighbors.size(); i++) {
-            bool valid;
-            iterator.GetPixel(neighbors[i], valid);
-            if (!valid) {
-                continue;
-            }
-            typename InputImageType::PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
-
-            float pixelDifference = centerPixel - neighborPixel;
-            sigma += pixelDifference;
-            numberOfEdges++;
-        }
-
-    }
-
-    // Normalize
-    sigma /= static_cast<double>(numberOfEdges);
-
-    return sigma;
 }
 
 
