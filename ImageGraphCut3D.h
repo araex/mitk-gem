@@ -49,8 +49,8 @@ public:
     // typedefs
     typedef itk::Image<unsigned char, 3> ResultImageType;
     typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
-    typedef itk::Image<void *, 3> NodeImageType; // graph node labels
-    typedef std::vector<itk::Index<3> > IndexContainer; // container for sinks / sources
+    typedef itk::Image<void *, 3> NodeImageType;            // graph node labels
+    typedef std::vector<itk::Index<3> > IndexContainer;     // container for sinks / sources
     typedef typename TImage::PixelType PixelType;
 
     ImageGraphCut3D();
@@ -149,8 +149,6 @@ private:
     // to ensure backward compatibility, the initialization is done in the constructors initialization list
     const typename ResultImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
     const typename ResultImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
-    bool m_LogToStd;
-
 };
 
 #include "ImageGraphCut3D.hpp"

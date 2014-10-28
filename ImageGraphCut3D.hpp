@@ -52,8 +52,7 @@ ImageGraphCut3D<TImage>::ImageGraphCut3D() :
           m_Lambda(1.0f),
           m_NumberOfHistogramBins(10),
           RESULT_FOREGROUND_PIXEL_VALUE(255),
-          RESULT_BACKGROUND_PIXEL_VALUE(0),
-          m_LogToStd(false)
+          RESULT_BACKGROUND_PIXEL_VALUE(0)
 {
     SetBoundaryDirectionTypeToNoDirection();
 }
@@ -132,14 +131,7 @@ void ImageGraphCut3D<TImage>::PerformSegmentation() {
         ++nodeImageIterator;
     }
 
-    if(m_LogToStd){
-        std::cout << "  - Creating the graph" << std::endl;
-    }
     this->CreateGraph();
-
-    if(m_LogToStd){
-        std::cout << "  - Cutting the graph" << std::endl;
-    }
     this->CutGraph();
 }
 
@@ -162,8 +154,6 @@ void ImageGraphCut3D<TImage>::CreateSamples() {
     // Create foreground samples and histogram
     m_ForegroundSample->Clear();
     m_ForegroundSample->SetMeasurementVectorSize(numberOfComponentsPerPixel);
-    //std::cout << "Measurement vector size: " << this->ForegroundSample->GetMeasurementVectorSize() << std::endl;
-    //std::cout << "Pixel size: " << this->Image->GetPixel(this->Sources[0]).GetNumberOfElements() << std::endl;
 
     for (unsigned int i = 0; i < m_Sources.size(); i++) {
         m_ForegroundSample->PushBack(m_Image->GetPixel(m_Sources[i]));
@@ -216,32 +206,7 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
     // Estimate the "camera noise"
     if (m_Sigma < 0) {
-        if(m_LogToStd){
-            std::cout << "    - Computing Noise" << std::endl;
-        }
         m_Sigma = this->ComputeNoise();
-    }
-    if(m_LogToStd) {
-        std::cout << "    - using sigma = " << m_Sigma << std::endl;
-    }
-
-    // Create n-edges and set n-edge weights
-    // (links between image nodes)
-    if(m_LogToStd){
-        std::cout << "    - Setting n-edges" << std::endl;
-    }
-    if (m_BoundaryDirectionType == BrightDark) {
-        if(m_LogToStd){
-            std::cout << "       Using Bright to Dark direction" << std::endl;
-        }
-    } else if (m_BoundaryDirectionType == DarkBright) {
-        if(m_LogToStd){
-            std::cout << "       Using Dark to Bright direction" << std::endl;
-        }
-    } else {
-        if(m_LogToStd){
-            std::cout << "       Using no direction, i.e. equal weights" << std::endl;
-        }
     }
 
     // We are only using a 6-connected structure,
