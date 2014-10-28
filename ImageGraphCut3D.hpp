@@ -116,16 +116,8 @@ void ImageGraphCut3D<TImage>::PerformSegmentation() {
     }
 
     // Blank the NodeImage
-    itk::ImageRegionIterator<NodeImageType>
-            nodeImageIterator(m_NodeImage,
-            m_NodeImage->GetLargestPossibleRegion());
-    nodeImageIterator.GoToBegin();
-
-    while (!nodeImageIterator.IsAtEnd()) {
-        //YP was: nodeImageIterator.Set(nullptr);
-        nodeImageIterator.Set(NULL);
-        ++nodeImageIterator;
-    }
+    m_NodeImage->SetBufferedRegion(m_NodeImage->GetLargestPossibleRegion());
+    m_NodeImage->FillBuffer(NULL);
 
     this->CreateGraph();
     this->CutGraph();
