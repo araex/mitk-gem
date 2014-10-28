@@ -100,8 +100,9 @@ int main(int argc, char *argv[]) {
     typedef itk::Image<short, 3> ImageType;
     // The image type of masks
     typedef itk::Image<unsigned char, 3> MaskImageType;
+    typedef MaskImageType OutputImageType;
 
-    typedef ImageGraphCut3D <ImageType> Graph3DType;
+    typedef ImageGraphCut3D <ImageType, MaskImageType, MaskImageType, OutputImageType> Graph3DType;
 
     // Read the image
     std::cout << "*** Reading image ***" << std::endl;
@@ -165,8 +166,8 @@ int main(int argc, char *argv[]) {
 
     // Get and write the result
     std::cout << "*** Writing Result ***" << std::endl;
-    Graph3DType::ResultImageType::Pointer result = GraphCut.GetSegmentMask();
-    typedef itk::ImageFileWriter<Graph3DType::ResultImageType> WriterType;
+    Graph3DType::OutputImageType::Pointer result = GraphCut.GetSegmentMask();
+    typedef itk::ImageFileWriter<Graph3DType::OutputImageType> WriterType;
     WriterType::Pointer writer = WriterType::New();
 
     writer->SetFileName(outputFilename);

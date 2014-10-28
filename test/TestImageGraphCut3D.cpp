@@ -22,10 +22,10 @@ protected:
     typedef itk::Image<int, 3> TIntImage;
 
     // graphcut
-    typedef ImageGraphCut3D <TInput> Graph3DType;
+    typedef ImageGraphCut3D <TInput, TForeground, TBackground, TOutput> Graph3DType;
 
     // image compare
-    typedef itk::SubtractImageFilter<Graph3DType::ResultImageType, TOutput, TIntImage> TDifferenceFilter;
+    typedef itk::SubtractImageFilter<Graph3DType::OutputImageType, TOutput, TIntImage> TDifferenceFilter;
     typedef itk::StatisticsImageFilter<TDifferenceFilter::OutputImageType> TStatisticsFilter;
 
     virtual void SetUp() {
@@ -74,7 +74,7 @@ protected:
     TInput::Pointer inputImageNoisy;
     TForeground::Pointer foregroundMask;
     TBackground::Pointer backgroundMask;
-    Graph3DType::ResultImageType::Pointer outputImage;
+    Graph3DType::OutputImageType::Pointer outputImage;
     TOutput::Pointer expectedResultImage;
 
     // hard constraints

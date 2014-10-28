@@ -42,8 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // STL
 #include <cmath>
 
-template<typename TImage>
-ImageGraphCut3D<TImage>::ImageGraphCut3D() :
+template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ImageGraphCut3D() :
           m_Sigma(5.0f),
           m_Lambda(1.0f),
           m_NumberOfHistogramBins(10),
@@ -60,19 +60,19 @@ ImageGraphCut3D<TImage>::ImageGraphCut3D() :
     m_BackgroundHistogramFilter = SampleToHistogramFilterType::New();
 }
 
-template<typename TImage>
-void ImageGraphCut3D<TImage>::CutGraph() {
+template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CutGraph() {
     // Compute max-flow
     m_Graph->maxflow();
 
     // Setup the output (mask) image
-    m_ResultMask = ResultImageType::New();
+    m_ResultMask = OutputImageType::New();
     m_ResultMask->SetRegions(m_InputImage->GetLargestPossibleRegion());
     m_ResultMask->SetOrigin(m_InputImage->GetOrigin());
     m_ResultMask->SetSpacing(m_InputImage->GetSpacing());
     m_ResultMask->SetDirection(m_InputImage->GetDirection());
     m_ResultMask->Allocate();
-    m_ResultMask->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero); // fill with zeros
+    m_ResultMask->FillBuffer(itk::NumericTraits<typename OutputImageType::PixelType>::Zero); // fill with zeros
 
     // Iterate over the node image, querying the Kolmorogov graph object for the association of each pixel and storing them as the output mask
     itk::ImageRegionConstIterator<NodeImageType>
@@ -92,8 +92,8 @@ void ImageGraphCut3D<TImage>::CutGraph() {
     delete m_Graph;
 }
 
-template<typename TImage>
-void ImageGraphCut3D<TImage>::PerformSegmentation() {
+template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::PerformSegmentation() {
     // This function performs some initializations and then creates and cuts the graph
 
     // Ensure at least one pixel has been specified for both the foreground and background
@@ -116,8 +116,8 @@ void ImageGraphCut3D<TImage>::PerformSegmentation() {
 }
 
 // TODO: this could be adjusted because the images are assumed to have only one component.
-template<typename TImage>
-void ImageGraphCut3D<TImage>::CreateSamples() {
+template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateSamples() {
     // This function creates ITK samples from the scribbled pixels and then computes the foreground and background histograms
 
     const unsigned int numberOfComponentsPerPixel = 1;
@@ -170,8 +170,8 @@ void ImageGraphCut3D<TImage>::CreateSamples() {
 
 }
 
-template<typename TImage>
-void ImageGraphCut3D<TImage>::CreateGraph() {
+template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
     // Form the graph
     m_Graph = new GraphType;
 
@@ -279,8 +279,8 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
     }
 }
 
-template<typename TImage>
-double ImageGraphCut3D<TImage>::ComputeNoise() {
+template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+double ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ComputeNoise() {
     // Compute an estimate of the "camera noise". This is used in the N-weight function.
 
     // Since we use a 6-connected neighborhood, the kernel must be 3x3x3 (a rectangular radius of 1 creates a kernel side length of 3)

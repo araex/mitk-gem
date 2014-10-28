@@ -43,11 +43,11 @@ typedef Graph GraphType;
 /** Perform graph cut based segmentation on a 3D image. Image pixels can contain only
 * one component, i.e. grayscale.
 */
-template<typename TImage>
+template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
 class ImageGraphCut3D {
 public:
     // typedefs
-    typedef itk::Image<unsigned char, 3> ResultImageType;
+    typedef TOutput OutputImageType;
     typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
     typedef itk::Image<void *, 3> NodeImageType;            // graph node labels
     typedef std::vector<itk::Index<3> > IndexContainer;     // container for sinks / sources
@@ -83,7 +83,7 @@ public:
     TImage *GetInputImage(){
         return m_InputImage;
     }
-    ResultImageType::Pointer GetSegmentMask(){
+    typename OutputImageType::Pointer GetSegmentMask(){
         return m_ResultMask;
     }
     IndexContainer GetSources(){
@@ -117,7 +117,9 @@ protected:
     GraphType                   *m_Graph;               // kolmogorov graph object
     typename TImage::Pointer    m_InputImage;
     NodeImageType::Pointer      m_NodeImage;            // mapping pixel index -> graph node id
-    ResultImageType::Pointer    m_ResultMask;
+    typename OutputImageType::Pointer    m_ResultMask;
+    typename TForeground::Pointer m_ForegroundImage;
+    typename TBackground::Pointer m_BackgroundImage;
     IndexContainer              m_Sources;              // foreground pixel indices
     IndexContainer              m_Sinks;                // background pixel indices
 
@@ -130,8 +132,8 @@ protected:
     typename SampleToHistogramFilterType::Pointer m_BackgroundHistogramFilter;
 
     // constants
-    const typename ResultImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
-    const typename ResultImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
+    const typename OutputImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
+    const typename OutputImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
 
     // parameters
     double                 m_Sigma;                     // noise in boundary term
