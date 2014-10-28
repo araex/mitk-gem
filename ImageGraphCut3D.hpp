@@ -320,15 +320,17 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
     // Set very high source weights for the pixels that were
     // selected as foreground by the user
     for (unsigned int i = 0; i < m_Sources.size(); i++) {
-        m_Graph->add_tweights(m_NodeImage->GetPixel(m_Sources[i]),
-                m_Lambda * std::numeric_limits<float>::max(), 0);
+        // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything.
+        // TODO: figure out some good values
+        m_Graph->add_tweights(m_NodeImage->GetPixel(m_Sources[i]), m_Lambda * std::numeric_limits<float>::max(), 0);
     }
 
     // Set very high sink weights for the pixels that
     // were selected as background by the user
     for (unsigned int i = 0; i < m_Sinks.size(); i++) {
-        m_Graph->add_tweights(m_NodeImage->GetPixel(m_Sinks[i]),
-                0, m_Lambda * std::numeric_limits<float>::max());
+        // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything
+        // TODO: figure out some good values
+        m_Graph->add_tweights(m_NodeImage->GetPixel(m_Sinks[i]), 0, m_Lambda * std::numeric_limits<float>::max());
     }
 }
 
