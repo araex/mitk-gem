@@ -257,11 +257,6 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
         }
     }
 
-    //We don't need the histograms anymore
-    m_ForegroundHistogram = NULL;
-    m_BackgroundHistogram = NULL;
-
-
     // Set very high source weights for the pixels that were
     // selected as foreground by the user
     for (unsigned int i = 0; i < m_Sources.size(); i++) {

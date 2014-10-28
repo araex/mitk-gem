@@ -122,12 +122,12 @@ protected:
     IndexContainerType                  m_Sinks;                // background pixel indices
 
     // histogram related
-    typename SampleType::Pointer m_ForegroundSample;
-    typename SampleType::Pointer m_BackgroundSample;
-    const HistogramType *m_ForegroundHistogram;
-    const HistogramType *m_BackgroundHistogram;
-    typename SampleToHistogramFilterType::Pointer m_ForegroundHistogramFilter;
-    typename SampleToHistogramFilterType::Pointer m_BackgroundHistogramFilter;
+    typename SampleType::Pointer                    m_ForegroundSample;
+    typename SampleType::Pointer                    m_BackgroundSample;
+    const HistogramType::Pointer                    m_ForegroundHistogram;
+    const HistogramType::Pointer                    m_BackgroundHistogram;
+    typename SampleToHistogramFilterType::Pointer   m_ForegroundHistogramFilter;
+    typename SampleToHistogramFilterType::Pointer   m_BackgroundHistogramFilter;
 
     // constants
     const typename OutputImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
