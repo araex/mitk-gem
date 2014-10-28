@@ -48,8 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //YP new: Constructor
 template<typename TImage>
 ImageGraphCut3D<TImage>::ImageGraphCut3D()
-        : RESULT_FOREGROUND_PIXEL_VALUE(127),
-          RESULT_BACKGROUND_PIXEL_VALUE(255),
+        : RESULT_FOREGROUND_PIXEL_VALUE(255),
+          RESULT_BACKGROUND_PIXEL_VALUE(0),
           m_Sigma(5.0f),
           m_UseRegionTermBasedOnHistogram(false),
           m_UseRegionTermBasedOnThreshold(false),
