@@ -104,5 +104,47 @@ TEST_F(TestImageGraphCut3D, BasicGraphTest){
 
     int pixelSum = statisticsFilter->GetSum();
 
-    EXPECT_EQ(pixelSum, 0);
+ASSERT_EQ(pixelSum, 0);
+}
+
+TEST_F(TestImageGraphCut3D, BasicGraphTestWithNoise){
+Graph3DType graphCut;
+graphCut.
+SetImage(inputImageNoisy);
+graphCut.
+
+SetBoundaryDirectionTypeToBrightDark();
+
+graphCut.
+SetSources(foregroundPixels);
+graphCut.
+SetSinks(backgroundPixels);
+graphCut.
+
+PerformSegmentation();
+
+outputImage = graphCut.GetSegmentMask();
+
+substractFilter->
+SetInput1(outputImage);
+substractFilter->
+SetInput2(expectedResultImage);
+substractFilter->
+
+Update();
+
+statisticsFilter->
+SetInput(substractFilter
+->
+
+GetOutput()
+
+);
+statisticsFilter->
+
+Update();
+
+int pixelSum = statisticsFilter->GetSum();
+
+ASSERT_EQ(pixelSum, 0);
 }
