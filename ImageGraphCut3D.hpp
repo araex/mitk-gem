@@ -47,15 +47,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //YP new: Constructor
 template<typename TImage>
-ImageGraphCut3D<TImage>::ImageGraphCut3D()
-        : RESULT_FOREGROUND_PIXEL_VALUE(255),
-          RESULT_BACKGROUND_PIXEL_VALUE(0),
+ImageGraphCut3D<TImage>::ImageGraphCut3D() :
           m_Sigma(5.0f),
           m_UseRegionTermBasedOnHistogram(false),
           m_UseRegionTermBasedOnThreshold(false),
           m_Lambda(1.0f),
           m_NumberOfHistogramBins(10),
-          m_RegionThreshold(200) {
+          m_RegionThreshold(200),
+          RESULT_FOREGROUND_PIXEL_VALUE(255),
+          RESULT_BACKGROUND_PIXEL_VALUE(0),
+          m_LogToStd(false)
+{
     SetBoundaryDirectionTypeToNoDirection();
 }
 
@@ -135,9 +137,14 @@ void ImageGraphCut3D<TImage>::PerformSegmentation() {
         ++nodeImageIterator;
     }
 
-    std::cout << "  - Creating the graph" << std::endl;
+    if(m_LogToStd){
+        std::cout << "  - Creating the graph" << std::endl;
+    }
     this->CreateGraph();
-    std::cout << "  - Cutting the graph" << std::endl;
+
+    if(m_LogToStd){
+        std::cout << "  - Cutting the graph" << std::endl;
+    }
     this->CutGraph();
 }
 
@@ -214,20 +221,32 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
     // Estimate the "camera noise"
     if (m_Sigma < 0) {
-        std::cout << "    - Computing Noise" << std::endl;
+        if(m_LogToStd){
+            std::cout << "    - Computing Noise" << std::endl;
+        }
         m_Sigma = this->ComputeNoise();
     }
-    std::cout << "    - using sigma = " << m_Sigma << std::endl;
+    if(m_LogToStd) {
+        std::cout << "    - using sigma = " << m_Sigma << std::endl;
+    }
 
     // Create n-edges and set n-edge weights
     // (links between image nodes)
-    std::cout << "    - Setting n-edges" << std::endl;
+    if(m_LogToStd){
+        std::cout << "    - Setting n-edges" << std::endl;
+    }
     if (m_BoundaryDirectionType == BrightDark) {
-        std::cout << "       Using Bright to Dark direction" << std::endl;
+        if(m_LogToStd){
+            std::cout << "       Using Bright to Dark direction" << std::endl;
+        }
     } else if (m_BoundaryDirectionType == DarkBright) {
-        std::cout << "       Using Dark to Bright direction" << std::endl;
+        if(m_LogToStd){
+            std::cout << "       Using Dark to Bright direction" << std::endl;
+        }
     } else {
-        std::cout << "       Using no direction, i.e. equal weights" << std::endl;
+        if(m_LogToStd){
+            std::cout << "       Using no direction, i.e. equal weights" << std::endl;
+        }
     }
 
     // We are only using a 6-connected structure,
@@ -302,9 +321,11 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
     // Compute the histograms of the selected foreground and background pixels
     if (m_UseRegionTermBasedOnHistogram) {
-        std::cout << "    - UseRegionTermBasedOnHistogram ON" << std::endl;
-        std::cout << "      Creating Histogram Samples" << std::endl;
-        std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
+        if(m_LogToStd) {
+            std::cout << "    - UseRegionTermBasedOnHistogram ON" << std::endl;
+            std::cout << "      Creating Histogram Samples" << std::endl;
+            std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
+        }
         CreateSamples();
 
         itk::ImageRegionIterator<TImage>
@@ -365,8 +386,10 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
     }
     else if (m_UseRegionTermBasedOnThreshold) {
-        std::cout << "    - UseRegionTermBasedOnThreshold ON" << std::endl;
-        std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
+        if(m_LogToStd) {
+            std::cout << "    - UseRegionTermBasedOnThreshold ON" << std::endl;
+            std::cout << "      adding region terms, lambda = " << m_Lambda << std::endl;
+        }
         itk::ImageRegionIterator<TImage>
                 imageIterator(m_Image,
                 m_Image->GetLargestPossibleRegion());
@@ -399,8 +422,10 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
         }
     }
     else {
-        std::cout << "    - No region term" << std::endl;
-        std::cout << "      Without Histogram, just hard constraints, lambda = " << m_Lambda << std::endl;
+        if(m_LogToStd){
+            std::cout << "    - No region term" << std::endl;
+            std::cout << "      Without Histogram, just hard constraints, lambda = " << m_Lambda << std::endl;
+        }
     }
 
     //We don't need the histograms anymore

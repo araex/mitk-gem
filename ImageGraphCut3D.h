@@ -127,6 +127,8 @@ public:
 
     void SetBoundaryDirectionTypeToDarkBright();
 
+    void SetLogToStd(bool);
+
 protected:
 
     /** A Kolmogorov graph object */
@@ -209,6 +211,8 @@ private:
     // to ensure backward compatibility, the initialization is done in the constructors initialization list
     const typename ResultImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
     const typename ResultImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
+
+    bool m_LogToStd;
 
 };
 
