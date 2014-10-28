@@ -92,7 +92,7 @@ public:
     }
 
     // getters
-    InputImageType *GetInputImage(){
+    typename InputImageType::Pointer GetInputImage(){
         return m_InputImage;
     }
     typename OutputImageType::Pointer GetSegmentMask(){
