@@ -195,7 +195,7 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
     itk::Size<3> radius;
     radius.Fill(1);
 
-    typedef itk::ShapedNeighborhoodIterator<TImage> IteratorType;
+    typedef itk::ShapedNeighborhoodIterator<InputImageType> IteratorType;
 
     // Traverse the image adding an edge between the current pixel
     // and the pixel below it and the current pixel and the pixel to the right of it
@@ -220,7 +220,7 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
     iterator.ActivateOffset(center);
 
     for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator) {
-        PixelType centerPixel = iterator.GetPixel(center);
+        typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
 
         for (unsigned int i = 0; i < neighbors.size(); i++) {
             bool valid;
@@ -230,7 +230,7 @@ void ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::CreateGraph() {
             if (!valid) {
                 continue;
             }
-            PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
+            typename InputImageType::PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
 
             // Compute the edge weight
             double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * m_Sigma * m_Sigma));
@@ -287,7 +287,7 @@ double ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ComputeNoise(
     itk::Size<3> radius;
     radius.Fill(1);
 
-    typedef itk::ShapedNeighborhoodIterator<TImage> IteratorType;
+    typedef itk::ShapedNeighborhoodIterator<InputImageType> IteratorType;
 
     std::vector<typename IteratorType::OffsetType> neighbors;
     typename IteratorType::OffsetType bottom = {{0, 1, 0}};
@@ -311,7 +311,7 @@ double ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ComputeNoise(
 
     // Traverse the image collecting the differences between neighboring pixel intensities
     for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator) {
-        PixelType centerPixel = iterator.GetPixel(center);
+        typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
 
         for (unsigned int i = 0; i < neighbors.size(); i++) {
             bool valid;
@@ -319,7 +319,7 @@ double ImageGraphCut3D<TImage, TForeground, TBackground, TOutput>::ComputeNoise(
             if (!valid) {
                 continue;
             }
-            PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
+            typename InputImageType::PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
 
             float pixelDifference = centerPixel - neighborPixel;
             sigma += pixelDifference;

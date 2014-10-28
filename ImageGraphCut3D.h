@@ -46,21 +46,33 @@ typedef Graph GraphType;
 template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
 class ImageGraphCut3D {
 public:
-    // typedefs
+    // image types
+    typedef TImage InputImageType;
+    typedef TForeground ForegroundImageType;
+    typedef TBackground BackgroundImageType;
+    typedef itk::Image<void *, 3> NodeImageType; // graph node mappings
     typedef TOutput OutputImageType;
+
     typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
-    typedef itk::Image<void *, 3> NodeImageType;            // graph node labels
-    typedef std::vector<itk::Index<3> > IndexContainer;     // container for sinks / sources
-    typedef typename TImage::PixelType PixelType;
+    typedef std::vector<itk::Index<3> > IndexContainerType;     // container for sinks / sources
+    typedef enum {
+        NoDirection, BrightDark, DarkBright
+    } BoundaryDirectionType;
 
     ImageGraphCut3D();
-
-    // functions
     void PerformSegmentation();
 
-
     // setters
-    void SetInputImage(TImage *const image){
+    void SetBoundaryDirectionTypeToNoDirection(){
+        m_BoundaryDirectionType = NoDirection;
+    }
+    void SetBoundaryDirectionTypeToBrightDark(){
+        m_BoundaryDirectionType = BrightDark;
+    }
+    void SetBoundaryDirectionTypeToDarkBright(){
+        m_BoundaryDirectionType = DarkBright;
+    }
+    void SetInputImage(InputImageType *const image){
         m_InputImage = image;
     }
     void SetLambda(const double lambda){
@@ -72,56 +84,42 @@ public:
     void SetNumberOfHistogramBins(const int bins){
         m_NumberOfHistogramBins = bins;
     }
-    void SetSources(const IndexContainer &sources){
+    void SetSources(const IndexContainerType &sources){
         m_Sources = sources;
     }
-    void SetSinks(const IndexContainer &sinks){
+    void SetSinks(const IndexContainerType &sinks){
         m_Sinks = sinks;
     }
 
     // getters
-    TImage *GetInputImage(){
+    InputImageType *GetInputImage(){
         return m_InputImage;
     }
     typename OutputImageType::Pointer GetSegmentMask(){
         return m_ResultMask;
     }
-    IndexContainer GetSources(){
+    IndexContainerType GetSources(){
         return m_Sources;
     }
-    IndexContainer GetSinks(){
+    IndexContainerType GetSinks(){
         return m_Sinks;
     }
 
-    // Enums used to specify Boundary term direction
-    typedef enum {
-        NoDirection, BrightDark, DarkBright
-    } BoundaryDirectionType;
-    void SetBoundaryDirectionTypeToNoDirection(){
-        m_BoundaryDirectionType = NoDirection;
-    }
-    void SetBoundaryDirectionTypeToBrightDark(){
-        m_BoundaryDirectionType = BrightDark;
-    }
-    void SetBoundaryDirectionTypeToDarkBright(){
-        m_BoundaryDirectionType = DarkBright;
-    }
 
 protected:
-    // Typedefs
-    typedef itk::Vector<PixelType, 1> ListSampleMeasurementVectorType;
+    typedef itk::Vector<typename InputImageType::PixelType, 1> ListSampleMeasurementVectorType;
     typedef itk::Statistics::ListSample<ListSampleMeasurementVectorType> SampleType;
     typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
 
     // members
-    GraphType                   *m_Graph;               // kolmogorov graph object
-    typename TImage::Pointer    m_InputImage;
-    NodeImageType::Pointer      m_NodeImage;            // mapping pixel index -> graph node id
-    typename OutputImageType::Pointer    m_ResultMask;
-    typename TForeground::Pointer m_ForegroundImage;
-    typename TBackground::Pointer m_BackgroundImage;
-    IndexContainer              m_Sources;              // foreground pixel indices
-    IndexContainer              m_Sinks;                // background pixel indices
+    typename InputImageType::Pointer    m_InputImage;
+    typename TForeground::Pointer       m_ForegroundImage;
+    typename TBackground::Pointer       m_BackgroundImage;
+    typename OutputImageType::Pointer   m_ResultMask;
+    NodeImageType::Pointer              m_NodeImage;            // mapping pixel index -> graph node id
+    GraphType                           *m_Graph;               // kolmogorov graph object
+    IndexContainerType                  m_Sources;              // foreground pixel indices
+    IndexContainerType                  m_Sinks;                // background pixel indices
 
     // histogram related
     typename SampleType::Pointer m_ForegroundSample;
