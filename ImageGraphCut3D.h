@@ -55,7 +55,6 @@ public:
 
     ImageGraphCut3D();
 
-
     // functions
     void PerformSegmentation();
     void SetImage(TImage *const image); // TODO: more than just a setter
@@ -115,40 +114,33 @@ protected:
     GraphType                   *m_Graph;               // kolmogorov graph object
     typename TImage::Pointer    m_InputImage;
     NodeImageType::Pointer      m_NodeImage;            // mapping pixel index -> graph node id
-    ResultImageType::Pointer    m_ResultingSegments;    // resulting segmentation
+    ResultImageType::Pointer    m_ResultingSegments;
     IndexContainer              m_Sources;              // foreground pixel indices
     IndexContainer              m_Sinks;                // background pixel indices
 
-    // parameters
-    double m_Sigma;                         // noise in boundary term
-    double m_Lambda;                        // weighting between region and boundary terms
-    int m_NumberOfHistogramBins;            // number of bins per dimension of the foreground and background histograms
-    BoundaryDirectionType m_BoundaryDirectionType; // Direction of the Boundary term
-
-    // member functions
-    void CreateSamples();       // create histograms from the users selections
-    double ComputeNoise();      // Estimate the "camera noise"
-    void CreateGraph();         // Create a Kolmogorov graph structure from the image and selections
-    void CutGraph();            // Perform the s-t min cut
-
-    /** The ITK data structure for storing the values that we will compute the histogram of. */
+    // histogram related
     typename SampleType::Pointer m_ForegroundSample;
     typename SampleType::Pointer m_BackgroundSample;
-
-    /** The histograms. */
     const HistogramType *m_ForegroundHistogram;
     const HistogramType *m_BackgroundHistogram;
-
-
-    /** ITK filters to create histograms. */
     typename SampleToHistogramFilterType::Pointer m_ForegroundHistogramFilter;
     typename SampleToHistogramFilterType::Pointer m_BackgroundHistogramFilter;
 
-private:
-    // in-class initializations of dependent types is only possible in >=C++11.
-    // to ensure backward compatibility, the initialization is done in the constructors initialization list
+    // constants
     const typename ResultImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
     const typename ResultImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
+
+    // parameters
+    double                 m_Sigma;                     // noise in boundary term
+    double                 m_Lambda;                    // weighting of hard constraints
+    int                    m_NumberOfHistogramBins;     // bins per dimension of foreground and background histograms
+    BoundaryDirectionType  m_BoundaryDirectionType;
+
+    // member functions
+    double ComputeNoise();      // Estimate the "camera noise"
+    void CreateSamples();       // create histograms from the users selections
+    void CreateGraph();         // Create a Kolmogorov graph structure from the image and selections
+    void CutGraph();            // Perform the s-t min cut
 };
 
 #include "ImageGraphCut3D.hpp"
