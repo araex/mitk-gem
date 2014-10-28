@@ -113,9 +113,6 @@ public:
     /** Set threshold for threshold based region term */
     void SetRegionThreshold(PixelType);
 
-    /** Deep copy from ITKHelpers. We could use the ImageDuplicator instead.*/
-    void DeepCopy(TImage *input, TImage *output);
-
     /** Enums used to specify Boundary term direction */
     typedef enum {
         NoDirection, BrightDark, DarkBright

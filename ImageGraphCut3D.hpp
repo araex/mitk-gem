@@ -578,21 +578,6 @@ TImage *ImageGraphCut3D<TImage>::GetImage() {
 }
 
 template<typename TImage>
-void ImageGraphCut3D<TImage>::DeepCopy(TImage *input, TImage *output) {
-    output->SetRegions(input->GetLargestPossibleRegion());
-    output->Allocate();
-
-    itk::ImageRegionConstIterator<TImage> inputIterator(input, input->GetLargestPossibleRegion());
-    itk::ImageRegionIterator<TImage> outputIterator(output, output->GetLargestPossibleRegion());
-
-    while (!inputIterator.IsAtEnd()) {
-        outputIterator.Set(inputIterator.Get());
-        ++inputIterator;
-        ++outputIterator;
-    }
-}
-
-template<typename TImage>
 void ImageGraphCut3D<TImage>::SetBoundaryDirectionTypeToNoDirection() {
     m_BoundaryDirectionType = NoDirection;
 }
