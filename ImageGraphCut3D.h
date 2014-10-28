@@ -55,33 +55,55 @@ public:
 
     ImageGraphCut3D();
 
-    void SetImage(TImage *const image); // TODO: more than just a setter
 
     // functions
     void PerformSegmentation();
+    void SetImage(TImage *const image); // TODO: more than just a setter
 
     // setters
-    void SetLambda(const float); // set weight scalar of hard constraints
-    void SetSigma(const double);
-    void SetNumberOfHistogramBins(const int); // Set the number of bins per dimension of the foreground and background histograms.
-    void SetSources(const IndexContainer &sources);
-    void SetSinks(const IndexContainer &sinks);
+    void SetLambda(const float lambda){
+        m_Lambda = lambda;
+    }
+    void SetSigma(const double sigma){
+        m_Sigma = sigma;
+    }
+    void SetNumberOfHistogramBins(const int bins){
+        m_NumberOfHistogramBins = bins;
+    }
+    void SetSources(const IndexContainer &sources){
+        m_Sources = sources;
+    }
+    void SetSinks(const IndexContainer &sinks){
+        m_Sinks = sinks;
+    }
 
     // getters
-    TImage *GetImage();
-    ResultImageType::Pointer GetSegmentMask();
-    IndexContainer GetSources();
-    IndexContainer GetSinks();
+    TImage *GetImage(){
+        return m_Image;
+    }
+    ResultImageType::Pointer GetSegmentMask(){
+        return m_ResultingSegments;
+    }
+    IndexContainer GetSources(){
+        return m_Sources;
+    }
+    IndexContainer GetSinks(){
+        return m_Sinks;
+    }
 
     // Enums used to specify Boundary term direction
     typedef enum {
         NoDirection, BrightDark, DarkBright
     } BoundaryDirectionType;
-    void SetBoundaryDirectionTypeToNoDirection();
-    void SetBoundaryDirectionTypeToBrightDark();
-    void SetBoundaryDirectionTypeToDarkBright();
-
-    void SetLogToStd(bool);
+    void SetBoundaryDirectionTypeToNoDirection(){
+        m_BoundaryDirectionType = NoDirection;
+    }
+    void SetBoundaryDirectionTypeToBrightDark(){
+        m_BoundaryDirectionType = BrightDark;
+    }
+    void SetBoundaryDirectionTypeToDarkBright(){
+        m_BoundaryDirectionType = DarkBright;
+    }
 
 protected:
     // Typedefs
