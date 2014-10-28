@@ -61,7 +61,7 @@ public:
     void SetImage(TImage *const image); // TODO: more than just a setter
 
     // setters
-    void SetLambda(const float lambda){
+    void SetLambda(const double lambda){
         m_Lambda = lambda;
     }
     void SetSigma(const double sigma){
@@ -121,7 +121,7 @@ protected:
 
     // parameters
     double m_Sigma;                         // noise in boundary term
-    float m_Lambda;                         // weighting between region and boundary terms
+    double m_Lambda;                        // weighting between region and boundary terms
     int m_NumberOfHistogramBins;            // number of bins per dimension of the foreground and background histograms
     BoundaryDirectionType m_BoundaryDirectionType; // Direction of the Boundary term
 
