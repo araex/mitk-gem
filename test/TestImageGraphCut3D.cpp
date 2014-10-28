@@ -88,7 +88,7 @@ protected:
 
 TEST_F(TestImageGraphCut3D, BasicGraphTest){
     Graph3DType graphCut;
-    graphCut.SetImage(inputImage);
+    graphCut.SetInputImage(inputImage);
     graphCut.SetBoundaryDirectionTypeToBrightDark();
     graphCut.SetSources(foregroundPixels);
     graphCut.SetSinks(backgroundPixels);
@@ -109,7 +109,7 @@ TEST_F(TestImageGraphCut3D, BasicGraphTest){
 
 TEST_F(TestImageGraphCut3D, BasicGraphTestWithNoise){
     Graph3DType graphCut;
-    graphCut.SetImage(inputImageNoisy);
+    graphCut.SetInputImage(inputImageNoisy);
     graphCut.SetBoundaryDirectionTypeToBrightDark();
     graphCut.SetSources(foregroundPixels);
     graphCut.SetSinks(backgroundPixels);

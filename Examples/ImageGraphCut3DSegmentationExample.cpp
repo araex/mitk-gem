@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
     // Set up and Perform the cut
     std::cout << "*** Performing Graph Cut ***" << std::endl;
     Graph3DType GraphCut;
-    GraphCut.SetImage(reader->GetOutput());
+    GraphCut.SetInputImage(reader->GetOutput());
     reader = NULL;
 
     //Boundary Term

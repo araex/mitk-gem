@@ -57,9 +57,12 @@ public:
 
     // functions
     void PerformSegmentation();
-    void SetImage(TImage *const image); // TODO: more than just a setter
+
 
     // setters
+    void SetInputImage(TImage *const image){
+        m_InputImage = image;
+    }
     void SetLambda(const double lambda){
         m_Lambda = lambda;
     }

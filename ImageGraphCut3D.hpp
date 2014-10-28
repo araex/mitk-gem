@@ -51,22 +51,13 @@ ImageGraphCut3D<TImage>::ImageGraphCut3D() :
           RESULT_FOREGROUND_PIXEL_VALUE(255),
           RESULT_BACKGROUND_PIXEL_VALUE(0)
 {
-    // Initializations
+    m_NodeImage = NodeImageType::New();
+
     m_ForegroundSample = SampleType::New();
     m_BackgroundSample = SampleType::New();
 
     m_ForegroundHistogramFilter = SampleToHistogramFilterType::New();
     m_BackgroundHistogramFilter = SampleToHistogramFilterType::New();
-}
-
-template<typename TImage>
-void ImageGraphCut3D<TImage>::SetImage(TImage *const image) {
-    m_InputImage = image;
-
-    // setup the node image
-    m_NodeImage = NodeImageType::New();
-    m_NodeImage->SetRegions(m_InputImage->GetLargestPossibleRegion());
-    m_NodeImage->Allocate();
 }
 
 template<typename TImage>
@@ -115,6 +106,8 @@ void ImageGraphCut3D<TImage>::PerformSegmentation() {
     }
 
     // Blank the NodeImage
+    m_NodeImage->SetRegions(m_InputImage->GetLargestPossibleRegion());
+    m_NodeImage->Allocate();
     m_NodeImage->SetBufferedRegion(m_NodeImage->GetLargestPossibleRegion());
     m_NodeImage->FillBuffer(NULL);
 
