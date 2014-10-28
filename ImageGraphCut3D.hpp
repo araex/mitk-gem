@@ -55,11 +55,11 @@ ImageGraphCut3D<TImage>::ImageGraphCut3D() :
 
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetImage(TImage *const image) {
-    m_Image = image;
+    m_InputImage = image;
 
     // Setup the image to store the node ids
     m_NodeImage = NodeImageType::New();
-    m_NodeImage->SetRegions(m_Image->GetLargestPossibleRegion());
+    m_NodeImage->SetRegions(m_InputImage->GetLargestPossibleRegion());
     m_NodeImage->Allocate();
 
     // Initializations
@@ -77,10 +77,10 @@ void ImageGraphCut3D<TImage>::CutGraph() {
 
     // Setup the output (mask) image
     m_ResultingSegments = ResultImageType::New();
-    m_ResultingSegments->SetRegions(m_Image->GetLargestPossibleRegion());
-    m_ResultingSegments->SetOrigin(m_Image->GetOrigin());
-    m_ResultingSegments->SetSpacing(m_Image->GetSpacing());
-    m_ResultingSegments->SetDirection(m_Image->GetDirection());
+    m_ResultingSegments->SetRegions(m_InputImage->GetLargestPossibleRegion());
+    m_ResultingSegments->SetOrigin(m_InputImage->GetOrigin());
+    m_ResultingSegments->SetSpacing(m_InputImage->GetSpacing());
+    m_ResultingSegments->SetDirection(m_InputImage->GetDirection());
     m_ResultingSegments->Allocate();
     m_ResultingSegments->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero); // fill with zeros
 
@@ -152,7 +152,7 @@ void ImageGraphCut3D<TImage>::CreateSamples() {
     m_ForegroundSample->SetMeasurementVectorSize(numberOfComponentsPerPixel);
 
     for (unsigned int i = 0; i < m_Sources.size(); i++) {
-        m_ForegroundSample->PushBack(m_Image->GetPixel(m_Sources[i]));
+        m_ForegroundSample->PushBack(m_InputImage->GetPixel(m_Sources[i]));
     }
 
     m_ForegroundHistogramFilter->SetHistogramSize(histogramSize);
@@ -170,7 +170,7 @@ void ImageGraphCut3D<TImage>::CreateSamples() {
     m_BackgroundSample->Clear();
     m_BackgroundSample->SetMeasurementVectorSize(numberOfComponentsPerPixel);
     for (unsigned int i = 0; i < m_Sinks.size(); i++) {
-        m_BackgroundSample->PushBack(m_Image->GetPixel(m_Sinks[i]));
+        m_BackgroundSample->PushBack(m_InputImage->GetPixel(m_Sinks[i]));
     }
 
     m_BackgroundHistogramFilter->SetHistogramSize(histogramSize);
@@ -228,7 +228,7 @@ void ImageGraphCut3D<TImage>::CreateGraph() {
 
     typename IteratorType::OffsetType center = {{0, 0, 0}};
 
-    IteratorType iterator(radius, m_Image, m_Image->GetLargestPossibleRegion());
+    IteratorType iterator(radius, m_InputImage, m_InputImage->GetLargestPossibleRegion());
     iterator.ClearActiveList();
     iterator.ActivateOffset(bottom);
     iterator.ActivateOffset(right);
@@ -315,7 +315,7 @@ double ImageGraphCut3D<TImage>::ComputeNoise() {
 
     typename IteratorType::OffsetType center = {{0, 0, 0}};
 
-    IteratorType iterator(radius, m_Image, m_Image->GetLargestPossibleRegion());
+    IteratorType iterator(radius, m_InputImage, m_InputImage->GetLargestPossibleRegion());
     iterator.ClearActiveList();
     iterator.ActivateOffset(bottom);
     iterator.ActivateOffset(right);
