@@ -84,7 +84,7 @@ public:
         return m_InputImage;
     }
     ResultImageType::Pointer GetSegmentMask(){
-        return m_ResultingSegments;
+        return m_ResultMask;
     }
     IndexContainer GetSources(){
         return m_Sources;
@@ -117,7 +117,7 @@ protected:
     GraphType                   *m_Graph;               // kolmogorov graph object
     typename TImage::Pointer    m_InputImage;
     NodeImageType::Pointer      m_NodeImage;            // mapping pixel index -> graph node id
-    ResultImageType::Pointer    m_ResultingSegments;
+    ResultImageType::Pointer    m_ResultMask;
     IndexContainer              m_Sources;              // foreground pixel indices
     IndexContainer              m_Sinks;                // background pixel indices
 

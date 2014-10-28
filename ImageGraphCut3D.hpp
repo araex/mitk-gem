@@ -66,13 +66,13 @@ void ImageGraphCut3D<TImage>::CutGraph() {
     m_Graph->maxflow();
 
     // Setup the output (mask) image
-    m_ResultingSegments = ResultImageType::New();
-    m_ResultingSegments->SetRegions(m_InputImage->GetLargestPossibleRegion());
-    m_ResultingSegments->SetOrigin(m_InputImage->GetOrigin());
-    m_ResultingSegments->SetSpacing(m_InputImage->GetSpacing());
-    m_ResultingSegments->SetDirection(m_InputImage->GetDirection());
-    m_ResultingSegments->Allocate();
-    m_ResultingSegments->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero); // fill with zeros
+    m_ResultMask = ResultImageType::New();
+    m_ResultMask->SetRegions(m_InputImage->GetLargestPossibleRegion());
+    m_ResultMask->SetOrigin(m_InputImage->GetOrigin());
+    m_ResultMask->SetSpacing(m_InputImage->GetSpacing());
+    m_ResultMask->SetDirection(m_InputImage->GetDirection());
+    m_ResultMask->Allocate();
+    m_ResultMask->FillBuffer(itk::NumericTraits<ResultImageType::PixelType>::Zero); // fill with zeros
 
     // Iterate over the node image, querying the Kolmorogov graph object for the association of each pixel and storing them as the output mask
     itk::ImageRegionConstIterator<NodeImageType>
@@ -81,10 +81,10 @@ void ImageGraphCut3D<TImage>::CutGraph() {
 
     while (!nodeImageIterator.IsAtEnd()) {
         if (m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SOURCE) {
-            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), RESULT_FOREGROUND_PIXEL_VALUE);
+            m_ResultMask->SetPixel(nodeImageIterator.GetIndex(), RESULT_FOREGROUND_PIXEL_VALUE);
         }
         else if (m_Graph->what_segment(nodeImageIterator.Get()) == GraphType::SINK) {
-            m_ResultingSegments->SetPixel(nodeImageIterator.GetIndex(), RESULT_BACKGROUND_PIXEL_VALUE);
+            m_ResultMask->SetPixel(nodeImageIterator.GetIndex(), RESULT_BACKGROUND_PIXEL_VALUE);
         }
         ++nodeImageIterator;
     }
