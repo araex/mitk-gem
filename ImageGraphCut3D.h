@@ -46,58 +46,34 @@ typedef Graph GraphType;
 template<typename TImage>
 class ImageGraphCut3D {
 public:
-
-    //YP constructor now in .hpp; was: ImageGraphCut3D(){}
-    ImageGraphCut3D();
-
-    /** This is the results image as uchar. */
+    // typedefs
     typedef itk::Image<unsigned char, 3> ResultImageType;
-
-    /** This is a special type to keep track of the graph node labels. */
-    typedef itk::Image<void *, 3> NodeImageType;
-
-    /** The type of the histograms. */
-    typedef itk::Statistics::Histogram<short,
-            itk::Statistics::DenseFrequencyContainer2> HistogramType;
-
-    /** The type of a list of pixels/indexes. */
-    typedef std::vector<itk::Index<3> > IndexContainer;
-
-    /** Type of input image pixels */
+    typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
+    typedef itk::Image<void *, 3> NodeImageType; // graph node labels
+    typedef std::vector<itk::Index<3> > IndexContainer; // container for sinks / sources
     typedef typename TImage::PixelType PixelType;
 
-    /** Several initializations are done here. */
-    void SetImage(TImage *const image);
+    ImageGraphCut3D();
 
-    /** Get the image that we are segmenting. */
-    TImage *GetImage();
+    void SetImage(TImage *const image); // TODO: more than just a setter
 
-    /** Create and cut the graph (The main driver function). */
+    // functions
     void PerformSegmentation();
 
-    /** Return a list of the selected (via scribbling) pixels. */
-    IndexContainer GetSources();
-
-    IndexContainer GetSinks();
-
-    /** Set the selected pixels. */
+    // setters
+    void SetLambda(const float); // set weight scalar of hard constraints
+    void SetSigma(const double);
+    void SetNumberOfHistogramBins(const int); // Set the number of bins per dimension of the foreground and background histograms.
     void SetSources(const IndexContainer &sources);
-
     void SetSinks(const IndexContainer &sinks);
 
-    /** Get the output of the segmentation. */
+    // getters
+    TImage *GetImage();
     ResultImageType::Pointer GetSegmentMask();
+    IndexContainer GetSources();
+    IndexContainer GetSinks();
 
-    /** Set the weight between the regional and boundary terms. */
-    void SetLambda(const float);
-
-    /** Set sigma for boundary term. */
-    void SetSigma(const double);
-
-    /** Set the number of bins per dimension of the foreground and background histograms. */
-    void SetNumberOfHistogramBins(const int);
-
-    /** Enums used to specify Boundary term direction */
+    // Enums used to specify Boundary term direction
     typedef enum {
         NoDirection, BrightDark, DarkBright
     } BoundaryDirectionType;
@@ -145,9 +121,6 @@ protected:
     /** ITK filters to create histograms. */
     typename SampleToHistogramFilterType::Pointer m_ForegroundHistogramFilter;
     typename SampleToHistogramFilterType::Pointer m_BackgroundHistogramFilter;
-
-    /** The image to be segmented */
-
 
 private:
     // in-class initializations of dependent types is only possible in >=C++11.
