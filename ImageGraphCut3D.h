@@ -47,11 +47,11 @@ template<typename TImage, typename TForeground, typename TBackground, typename T
 class ImageGraphCut3D {
 public:
     // image types
-    typedef TImage InputImageType;
-    typedef TForeground ForegroundImageType;
-    typedef TBackground BackgroundImageType;
-    typedef itk::Image<void *, 3> NodeImageType; // graph node mappings
-    typedef TOutput OutputImageType;
+    typedef TImage                  InputImageType;
+    typedef TForeground             ForegroundImageType;
+    typedef TBackground             BackgroundImageType;
+    typedef itk::Image<void *, 3>   NodeImageType; // graph node mappings
+    typedef TOutput                 OutputImageType;
 
     typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
     typedef std::vector<itk::Index<3> > IndexContainerType;     // container for sinks / sources
@@ -112,14 +112,14 @@ protected:
     typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
 
     // members
-    typename InputImageType::Pointer    m_InputImage;
-    typename TForeground::Pointer       m_ForegroundImage;
-    typename TBackground::Pointer       m_BackgroundImage;
-    typename OutputImageType::Pointer   m_ResultMask;
-    NodeImageType::Pointer              m_NodeImage;            // mapping pixel index -> graph node id
-    GraphType                           *m_Graph;               // kolmogorov graph object
-    IndexContainerType                  m_Sources;              // foreground pixel indices
-    IndexContainerType                  m_Sinks;                // background pixel indices
+    typename InputImageType::Pointer                m_InputImage;
+    typename TForeground::Pointer                   m_ForegroundImage;
+    typename TBackground::Pointer                   m_BackgroundImage;
+    typename OutputImageType::Pointer               m_ResultMask;
+    NodeImageType::Pointer                          m_NodeImage;                 // mapping pixel index -> graph node id
+    GraphType                                       *m_Graph;                    // kolmogorov graph object
+    IndexContainerType                              m_Sources;                   // foreground pixel indices
+    IndexContainerType                              m_Sinks;                     // background pixel indices
 
     // histogram related
     typename SampleType::Pointer                    m_ForegroundSample;
@@ -130,14 +130,14 @@ protected:
     typename SampleToHistogramFilterType::Pointer   m_BackgroundHistogramFilter;
 
     // constants
-    const typename OutputImageType::PixelType RESULT_FOREGROUND_PIXEL_VALUE;
-    const typename OutputImageType::PixelType RESULT_BACKGROUND_PIXEL_VALUE;
+    const typename OutputImageType::PixelType       RESULT_FOREGROUND_PIXEL_VALUE;
+    const typename OutputImageType::PixelType       RESULT_BACKGROUND_PIXEL_VALUE;
 
     // parameters
-    double                 m_Sigma;                     // noise in boundary term
-    double                 m_Lambda;                    // weighting of hard constraints
-    int                    m_NumberOfHistogramBins;     // bins per dimension of foreground and background histograms
-    BoundaryDirectionType  m_BoundaryDirectionType;
+    double                                          m_Sigma;                     // noise in boundary term
+    double                                          m_Lambda;                    // weighting of hard constraints
+    int                                             m_NumberOfHistogramBins;     // bins per dimension of histograms
+    BoundaryDirectionType                           m_BoundaryDirectionType;
 
     // member functions
     double ComputeNoise();      // Estimate the "camera noise"
