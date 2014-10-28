@@ -37,9 +37,13 @@ if(ImageGraphCut3DSegmentation_BuildExamples)
   add_subdirectory(Examples)
 endif()
 
-option(ImageGraphCut3DSegmentation_BuildTests "Build ImageGraphCut3DSegmentation tests?")
+option(ImageGraphCut3DSegmentation_BuildTests "Build ImageGraphCut3DSegmentation tests?" ON)
 if(ImageGraphCut3DSegmentation_BuildTests)
+  add_subdirectory(lib/gtest-1.7.0)
+  enable_testing()
+  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+  include_directories(src)
+  subdirs(test)
   add_subdirectory(Kolmogorov/Tests)
 endif()
-
 
