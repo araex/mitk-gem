@@ -64,8 +64,6 @@ ImageGraphCut3D<TImage>::ImageGraphCut3D() :
 template<typename TImage>
 void ImageGraphCut3D<TImage>::SetImage(TImage *const image) {
     m_Image = image;
-    //this->Image = TImage::New();
-    //DeepCopy(image, this->Image.GetPointer());
 
     // Setup the image to store the node ids
     m_NodeImage = NodeImageType::New();
