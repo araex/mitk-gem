@@ -68,6 +68,15 @@ namespace itk {
 
         void GenerateData();
 
+        // parameters
+        double                                    m_Sigma;                     // noise in boundary term
+        double                                    m_Lambda;                    // weighting of hard constraints
+        int                                       m_NumberOfHistogramBins;     // bins per dimension of histograms
+        BoundaryDirectionType                     m_BoundaryDirectionType;
+        typename OutputImageType::PixelType       m_ForegroundPixelValue;
+        typename OutputImageType::PixelType       m_BackgroundPixelValue;
+
+
     private:
         ImageGraphCut3DFilter(const Self &); // intentionally not implemented
         void operator=(const Self &); // intentionally not implemented
