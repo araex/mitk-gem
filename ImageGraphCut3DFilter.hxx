@@ -11,16 +11,15 @@ namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::~ImageGraphCut3DFilter() {
-        this->SetNumberOfRequiredInputs(3);
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::GenerateData() {
         // get input
-        typename InputImageType::ConstPointer inputImage(this->GetInput());
-        typename InputImageType::ConstPointer foregroundImage(this->GetInput());
-        typename InputImageType::ConstPointer backgroundImage(this->GetInput());
+        const InputImageType *inputImage = GetInputImage();
+        const ForegroundImageType *foregroundImage = GetForegroundImage();
+        const BackgroundImageType *backgroundImage = GetBackgroundImage();
     }
 }
 

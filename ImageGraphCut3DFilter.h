@@ -51,22 +51,23 @@ namespace itk {
             SetNthInput(2, const_cast<BackgroundImageType*>(image));
         }
 
-        // image getters
-        typename InputImageType::Pointer GetInputImage(){
-            return static_cast< const InputImageType * >(this->ProcessObject::GetInput(0));
-        }
-        IndexContainerType GetForegroundImage(){
-            return static_cast< const ForegroundImageType * >(this->ProcessObject::GetInput(1));
-        }
-        IndexContainerType GetBackgroundImage(){
-            return static_cast< const BackgroundImageType * >(this->ProcessObject::GetInput(2));
-        }
 
     protected:
         ImageGraphCut3DFilter();
         virtual ~ImageGraphCut3DFilter();
 
         void GenerateData();
+
+        // image getters
+        const InputImageType * GetInputImage(){
+            return static_cast< const InputImageType * >(this->ProcessObject::GetInput(0));
+        }
+        const ForegroundImageType * GetForegroundImage(){
+            return static_cast< const ForegroundImageType * >(this->ProcessObject::GetInput(1));
+        }
+        const BackgroundImageType * GetBackgroundImage(){
+            return static_cast< const BackgroundImageType * >(this->ProcessObject::GetInput(2));
+        }
 
         // parameters
         double                                    m_Sigma;                     // noise in boundary term
