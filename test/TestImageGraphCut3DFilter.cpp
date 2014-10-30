@@ -42,31 +42,12 @@ protected:
         backgroundMask = IOHelper::readImage<TBackground>(backgroundPath.c_str());
         expectedResultImage = IOHelper::readImage<TOutput>(expectedPath.c_str());
 
-        // calculate non zero pixels for hard constraints
-        foregroundPixels = getNonZeroPixels<TMask>(foregroundMask);
-        backgroundPixels = getNonZeroPixels<TMask>(backgroundMask);
-
         // setup filters to compare the results
         substractFilter = TDifferenceFilter::New();
         statisticsFilter = TStatisticsFilter::New();
     }
 
     // virtual void TearDown() {}
-
-    template<typename TImage>
-    std::vector<itk::Index<3> > getNonZeroPixels(const TImage *const image) {
-        std::vector<itk::Index<3> > pixelsWithValueLargerThanZero;
-
-        itk::ImageRegionConstIterator<TImage> regionIterator(image, image->GetLargestPossibleRegion());
-        while (!regionIterator.IsAtEnd()) {
-            if (regionIterator.Get() > itk::NumericTraits<typename TImage::PixelType>::Zero) {
-                pixelsWithValueLargerThanZero.push_back(regionIterator.GetIndex());
-            }
-            ++regionIterator;
-        }
-
-        return pixelsWithValueLargerThanZero;
-    }
 
     // image references
     TInput::Pointer inputImage;
@@ -75,10 +56,6 @@ protected:
     TBackground::Pointer backgroundMask;
     TOutput::Pointer outputImage;
     TOutput::Pointer expectedResultImage;
-
-    // hard constraints
-    std::vector<itk::Index<3> > foregroundPixels;
-    std::vector<itk::Index<3> > backgroundPixels;
 
     // image compare filter
     TDifferenceFilter::Pointer substractFilter;
@@ -89,5 +66,13 @@ TEST_F(TestImageGraphCut3DFilter, FilterCreation){
     typedef itk::ImageGraphCut3DFilter<TInput, TForeground, TBackground, TOutput> GraphCutFilterType;
     GraphCutFilterType::Pointer graphCutFilter;
     graphCutFilter = GraphCutFilterType::New();
+
+    // set images
+    graphCutFilter->SetInputImage(inputImage);
+    graphCutFilter->SetForegroundImage(foregroundMask);
+    graphCutFilter->SetBackgroundImage(backgroundMask);
+
+    graphCutFilter->Update();
+
     ASSERT_EQ(1,1);
 }

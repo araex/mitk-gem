@@ -42,21 +42,29 @@ namespace itk {
 
         // image setters
         void SetInputImage(const InputImageType *image){
-            SetNthInput(0, const_cast<InputImageType*>(image));
+            this->SetNthInput(0, const_cast<InputImageType*>(image));
         }
         void SetForegroundImage(const ForegroundImageType *image){
-            SetNthInput(1, const_cast<ForegroundImageType*>(image));
+            this->SetNthInput(1, const_cast<ForegroundImageType*>(image));
         }
         void SetBackgroundImage(const BackgroundImageType *image){
-            SetNthInput(2, const_cast<BackgroundImageType*>(image));
+            this->SetNthInput(2, const_cast<BackgroundImageType*>(image));
         }
 
 
     protected:
+        typedef itk::Vector<typename InputImageType::PixelType, 1> ListSampleMeasurementVectorType;
+        typedef itk::Statistics::ListSample<ListSampleMeasurementVectorType> SampleType;
+        typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
+        typedef Graph GraphType;
+
         ImageGraphCut3DFilter();
         virtual ~ImageGraphCut3DFilter();
 
         void GenerateData();
+        GraphType* CreateGraph(NodeImageType::Pointer);
+        template<typename TIndexImage>
+        std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
 
         // image getters
         const InputImageType * GetInputImage(){
