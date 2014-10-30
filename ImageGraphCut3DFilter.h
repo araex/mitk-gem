@@ -92,7 +92,7 @@ namespace itk {
         virtual ~ImageGraphCut3DFilter();
 
         void GenerateData();
-        GraphType* CreateGraph(ImageContainer);
+        void InitializeGraph(GraphType*, ImageContainer);
         void CutGraph(GraphType*, ImageContainer);
 
         // helper to convert masks to >0 indices

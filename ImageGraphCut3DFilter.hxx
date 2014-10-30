@@ -47,18 +47,18 @@ namespace itk {
         typename SampleToHistogramFilterType::Pointer backgroundHistogramFilter = SampleToHistogramFilterType::New();
 
         // create graph
-        GraphType* graph = CreateGraph(images);
+        GraphType graph;
+        InitializeGraph(&graph, images);
+
         // cut graph
-        CutGraph(graph, images);
+        CutGraph(&graph, images);
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-    GraphType* ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::CreateGraph(ImageContainer images){
+    void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
+    ::InitializeGraph(GraphType *graph, ImageContainer images){
         IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
         IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(images.background);
-
-        GraphType *graph = new GraphType;
 
         // Add all of the nodes to the graph and store their IDs in a "node image"
         itk::ImageRegionIterator<NodeImageType> nodeImageIterator(images.node, images.node->GetLargestPossibleRegion());
@@ -152,13 +152,11 @@ namespace itk {
             // TODO: figure out some good values
             graph->add_tweights(images.node->GetPixel(sinks[i]), 0, m_Lambda * std::numeric_limits<float>::max());
         }
-
-        return graph;
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::CutGraph(GraphType* graph, ImageContainer images){
+    ::CutGraph(GraphType *graph, ImageContainer images){
         // Compute max-flow
         graph->maxflow();
 
@@ -179,8 +177,6 @@ namespace itk {
             }
             ++nodeImageIterator;
         }
-
-        delete graph;
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
