@@ -47,6 +47,15 @@ namespace itk {
         void SetLambda(double d){
             m_Lambda = d;
         }
+        void SetBoundaryDirectionTypeToNoDirection(){
+            m_BoundaryDirectionType = NoDirection;
+        }
+        void SetBoundaryDirectionTypeToBrightDark(){
+            m_BoundaryDirectionType = BrightDark;
+        }
+        void SetBoundaryDirectionTypeToDarkBright(){
+            m_BoundaryDirectionType = DarkBright;
+        }
         void SetForegroundPixelValue(typename OutputImageType::PixelType v){
             m_ForegroundPixelValue = v;
         }

@@ -9,7 +9,7 @@ namespace itk {
         , m_Lambda(1.0)
         , m_ForegroundPixelValue(255)
         , m_BackgroundPixelValue(0)
-
+        , m_BoundaryDirectionType(NoDirection)
     {
         this->SetNumberOfRequiredInputs(3);
     }
