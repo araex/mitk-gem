@@ -23,21 +23,22 @@ namespace itk {
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::GenerateData() {
         // get all images
-        const InputImageType *inputImage = GetInputImage();
-        const ForegroundImageType *foregroundImage = GetForegroundImage();
-        const BackgroundImageType *backgroundImage = GetBackgroundImage();
-        OutputImageType *outputImage = this->GetOutput();
+        ImageContainer images;
+        images.input = GetInputImage();
+        images.foreground = GetForegroundImage();
+        images.background = GetBackgroundImage();
+        images.output = this->GetOutput();
 
         // allocate output
-        outputImage->SetBufferedRegion(outputImage->GetRequestedRegion());
-        outputImage->Allocate();
+        images.output->SetBufferedRegion(images.output->GetRequestedRegion());
+        images.output->Allocate();
 
         // init node image
-        NodeImageType::Pointer nodeImage = NodeImageType::New();
-        nodeImage->SetRegions(inputImage->GetLargestPossibleRegion());
-        nodeImage->Allocate();
-        nodeImage->SetBufferedRegion(nodeImage->GetLargestPossibleRegion());
-        nodeImage->FillBuffer(NULL);
+        images.node = NodeImageType::New();
+        images.node->SetRegions(images.input->GetLargestPossibleRegion());
+        images.node->Allocate();
+        images.node->SetBufferedRegion(images.node->GetLargestPossibleRegion());
+        images.node->FillBuffer(NULL);
 
         // init samples and histogram
         typename SampleType::Pointer foregroundSample = SampleType::New();
@@ -46,21 +47,21 @@ namespace itk {
         typename SampleToHistogramFilterType::Pointer backgroundHistogramFilter = SampleToHistogramFilterType::New();
 
         // create graph
-        GraphType* graph = CreateGraph(inputImage, foregroundImage, backgroundImage, nodeImage);
+        GraphType* graph = CreateGraph(images);
         // cut graph
-        CutGraph(graph, nodeImage, outputImage);
+        CutGraph(graph, images);
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     GraphType* ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::CreateGraph(typename TImage::ConstPointer inputImage, typename TForeground::ConstPointer foregroundImage, typename TBackground::ConstPointer backgroundImage, NodeImageType::Pointer nodeImage){
-        IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(foregroundImage);
-        IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(backgroundImage);
+    ::CreateGraph(ImageContainer images){
+        IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
+        IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(images.background);
 
         GraphType *graph = new GraphType;
 
         // Add all of the nodes to the graph and store their IDs in a "node image"
-        itk::ImageRegionIterator<NodeImageType> nodeImageIterator(nodeImage, nodeImage->GetLargestPossibleRegion());
+        itk::ImageRegionIterator<NodeImageType> nodeImageIterator(images.node, images.node->GetLargestPossibleRegion());
         nodeImageIterator.GoToBegin();
 
         while (!nodeImageIterator.IsAtEnd()) {
@@ -91,7 +92,7 @@ namespace itk {
 
         typename IteratorType::OffsetType center = {{0, 0, 0}};
 
-        IteratorType iterator(radius, inputImage, inputImage->GetLargestPossibleRegion());
+        IteratorType iterator(radius, images.input, images.input->GetLargestPossibleRegion());
         iterator.ClearActiveList();
         iterator.ActivateOffset(bottom);
         iterator.ActivateOffset(right);
@@ -116,8 +117,8 @@ namespace itk {
                 assert(weight >= 0);
 
                 // Add the edge to the graph
-                void *node1 = nodeImage->GetPixel(iterator.GetIndex(center));
-                void *node2 = nodeImage->GetPixel(iterator.GetIndex(neighbors[i]));
+                void *node1 = images.node->GetPixel(iterator.GetIndex(center));
+                void *node2 = images.node->GetPixel(iterator.GetIndex(neighbors[i]));
 
                 //Determine which direction is used
                 if (m_BoundaryDirectionType == BrightDark) {
@@ -141,7 +142,7 @@ namespace itk {
         for (unsigned int i = 0; i < sources.size(); i++) {
             // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything.
             // TODO: figure out some good values
-            graph->add_tweights(nodeImage->GetPixel(sources[i]), m_Lambda * std::numeric_limits<float>::max(), 0);
+            graph->add_tweights(images.node->GetPixel(sources[i]), m_Lambda * std::numeric_limits<float>::max(), 0);
         }
 
         // Set very high sink weights for the pixels that
@@ -149,7 +150,7 @@ namespace itk {
         for (unsigned int i = 0; i < sinks.size(); i++) {
             // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything
             // TODO: figure out some good values
-            graph->add_tweights(nodeImage->GetPixel(sinks[i]), 0, m_Lambda * std::numeric_limits<float>::max());
+            graph->add_tweights(images.node->GetPixel(sinks[i]), 0, m_Lambda * std::numeric_limits<float>::max());
         }
 
         return graph;
@@ -157,26 +158,24 @@ namespace itk {
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::CutGraph(GraphType* graph, typename NodeImageType::Pointer nodeImage, typename OutputImageType::Pointer outputImage){
-        const InputImageType *inputImage = GetInputImage();
-
+    ::CutGraph(GraphType* graph, ImageContainer images){
         // Compute max-flow
         graph->maxflow();
 
         // Setup the output (mask) image
-        outputImage->FillBuffer(itk::NumericTraits<typename OutputImageType::PixelType>::Zero); // fill with zeros
+        images.output->FillBuffer(itk::NumericTraits<typename OutputImageType::PixelType>::Zero); // fill with zeros
 
         // Iterate over the node image, querying the Kolmorogov graph object for the association of each pixel and storing them as the output mask
         itk::ImageRegionConstIterator<NodeImageType>
-                nodeImageIterator(nodeImage, nodeImage->GetLargestPossibleRegion());
+                nodeImageIterator(images.node, images.node->GetLargestPossibleRegion());
         nodeImageIterator.GoToBegin();
 
         while (!nodeImageIterator.IsAtEnd()) {
             if (graph->what_segment(nodeImageIterator.Get()) == GraphType::SOURCE) {
-                outputImage->SetPixel(nodeImageIterator.GetIndex(), m_ForegroundPixelValue);
+                images.output->SetPixel(nodeImageIterator.GetIndex(), m_ForegroundPixelValue);
             }
             else if (graph->what_segment(nodeImageIterator.Get()) == GraphType::SINK) {
-                outputImage->SetPixel(nodeImageIterator.GetIndex(), m_BackgroundPixelValue);
+                images.output->SetPixel(nodeImageIterator.GetIndex(), m_BackgroundPixelValue);
             }
             ++nodeImageIterator;
         }

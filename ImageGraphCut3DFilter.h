@@ -76,6 +76,13 @@ namespace itk {
 
 
     protected:
+        struct ImageContainer{
+            typename InputImageType::ConstPointer input;
+            typename ForegroundImageType::ConstPointer foreground;
+            typename BackgroundImageType::ConstPointer background;
+            typename NodeImageType::Pointer node;
+            typename OutputImageType::Pointer output;
+        };
         typedef itk::Vector<typename InputImageType::PixelType, 1> ListSampleMeasurementVectorType;
         typedef itk::Statistics::ListSample<ListSampleMeasurementVectorType> SampleType;
         typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
@@ -85,8 +92,8 @@ namespace itk {
         virtual ~ImageGraphCut3DFilter();
 
         void GenerateData();
-        GraphType* CreateGraph(typename InputImageType::ConstPointer, typename ForegroundImageType::ConstPointer, typename BackgroundImageType::ConstPointer, NodeImageType::Pointer);
-        void CutGraph(GraphType*, typename NodeImageType::Pointer, typename OutputImageType::Pointer outputImage);
+        GraphType* CreateGraph(ImageContainer);
+        void CutGraph(GraphType*, ImageContainer);
 
         // helper to convert masks to >0 indices
         template<typename TIndexImage> std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
