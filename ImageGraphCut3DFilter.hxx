@@ -46,18 +46,14 @@ namespace itk {
         typename SampleToHistogramFilterType::Pointer backgroundHistogramFilter = SampleToHistogramFilterType::New();
 
         // create graph
-        GraphType* graph = CreateGraph(nodeImage);
+        GraphType* graph = CreateGraph(inputImage, foregroundImage, backgroundImage, nodeImage);
         // cut graph
         CutGraph(graph, nodeImage, outputImage);
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     GraphType* ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::CreateGraph(NodeImageType::Pointer nodeImage){
-        const InputImageType *inputImage = GetInputImage();
-        const ForegroundImageType *foregroundImage = GetForegroundImage();
-        const BackgroundImageType *backgroundImage = GetBackgroundImage();
-
+    ::CreateGraph(typename TImage::ConstPointer inputImage, typename TForeground::ConstPointer foregroundImage, typename TBackground::ConstPointer backgroundImage, NodeImageType::Pointer nodeImage){
         IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(foregroundImage);
         IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(backgroundImage);
 

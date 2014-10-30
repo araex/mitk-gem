@@ -85,7 +85,7 @@ namespace itk {
         virtual ~ImageGraphCut3DFilter();
 
         void GenerateData();
-        GraphType* CreateGraph(NodeImageType::Pointer);
+        GraphType* CreateGraph(typename InputImageType::ConstPointer, typename ForegroundImageType::ConstPointer, typename BackgroundImageType::ConstPointer, NodeImageType::Pointer);
         void CutGraph(GraphType*, typename NodeImageType::Pointer, typename OutputImageType::Pointer outputImage);
 
         // helper to convert masks to >0 indices
