@@ -3,6 +3,8 @@
 
 // ITK
 #include "itkImageToImageFilter.h"
+#include "itkImageRegionIterator.h"
+#include "itkShapedNeighborhoodIterator.h"
 #include "itkImage.h"
 #include "itkSampleToHistogramFilter.h"
 #include "itkHistogram.h"

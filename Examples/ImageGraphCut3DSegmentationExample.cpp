@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ImageGraphCut3D.h"
+#include "ImageGraphCut3DFilter.h"
 
 
 #include "itkImage.h"
@@ -71,20 +71,12 @@ int main(int argc, char *argv[]) {
 
     // Parse arguments
     std::string imageFilename = argv[1];
-
-    // This image should have non-zero pixels indicating foreground pixels and 0 elsewhere.
-    std::string foregroundFilename = argv[2];
-
-    // This image should have non-zero pixels indicating background pixels and 0 elsewhere.
-    std::string backgroundFilename = argv[3];
-
-    std::string outputFilename = argv[4]; // Output has Foreground as 127 and Background as 255
-
-    float sigma = atof(argv[5]); //Noise parameter
-
-    int boundaryDirection = atoi(argv[6]); //0->bidirectional; 1->bright to dark; 2->dark to bright
-
-    float lambda = atof(argv[7]); //Region term weight
+    std::string foregroundFilename = argv[2];   // This image should have non-zero pixels indicating foreground pixels and 0 elsewhere.
+    std::string backgroundFilename = argv[3];   // This image should have non-zero pixels indicating background pixels and 0 elsewhere.
+    std::string outputFilename = argv[4];
+    float sigma = atof(argv[5]);                //Noise parameter
+    int boundaryDirection = atoi(argv[6]);      //0->bidirectional; 1->bright to dark; 2->dark to bright
+    float lambda = atof(argv[7]);               //Region term weight
 
     // Output arguments
     std::cout << "imageFilename: " << imageFilename << std::endl
@@ -95,82 +87,61 @@ int main(int argc, char *argv[]) {
             << "boundaryDirection: " << boundaryDirection << std::endl
             << "lambda: " << lambda << std::endl;
 
-    // The type of the image to segment
+    // define all the image types
     typedef itk::Image<short, 3> ImageType;
-    // The image type of masks
-    typedef itk::Image<unsigned char, 3> MaskImageType;
-    typedef MaskImageType OutputImageType;
-
-    typedef ImageGraphCut3D <ImageType, MaskImageType, MaskImageType, OutputImageType> Graph3DType;
+    typedef itk::Image<unsigned char, 3> ForegroundMaskType;
+    typedef itk::Image<unsigned char, 3> BackgroundMaskType;
+    typedef itk::Image<unsigned char, 3> OutputImageType;
 
     // Read the image
     std::cout << "*** Reading image ***" << std::endl;
     typedef itk::ImageFileReader<ImageType> ReaderType;
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(imageFilename);
-    reader->ReleaseDataFlagOn();
-    reader->Update();
 
-    // Read the foreground and background stroke images
+    // Read the foreground and background masks
     std::cout << "*** Reading foreground mask ***" << std::endl;
-    typedef itk::ImageFileReader<MaskImageType> MaskReaderType;
-    MaskReaderType::Pointer foregroundMaskReader =
-            MaskReaderType::New();
+    typedef itk::ImageFileReader<ForegroundMaskType> ForegroundMaskReaderType;
+    ForegroundMaskReaderType::Pointer foregroundMaskReader = ForegroundMaskReaderType::New();
     foregroundMaskReader->SetFileName(foregroundFilename);
-    foregroundMaskReader->ReleaseDataFlagOn();
-    foregroundMaskReader->Update();
 
     std::cout << "*** Reading background mask ***" << std::endl;
-    MaskReaderType::Pointer backgroundMaskReader =
-            MaskReaderType::New();
+    typedef itk::ImageFileReader<BackgroundMaskType> BackgroundMaskReaderType;
+    BackgroundMaskReaderType::Pointer backgroundMaskReader = BackgroundMaskReaderType::New();
     backgroundMaskReader->SetFileName(backgroundFilename);
-    backgroundMaskReader->ReleaseDataFlagOn();
-    backgroundMaskReader->Update();
 
-    //Extracting the mask pixel coordinates
-    std::cout << "*** Extracting mask pixel coordinates ***" << std::endl;
-    std::vector<itk::Index<3> > foregroundPixels =
-            GetPixelsWithValueLargerThanZero<MaskImageType>(foregroundMaskReader->GetOutput());
-    std::vector<itk::Index<3> > backgroundPixels =
-            GetPixelsWithValueLargerThanZero<MaskImageType>(backgroundMaskReader->GetOutput());
-    foregroundMaskReader = NULL;
-    backgroundMaskReader = NULL;
-
-
-    // Set up and Perform the cut
+    // Set up the graph cut
     std::cout << "*** Performing Graph Cut ***" << std::endl;
-    Graph3DType GraphCut;
-    GraphCut.SetInputImage(reader->GetOutput());
-    reader = NULL;
+    typedef itk::ImageGraphCut3DFilter<ImageType, ForegroundMaskType, BackgroundMaskType, OutputImageType> GraphCutFilterType;
+    GraphCutFilterType::Pointer graphCutFilter = GraphCutFilterType::New();
+    graphCutFilter->SetInputImage(reader->GetOutput());
+    graphCutFilter->SetForegroundImage(foregroundMaskReader->GetOutput());
+    graphCutFilter->SetBackgroundImage(backgroundMaskReader->GetOutput());
 
-    //Boundary Term
+    // set graph cut parameters
+    graphCutFilter->SetSigma(sigma);
+    graphCutFilter->SetLambda(lambda);
     switch (boundaryDirection) {
         case 1:
-            GraphCut.SetBoundaryDirectionTypeToBrightDark();
+            graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
             break;
         case 2:
-            GraphCut.SetBoundaryDirectionTypeToDarkBright();
+            graphCutFilter->SetBoundaryDirectionTypeToDarkBright();
             break;
         default:
-            GraphCut.SetBoundaryDirectionTypeToNoDirection();
+            graphCutFilter->SetBoundaryDirectionTypeToNoDirection();
     }
-    GraphCut.SetSigma(sigma);
 
-    GraphCut.SetLambda(lambda);
-
-    //Hard constraints
-    GraphCut.SetSources(foregroundPixels);
-    GraphCut.SetSinks(backgroundPixels);
-    GraphCut.PerformSegmentation();
+    // define the color values of the output
+    graphCutFilter->SetForegroundPixelValue(255);
+    graphCutFilter->SetBackgroundPixelValue(0);
 
     // Get and write the result
     std::cout << "*** Writing Result ***" << std::endl;
-    Graph3DType::OutputImageType::Pointer result = GraphCut.GetSegmentMask();
-    typedef itk::ImageFileWriter<Graph3DType::OutputImageType> WriterType;
+    typedef itk::ImageFileWriter<GraphCutFilterType::OutputImageType> WriterType;
     WriterType::Pointer writer = WriterType::New();
-
     writer->SetFileName(outputFilename);
-    writer->SetInput(result);
+    writer->SetInput(graphCutFilter->GetOutput());
     try {
         std::cout << "Writing output image " << outputFilename << std::endl;
         writer->Update();
