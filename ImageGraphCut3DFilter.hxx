@@ -7,6 +7,8 @@ namespace itk {
     ::ImageGraphCut3DFilter()
         : m_Sigma(5.0)
         , m_Lambda(1.0)
+        , m_ForegroundPixelValue(255)
+        , m_BackgroundPixelValue(0)
 
     {
         this->SetNumberOfRequiredInputs(3);
@@ -26,6 +28,10 @@ namespace itk {
         const BackgroundImageType *backgroundImage = GetBackgroundImage();
         OutputImageType *outputImage = this->GetOutput();
 
+        // allocate output
+        outputImage->SetBufferedRegion(outputImage->GetRequestedRegion());
+        outputImage->Allocate();
+
         // init node image
         NodeImageType::Pointer nodeImage = NodeImageType::New();
         nodeImage->SetRegions(inputImage->GetLargestPossibleRegion());
@@ -42,6 +48,7 @@ namespace itk {
         // create graph
         GraphType* graph = CreateGraph(nodeImage);
         // cut graph
+        CutGraph(graph, nodeImage, outputImage);
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
@@ -150,6 +157,35 @@ namespace itk {
         }
 
         return graph;
+    }
+
+    template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+    void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
+    ::CutGraph(GraphType* graph, typename NodeImageType::Pointer nodeImage, typename OutputImageType::Pointer outputImage){
+        const InputImageType *inputImage = GetInputImage();
+
+        // Compute max-flow
+        graph->maxflow();
+
+        // Setup the output (mask) image
+        outputImage->FillBuffer(itk::NumericTraits<typename OutputImageType::PixelType>::Zero); // fill with zeros
+
+        // Iterate over the node image, querying the Kolmorogov graph object for the association of each pixel and storing them as the output mask
+        itk::ImageRegionConstIterator<NodeImageType>
+                nodeImageIterator(nodeImage, nodeImage->GetLargestPossibleRegion());
+        nodeImageIterator.GoToBegin();
+
+        while (!nodeImageIterator.IsAtEnd()) {
+            if (graph->what_segment(nodeImageIterator.Get()) == GraphType::SOURCE) {
+                outputImage->SetPixel(nodeImageIterator.GetIndex(), m_ForegroundPixelValue);
+            }
+            else if (graph->what_segment(nodeImageIterator.Get()) == GraphType::SINK) {
+                outputImage->SetPixel(nodeImageIterator.GetIndex(), m_BackgroundPixelValue);
+            }
+            ++nodeImageIterator;
+        }
+
+        delete graph;
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>

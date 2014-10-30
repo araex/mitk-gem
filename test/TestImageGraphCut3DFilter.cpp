@@ -62,7 +62,7 @@ protected:
     TStatisticsFilter::Pointer statisticsFilter;
 };
 
-TEST_F(TestImageGraphCut3DFilter, FilterCreation){
+TEST_F(TestImageGraphCut3DFilter, BasicGraphCutTest){
     typedef itk::ImageGraphCut3DFilter<TInput, TForeground, TBackground, TOutput> GraphCutFilterType;
     GraphCutFilterType::Pointer graphCutFilter;
     graphCutFilter = GraphCutFilterType::New();
@@ -72,7 +72,32 @@ TEST_F(TestImageGraphCut3DFilter, FilterCreation){
     graphCutFilter->SetForegroundImage(foregroundMask);
     graphCutFilter->SetBackgroundImage(backgroundMask);
 
-    graphCutFilter->Update();
+    // compare the results: I_Result(x)-I_Expected(x)==0
+    substractFilter->SetInput1(graphCutFilter->GetOutput());
+    substractFilter->SetInput2(expectedResultImage);
+    statisticsFilter->SetInput(substractFilter->GetOutput());
+    statisticsFilter->Update();
 
-    ASSERT_EQ(1,1);
+    int pixelSum = statisticsFilter->GetSum();
+    ASSERT_EQ(pixelSum, 0);
+}
+
+TEST_F(TestImageGraphCut3D, BasicGraphCutTestWithNoise){
+    typedef itk::ImageGraphCut3DFilter<TInput, TForeground, TBackground, TOutput> GraphCutFilterType;
+    GraphCutFilterType::Pointer graphCutFilter;
+    graphCutFilter = GraphCutFilterType::New();
+
+    // set images
+    graphCutFilter->SetInputImage(inputImageNoisy);
+    graphCutFilter->SetForegroundImage(foregroundMask);
+    graphCutFilter->SetBackgroundImage(backgroundMask);
+
+    // compare the results: I_Result(x)-I_Expected(x)==0
+    substractFilter->SetInput1(graphCutFilter->GetOutput());
+    substractFilter->SetInput2(expectedResultImage);
+    statisticsFilter->SetInput(substractFilter->GetOutput());
+    statisticsFilter->Update();
+
+    int pixelSum = statisticsFilter->GetSum();
+    ASSERT_EQ(pixelSum, 0);
 }

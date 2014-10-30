@@ -63,6 +63,7 @@ namespace itk {
 
         void GenerateData();
         GraphType* CreateGraph(NodeImageType::Pointer);
+        void CutGraph(GraphType*, typename NodeImageType::Pointer, typename OutputImageType::Pointer outputImage);
         template<typename TIndexImage>
         std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
 
