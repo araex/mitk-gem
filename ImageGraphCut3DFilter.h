@@ -40,6 +40,20 @@ namespace itk {
             NoDirection, BrightDark, DarkBright
         } BoundaryDirectionType;
 
+        // parameter setters
+        void SetSigma(double d){
+            m_Sigma = d;
+        }
+        void SetLambda(double d){
+            m_Lambda = d;
+        }
+        void SetForegroundPixelValue(typename OutputImageType::PixelType v){
+            m_ForegroundPixelValue = v;
+        }
+        void SetBackgroundPixelValue(typename OutputImageType::PixelType v){
+            m_BackgroundPixelValue = v;
+        }
+
         // image setters
         void SetInputImage(const InputImageType *image){
             this->SetNthInput(0, const_cast<InputImageType*>(image));
@@ -64,8 +78,9 @@ namespace itk {
         void GenerateData();
         GraphType* CreateGraph(NodeImageType::Pointer);
         void CutGraph(GraphType*, typename NodeImageType::Pointer, typename OutputImageType::Pointer outputImage);
-        template<typename TIndexImage>
-        std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
+
+        // helper to convert masks to >0 indices
+        template<typename TIndexImage> std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
 
         // image getters
         const InputImageType * GetInputImage(){
