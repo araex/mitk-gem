@@ -31,6 +31,14 @@ namespace itk {
         images.background = GetBackgroundImage();
         images.output = this->GetOutput();
 
+        // init ITK progress reporter
+        // InitializeGraph() traverses the input image once
+        int numberOfPixelDuringInit = images.input->GetLargestPossibleRegion().GetNumberOfPixels();
+        // CutGraph() traverses the output image once
+        int numberOfPixelDuringOutput = images.output->GetRequestedRegion().GetNumberOfPixels();
+        // since both report to the same ProgressReporter, we add the total amount of pixels
+        ProgressReporter progress(this, 0, numberOfPixelDuringInit + numberOfPixelDuringOutput);
+
         // allocate output
         images.output->SetBufferedRegion(images.output->GetRequestedRegion());
         images.output->Allocate();
@@ -50,15 +58,15 @@ namespace itk {
 
         // create graph
         GraphType graph;
-        InitializeGraph(&graph, images);
+        InitializeGraph(&graph, images, progress);
 
         // cut graph
-        CutGraph(&graph, images);
+        CutGraph(&graph, images, progress);
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::InitializeGraph(GraphType *graph, ImageContainer images){
+    ::InitializeGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress){
         IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
         IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(images.background);
 
@@ -137,6 +145,7 @@ namespace itk {
                     graph->add_edge(node1, node2, weight, weight);
                 }
             }
+            progress.CompletedPixel();
         }
 
         // Set very high source weights for the pixels that were
@@ -158,10 +167,7 @@ namespace itk {
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::CutGraph(GraphType *graph, ImageContainer images){
-        // init ITK progress reporter
-        ProgressReporter progress(this, 0, images.output->GetRequestedRegion().GetNumberOfPixels());
-
+    ::CutGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress){
         // Compute max-flow
         graph->maxflow();
 

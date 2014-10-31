@@ -94,8 +94,8 @@ namespace itk {
         virtual ~ImageGraphCut3DFilter();
 
         void GenerateData();
-        void InitializeGraph(GraphType*, ImageContainer);
-        void CutGraph(GraphType*, ImageContainer);
+        void InitializeGraph(GraphType*, ImageContainer, ProgressReporter &progress);
+        void CutGraph(GraphType*, ImageContainer, ProgressReporter &progress);
 
         // helper to convert masks to >0 indices
         template<typename TIndexImage> std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
