@@ -41,8 +41,8 @@ Dependencies
 Example
 -------
 ```
-$ cd data
-$ ../build/Examples/ImageGraphCut3DSegmentationExample testCube10x10x10.mhd testForegroundMask.mhd testBackgroundMask.mhd testSegmentedCube.mhd -1
+$ cd data/femur
 
-$../build/Examples/ImageGraphCut3DSegmentationExample testCube10x10x10Noisy_0p01.mhd testForegroundMask.mhd testBackgroundMask.mhd testSegmentedNoisyCube.mhd -1
+$ ../../build/Examples/ImageGraphCut3DSegmentationExample input.mhd foreground.mhd background.mhd result.mhd 50 0 1
+
 ```
