@@ -37,7 +37,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
 
 // Graphcut
-#include "lib/GraphCut3D/ImageGraphCut3D.h"
+#include "lib/GraphCut3D/ImageGraphCut3DFilter.h"
 #include "GraphcutWorker.h"
 
 

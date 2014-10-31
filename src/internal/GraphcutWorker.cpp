@@ -10,12 +10,12 @@ GraphcutWorker::GraphcutWorker()
 void GraphcutWorker::preparePipeline() {
     MITK_DEBUG("ch.zhaw.graphcut") << "prepare pipeline...";
 
-    m_graphCut = new Graph3DType();
-    m_graphCut->SetImage(m_input);
-    m_graphCut->SetSources(getNonZeroPixelIndices(m_foreground));
-    m_graphCut->SetSinks(getNonZeroPixelIndices(m_background));
-    m_graphCut->SetSigma(m_Sigma);
+    m_graphCut = GraphCutFilterType::New();
+    m_graphCut->SetInputImage(m_input);
+    m_graphCut->SetForegroundImage(m_foreground);
+    m_graphCut->SetBackgroundImage(m_background);
 
+    m_graphCut->SetSigma(m_Sigma);
     switch (m_boundaryDirection) {
         case 0:
             m_graphCut->SetBoundaryDirectionTypeToNoDirection();
@@ -37,8 +37,8 @@ void GraphcutWorker::process() {
 
     try{
         preparePipeline();
-        m_graphCut->PerformSegmentation();
-        m_output = m_graphCut->GetSegmentMask();
+        m_graphCut->Update();
+        m_output = m_graphCut->GetOutput();
     } catch (itk::ExceptionObject &e){
         std::cerr << "Exception caught during execution of pipeline 'GraphcutWorker'." << std::endl;
         std::cerr << e << std::endl;
@@ -46,18 +46,4 @@ void GraphcutWorker::process() {
 
     MITK_DEBUG("ch.zhaw.graphcut") << "worker done";
     emit Worker::finished((itk::DataObject::Pointer) m_output, id);
-}
-
-std::vector<itk::Index<3> > GraphcutWorker::getNonZeroPixelIndices(MaskImageType::Pointer mask) {
-    std::vector<itk::Index<3> > nonZeroPixelIndices;
-
-    itk::ImageRegionConstIterator<MaskImageType> regionIterator(mask, mask->GetLargestPossibleRegion());
-    while(!regionIterator.IsAtEnd()) {
-        if(regionIterator.Get() > itk::NumericTraits<typename MaskImageType::PixelType>::Zero) {
-            nonZeroPixelIndices.push_back(regionIterator.GetIndex());
-        }
-        ++regionIterator;
-    }
-
-    return nonZeroPixelIndices;
 }

@@ -11,7 +11,7 @@
 // ITK
 #include <itkImage.h>
 
-#include "lib/GraphCut3D/ImageGraphCut3D.h"
+#include "lib/GraphCut3D/ImageGraphCut3DFilter.h"
 #include "Worker.h"
 
 class GraphcutWorker : public Worker {
@@ -25,7 +25,6 @@ public:
     };
 
     ~GraphcutWorker(){
-        delete m_graphCut;
     }
 
     // image typedefs
@@ -34,7 +33,7 @@ public:
     typedef typename itk::Image<unsigned char, 3> OutputImageType;
 
     // typedef for pipeline
-    typedef ImageGraphCut3D<InputImageType> Graph3DType;
+    typedef itk::ImageGraphCut3DFilter<InputImageType, MaskImageType, MaskImageType, OutputImageType> GraphCutFilterType;
 
     GraphcutWorker();
 
@@ -73,14 +72,14 @@ public:
 private:
 
     void preparePipeline();
-    std::vector<itk::Index<3> > getNonZeroPixelIndices(MaskImageType::Pointer);
 
     // member variables
     InputImageType::Pointer m_input;
     MaskImageType::Pointer m_foreground;
     MaskImageType::Pointer m_background;
     OutputImageType::Pointer m_output;
-    Graph3DType *m_graphCut;
+    GraphCutFilterType::Pointer m_graphCut;
+
     double m_Sigma;
     BoundaryDirection m_boundaryDirection;
 };
