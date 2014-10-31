@@ -18,13 +18,10 @@ See LICENSE.txt or http://www.mitk.org for details.
 #ifndef GraphcutView_h
 #define GraphcutView_h
 
+// MITK
 #include <berryISelectionListener.h>
-
 #include <QmitkAbstractView.h>
-
 #include "ui_GraphcutViewControls.h"
-
-#include "itkIndex.h"
 
 #include "GraphcutWorker.h"
 
