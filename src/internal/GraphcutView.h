@@ -28,18 +28,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include "GraphcutWorker.h"
 
-
-/**
-\brief GraphcutView
-
-\warning  This class is not yet documented. Use "git blame" and ask the author to provide basic documentation.
-
-\sa QmitkAbstractView
-\ingroup ${plugin_target}_internal
-*/
 class GraphcutView : public QmitkAbstractView {
-    // this is needed for all Qt objects that should have a Qt meta-object
-    // (everything that derives from QObject and wants to have signal/slots)
     Q_OBJECT
 
 public:
@@ -54,13 +43,11 @@ protected slots:
     void workerProgressUpdate(float progress, unsigned int id);
     void workerIsDone(itk::DataObject::Pointer, unsigned int);
 
-
 protected:
-
     virtual void CreateQtPartControl(QWidget *parent);
     virtual void SetFocus();
 
-    /// \brief called by QmitkFunctionality when DataManager's selection has changed
+    // called by QmitkFunctionality when DataManager's selection has changed
     virtual void OnSelectionChanged(berry::IWorkbenchPart::Pointer source,
             const QList <mitk::DataNode::Pointer> &nodes);
 
@@ -71,7 +58,6 @@ private:
     void setMandatoryField(QWidget *, bool);
     bool isValidSelection();
     void lockGui(bool);
-
     unsigned int m_currentlyActiveWorkerCount;
 };
 
