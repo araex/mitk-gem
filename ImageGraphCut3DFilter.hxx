@@ -1,6 +1,8 @@
 #ifndef __ImageGraphCut3DFilter_hxx_
 #define __ImageGraphCut3DFilter_hxx_
 
+#include "itkProgressReporter.h"
+
 namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
@@ -157,6 +159,9 @@ namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::CutGraph(GraphType *graph, ImageContainer images){
+        // init ITK progress reporter
+        ProgressReporter progress(this, 0, images.output->GetRequestedRegion().GetNumberOfPixels());
+
         // Compute max-flow
         graph->maxflow();
 
@@ -176,6 +181,7 @@ namespace itk {
                 images.output->SetPixel(nodeImageIterator.GetIndex(), m_BackgroundPixelValue);
             }
             ++nodeImageIterator;
+            progress.CompletedPixel();
         }
     }
 
