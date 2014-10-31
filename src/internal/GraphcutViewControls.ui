@@ -224,10 +224,10 @@ QScrollArea{
        <item>
         <widget class="QProgressBar" name="progressBar">
          <property name="maximum">
-          <number>0</number>
+          <number>100</number>
          </property>
          <property name="value">
-          <number>-1</number>
+          <number>0</number>
          </property>
          <property name="textVisible">
           <bool>true</bool>

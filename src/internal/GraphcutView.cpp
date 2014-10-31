@@ -116,6 +116,12 @@ void GraphcutView::startButtonPressed() {
         qRegisterMetaType<itk::DataObject::Pointer>("itk::DataObject::Pointer");
         QObject::connect(worker, SIGNAL(started(unsigned int)), this, SLOT(workerHasStarted(unsigned int)));
         QObject::connect(worker, SIGNAL(finished(itk::DataObject::Pointer, unsigned int)), this, SLOT(workerIsDone(itk::DataObject::Pointer, unsigned int)));
+        QObject::connect(worker, SIGNAL(progress(float, unsigned int)), this, SLOT(workerProgressUpdate(float, unsigned int)));
+
+        // prepare the progress bar
+        m_Controls.progressBar->setValue(0);
+        m_Controls.progressBar->setMinimum(0);
+        m_Controls.progressBar->setMaximum(100);
 
         QThreadPool::globalInstance()->start(worker);
     }
@@ -202,5 +208,11 @@ void GraphcutView::lockGui(bool b) {
     m_Controls.parentWidget->setEnabled(!b);
     m_Controls.progressBar->setVisible(b);
     m_Controls.startButton->setVisible(!b);
+    mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+}
+
+void GraphcutView::workerProgressUpdate(float progress, unsigned int){
+    int progressInt = (int) (progress * 100.0f);
+    m_Controls.progressBar->setValue(progressInt);
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }

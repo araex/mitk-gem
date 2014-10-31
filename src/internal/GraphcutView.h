@@ -51,6 +51,7 @@ protected slots:
     void startButtonPressed();
     void imageSelectionChanged();
     void workerHasStarted(unsigned int);
+    void workerProgressUpdate(float progress, unsigned int id);
     void workerIsDone(itk::DataObject::Pointer, unsigned int);
 
 
