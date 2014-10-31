@@ -62,6 +62,8 @@ TEST_F(TestImageGraphCut3DFilter, CubeGraphCutTest){
     graphCutFilter->SetBackgroundImage(backgroundMask);
 
     // set parameters
+    graphCutFilter->SetForegroundPixelValue(255);
+    graphCutFilter->SetBackgroundPixelValue(0);
     graphCutFilter->SetSigma(50.0);
     graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
@@ -95,6 +97,8 @@ TEST_F(TestImageGraphCut3DFilter, CubeGraphCutTestWithNoise){
     graphCutFilter->SetBackgroundImage(backgroundMask);
 
     // set parameters
+    graphCutFilter->SetForegroundPixelValue(255);
+    graphCutFilter->SetBackgroundPixelValue(0);
     graphCutFilter->SetSigma(50.0);
     graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
@@ -128,6 +132,8 @@ TEST_F(TestImageGraphCut3DFilter, FemurGraphCutTest){
     graphCutFilter->SetBackgroundImage(backgroundMask);
 
     // set parameters
+    graphCutFilter->SetForegroundPixelValue(255);
+    graphCutFilter->SetBackgroundPixelValue(0);
     graphCutFilter->SetSigma(50.0);
     graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToNoDirection();
@@ -140,4 +146,52 @@ TEST_F(TestImageGraphCut3DFilter, FemurGraphCutTest){
 
     double pixelSum = statisticsFilter->GetSum();
     ASSERT_DOUBLE_EQ(0, pixelSum);
+}
+
+TEST_F(TestImageGraphCut3DFilter, SetPixelValues){
+    // path to files
+    std::string inputPath = "data/test/cube10x10x10/cube.mhd";
+    std::string forgroundPath = "data/test/cube10x10x10/foregroundMask.mhd";
+    std::string backgroundPath = "data/test/cube10x10x10/backgroundMask.mhd";
+    std::string expectedPath = "data/test/cube10x10x10/expectedResult.mhd";
+
+    // read the images
+    TInput::Pointer inputImage = IOHelper::readImage<TInput>(inputPath.c_str());
+    TForeground::Pointer foregroundMask = IOHelper::readImage<TForeground>(forgroundPath.c_str());
+    TBackground::Pointer backgroundMask = IOHelper::readImage<TBackground>(backgroundPath.c_str());
+    TOutput::Pointer expectedResultImage = IOHelper::readImage<TOutput>(expectedPath.c_str());
+
+    // set images
+    graphCutFilter->SetInputImage(inputImage);
+    graphCutFilter->SetForegroundImage(foregroundMask);
+    graphCutFilter->SetBackgroundImage(backgroundMask);
+
+    // set parameters
+    graphCutFilter->SetSigma(50.0);
+    graphCutFilter->SetLambda(1.0);
+    graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
+
+    // set pixel values
+    int fgPixelValue = 33;
+    int bgPixelValue = 5;
+    graphCutFilter->SetForegroundPixelValue(fgPixelValue);
+    graphCutFilter->SetBackgroundPixelValue(bgPixelValue);
+
+    // compare the results: I_Result(x)-I_Expected(x)
+    substractFilter->SetInput1(graphCutFilter->GetOutput());
+    substractFilter->SetInput2(expectedResultImage);
+    statisticsFilter->SetInput(substractFilter->GetOutput());
+    statisticsFilter->Update();
+
+    // calculate our expected values
+    int totalNumberOfVoxels = 10*10*10;
+    int expectedNumberOfFgVoxels = 3*3*3; // as defined by the test data generation script
+    int expectedNumberOfBgVoxels = totalNumberOfVoxels - expectedNumberOfFgVoxels;
+
+    int imageExpectedResultPixelSum = expectedNumberOfFgVoxels * 255 + expectedNumberOfBgVoxels * 0;
+    int imageResultPixelSum = expectedNumberOfFgVoxels * fgPixelValue + expectedNumberOfBgVoxels * bgPixelValue;
+    int expectedPixelSum = imageResultPixelSum - imageExpectedResultPixelSum;
+
+    double pixelSum = statisticsFilter->GetSum();
+    ASSERT_DOUBLE_EQ(expectedPixelSum, pixelSum);
 }
