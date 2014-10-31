@@ -21,6 +21,7 @@ public slots:
 
     signals:
     void started(unsigned int workerId);
+    void progress(float progress, unsigned int workerId);
     void finished(itk::DataObject::Pointer ptr, unsigned int workerId);
 
 public:
@@ -30,6 +31,8 @@ public:
     void run() {
         process();
     };
+
+    virtual void itkProgressCommandCallback(float progress) = 0;
 };
 
 #endif

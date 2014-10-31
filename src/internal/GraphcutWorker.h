@@ -10,9 +10,39 @@
 
 // ITK
 #include <itkImage.h>
+#include <itkCommand.h>
 
 #include "lib/GraphCut3D/ImageGraphCut3DFilter.h"
 #include "Worker.h"
+
+class ProgressObserverCommand : public itk::Command {
+public:
+    itkNewMacro(ProgressObserverCommand);
+
+    void Execute(itk::Object *caller, const itk::EventObject &event){
+        Execute(const_cast<const itk::Object *>(caller), event);
+    }
+
+    void Execute(const itk::Object *caller, const itk::EventObject &event){
+        itk::ProcessObject *processObject = (itk::ProcessObject*)caller;
+        if (typeid(event) == typeid(itk::ProgressEvent)) {
+            if(m_worker){
+                m_worker->itkProgressCommandCallback(processObject->GetProgress());
+            } else{
+                std::cout << "ITK Progress event received from "
+                        << processObject->GetNameOfClass() << ". Progress is "
+                        << 100.0 * processObject->GetProgress() << " %."
+                        << std::endl;
+            }
+        }
+    }
+
+    void SetCallbackWorker(Worker* worker){
+        m_worker = worker;
+    }
+private:
+    Worker *m_worker;
+};
 
 class GraphcutWorker : public Worker {
 
@@ -42,7 +72,11 @@ public:
 
     // inherited signals
     void started(unsigned int workerId);
+    void progress(float progress, unsigned int workerId);
     void finished(itk::DataObject::Pointer ptr, unsigned int workerId);
+
+    // callback for the progress command
+    void itkProgressCommandCallback(float progress);
 
     // setters
     void setInputImage(InputImageType::Pointer img){
@@ -79,7 +113,9 @@ private:
     MaskImageType::Pointer m_background;
     OutputImageType::Pointer m_output;
     GraphCutFilterType::Pointer m_graphCut;
+    ProgressObserverCommand::Pointer m_progressCommand;
 
+    // parameters
     double m_Sigma;
     BoundaryDirection m_boundaryDirection;
 };

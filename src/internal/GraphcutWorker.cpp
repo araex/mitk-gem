@@ -28,6 +28,11 @@ void GraphcutWorker::preparePipeline() {
             break;
     }
 
+    // add progress observer
+    m_progressCommand = ProgressObserverCommand::New();
+    static_cast<ProgressObserverCommand*>(m_progressCommand.GetPointer())->SetCallbackWorker(this);
+    m_graphCut->AddObserver(itk::ProgressEvent(), m_progressCommand);
+
     MITK_DEBUG("ch.zhaw.graphcut") << "... pipeline prepared";
 }
 
@@ -46,4 +51,8 @@ void GraphcutWorker::process() {
 
     MITK_DEBUG("ch.zhaw.graphcut") << "worker done";
     emit Worker::finished((itk::DataObject::Pointer) m_output, id);
+}
+
+void GraphcutWorker::itkProgressCommandCallback(float progress){
+    emit Worker::progress(progress, id);
 }
