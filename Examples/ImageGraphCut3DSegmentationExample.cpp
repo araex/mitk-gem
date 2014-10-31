@@ -74,9 +74,9 @@ int main(int argc, char *argv[]) {
     std::string foregroundFilename = argv[2];   // This image should have non-zero pixels indicating foreground pixels and 0 elsewhere.
     std::string backgroundFilename = argv[3];   // This image should have non-zero pixels indicating background pixels and 0 elsewhere.
     std::string outputFilename = argv[4];
-    float sigma = atof(argv[5]);                //Noise parameter
+    double sigma = atof(argv[5]);                //Noise parameter
     int boundaryDirection = atoi(argv[6]);      //0->bidirectional; 1->bright to dark; 2->dark to bright
-    float lambda = atof(argv[7]);               //Region term weight
+    double lambda = atof(argv[7]);               //Region term weight
 
     // Output arguments
     std::cout << "imageFilename: " << imageFilename << std::endl
