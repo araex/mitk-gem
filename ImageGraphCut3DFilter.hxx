@@ -9,9 +9,9 @@ namespace itk {
     ::ImageGraphCut3DFilter()
         : m_Sigma(5.0)
         , m_Lambda(1.0)
+        , m_BoundaryDirectionType(NoDirection)
         , m_ForegroundPixelValue(255)
         , m_BackgroundPixelValue(0)
-        , m_BoundaryDirectionType(NoDirection)
     {
         this->SetNumberOfRequiredInputs(3);
     }
