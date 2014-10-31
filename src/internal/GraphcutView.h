@@ -23,6 +23,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <QmitkAbstractView.h>
 #include "ui_GraphcutViewControls.h"
 
+//
 #include "GraphcutWorker.h"
 
 class GraphcutView : public QmitkAbstractView {
