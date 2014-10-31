@@ -1,8 +1,6 @@
 #ifndef __ImageGraphCut3DFilter_hxx_
 #define __ImageGraphCut3DFilter_hxx_
 
-#include "itkProgressReporter.h"
-
 namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>

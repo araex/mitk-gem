@@ -9,6 +9,7 @@
 #include "itkSampleToHistogramFilter.h"
 #include "itkHistogram.h"
 #include "itkListSample.h"
+#include "itkProgressReporter.h"
 
 // STL
 #include <vector>
