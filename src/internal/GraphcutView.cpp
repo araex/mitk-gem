@@ -251,6 +251,7 @@ void GraphcutView::paddingButtonPressed(bool append) {
         foregroundMaskNode->SetData(img);
     }
     if(backgroundMaskNode){
+        // TODO: safeguard to prevent transforming twice. should be solved in the selector predicate
         if(!(backgroundMaskNode->GetData() == foregroundMaskNode->GetData())){
             mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
             img = WorkbenchUtils::addPadding<unsigned char>(img, axis, append, amountOfPadding, 0);
