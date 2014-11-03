@@ -232,32 +232,25 @@ void GraphcutView::prependButtonPressed() {
 void GraphcutView::paddingButtonPressed(bool append) {
     // get nodes
     mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
-    mitk::DataNode *foregroundMaskNode = m_Controls.foregroundImageSelector->GetSelectedNode();
-    mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
+    std::vector<mitk::DataNode::Pointer> maskNodes = this->GetDataStorage()->GetDerivations(greyscaleImageNode, NULL, true)->CastToSTLConstContainer();
 
     // get params
     float voxelValue = m_Controls.voxelValueSpinBox->value();
     unsigned int amountOfPadding = m_Controls.amountOfPaddingSpinBox->value();
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis)m_Controls.axisComboBox->currentIndex();
 
+    // add padding to the image
     if(greyscaleImageNode){
         mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
         img = WorkbenchUtils::addPadding<float>(img, axis, append, amountOfPadding, voxelValue);
         greyscaleImageNode->SetData(img);
     }
-    if(foregroundMaskNode){
-        mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(foregroundMaskNode->GetData());
-        img = WorkbenchUtils::addPadding<unsigned char>(img, axis, append, amountOfPadding, 0);
-        foregroundMaskNode->SetData(img);
-    }
-    if(backgroundMaskNode){
-        // TODO: safeguard to prevent transforming twice. should be solved in the selector predicate
-        if(!(backgroundMaskNode->GetData() == foregroundMaskNode->GetData())){
-            mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
-            img = WorkbenchUtils::addPadding<unsigned char>(img, axis, append, amountOfPadding, 0);
-            backgroundMaskNode->SetData(img);
-        }
 
+    // add padding to all childs of image
+    for(std::vector<mitk::DataNode::Pointer>::iterator it = maskNodes.begin(); it != maskNodes.end(); ++it) {
+        mitk::Image::Pointer img = dynamic_cast<mitk::Image *>((*it)->GetData());
+        img = WorkbenchUtils::addPadding<unsigned char>(img, axis, append, amountOfPadding, 0);
+        (*it)->SetData(img);
     }
 
     globalReinit();
