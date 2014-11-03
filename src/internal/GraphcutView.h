@@ -58,7 +58,7 @@ private:
     void setMandatoryField(QWidget *, bool);
     bool isValidSelection();
     void lockGui(bool);
-    void globalReinit();
+    void refreshBoundaries();
     unsigned int m_currentlyActiveWorkerCount;
 };
 

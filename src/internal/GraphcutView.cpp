@@ -253,17 +253,10 @@ void GraphcutView::paddingButtonPressed(bool append) {
         (*it)->SetData(img);
     }
 
-    globalReinit();
+    refreshBoundaries();
 }
 
-void GraphcutView::globalReinit(){
-    // get all nodes that want to be included in the bounding box
-    mitk::NodePredicateNot::Pointer pred = mitk::NodePredicateNot::New(mitk::NodePredicateProperty::New("includeInBoundingBox", mitk::BoolProperty::New(false)));
-    mitk::DataStorage::SetOfObjects::ConstPointer rs = this->GetDataStorage()->GetSubset(pred);
-
-    // calculate the bounding box of these nodes
-    mitk::TimeGeometry::Pointer bounds = this->GetDataStorage()->ComputeBoundingGeometry3D(rs, "visible");
-
-    // initialize the views to the bounding geometry
-    mitk::RenderingManager::GetInstance()->InitializeViews(bounds);
+void GraphcutView::refreshBoundaries(){
+    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
+    mitk::RenderingManager::GetInstance()->InitializeViews(greyscaleImageNode->GetData()->GetTimeGeometry ());
 }
