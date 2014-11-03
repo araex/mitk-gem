@@ -67,7 +67,8 @@ void GraphcutView::CreateQtPartControl(QWidget *parent) {
     connect(m_Controls.greyscaleImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.foregroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
-    connect(m_Controls.testButton, SIGNAL(clicked()), this, SLOT(testButtonPressed()));
+    connect(m_Controls.appendPaddingButton, SIGNAL(clicked()), this, SLOT(appendButtonPressed()));
+    connect(m_Controls.prependPaddingButton, SIGNAL(clicked()), this, SLOT(prependButtonPressed()));
 
     // init defaults
     m_currentlyActiveWorkerCount = 0;
@@ -220,11 +221,44 @@ void GraphcutView::workerProgressUpdate(float progress, unsigned int){
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
-void GraphcutView::testButtonPressed(){
+void GraphcutView::appendButtonPressed() {
+    paddingButtonPressed(true);
+}
+
+void GraphcutView::prependButtonPressed() {
+    paddingButtonPressed(false);
+}
+
+void GraphcutView::paddingButtonPressed(bool append) {
+    // get nodes
     mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
-    mitk::Image::Pointer greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
-    mitk::Image::Pointer result = WorkbenchUtils::appendPadding(greyscaleImage, WorkbenchUtils::SAGITTAL, 100);
-    greyscaleImageNode->SetData(result);
+    mitk::DataNode *foregroundMaskNode = m_Controls.foregroundImageSelector->GetSelectedNode();
+    mitk::DataNode *backgroundMaskNode = m_Controls.backgroundImageSelector->GetSelectedNode();
+
+    // get params
+    float voxelValue = m_Controls.voxelValueSpinBox->value();
+    unsigned int amountOfPadding = m_Controls.amountOfPaddingSpinBox->value();
+    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis)m_Controls.axisComboBox->currentIndex();
+
+    if(greyscaleImageNode){
+        mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
+        img = WorkbenchUtils::addPadding<float>(img, axis, append, amountOfPadding, voxelValue);
+        greyscaleImageNode->SetData(img);
+    }
+    if(foregroundMaskNode){
+        mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(foregroundMaskNode->GetData());
+        img = WorkbenchUtils::addPadding<unsigned char>(img, axis, append, amountOfPadding, 0);
+        foregroundMaskNode->SetData(img);
+    }
+    if(backgroundMaskNode){
+        if(!(backgroundMaskNode->GetData() == foregroundMaskNode->GetData())){
+            mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
+            img = WorkbenchUtils::addPadding<unsigned char>(img, axis, append, amountOfPadding, 0);
+            backgroundMaskNode->SetData(img);
+        }
+
+    }
+
     globalReinit();
 }
 

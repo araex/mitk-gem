@@ -34,9 +34,9 @@ public:
     static const std::string VIEW_ID;
 
 protected slots:
-
-    void testButtonPressed();
     void startButtonPressed();
+    void appendButtonPressed();
+    void prependButtonPressed();
     void imageSelectionChanged();
     void workerHasStarted(unsigned int);
     void workerProgressUpdate(float progress, unsigned int id);
@@ -53,6 +53,7 @@ protected:
     Ui::GraphcutViewControls m_Controls;
 
 private:
+    void paddingButtonPressed(bool append);
     void initializeImageSelector(QmitkDataStorageComboBox *);
     void setMandatoryField(QWidget *, bool);
     bool isValidSelection();
