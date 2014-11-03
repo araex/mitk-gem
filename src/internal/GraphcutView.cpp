@@ -28,6 +28,8 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <mitkNodePredicateOr.h>
 #include <mitkImageCast.h>
 #include <mitkITKImageImport.h>
+#include <mitkNodePredicateNot.h>
+#include <mitkTimeGeometry.h>
 
 // Qt
 #include <QThreadPool>
@@ -65,6 +67,7 @@ void GraphcutView::CreateQtPartControl(QWidget *parent) {
     connect(m_Controls.greyscaleImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.foregroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
+    connect(m_Controls.testButton, SIGNAL(clicked()), this, SLOT(testButtonPressed()));
 
     // init defaults
     m_currentlyActiveWorkerCount = 0;
@@ -215,4 +218,24 @@ void GraphcutView::workerProgressUpdate(float progress, unsigned int){
     int progressInt = (int) (progress * 100.0f);
     m_Controls.progressBar->setValue(progressInt);
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+}
+
+void GraphcutView::testButtonPressed(){
+    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
+    mitk::Image::Pointer greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
+    mitk::Image::Pointer result = WorkbenchUtils::appendPadding(greyscaleImage, WorkbenchUtils::SAGITTAL, 100);
+    greyscaleImageNode->SetData(result);
+    globalReinit();
+}
+
+void GraphcutView::globalReinit(){
+    // get all nodes that want to be included in the bounding box
+    mitk::NodePredicateNot::Pointer pred = mitk::NodePredicateNot::New(mitk::NodePredicateProperty::New("includeInBoundingBox", mitk::BoolProperty::New(false)));
+    mitk::DataStorage::SetOfObjects::ConstPointer rs = this->GetDataStorage()->GetSubset(pred);
+
+    // calculate the bounding box of these nodes
+    mitk::TimeGeometry::Pointer bounds = this->GetDataStorage()->ComputeBoundingGeometry3D(rs, "visible");
+
+    // initialize the views to the bounding geometry
+    mitk::RenderingManager::GetInstance()->InitializeViews(bounds);
 }

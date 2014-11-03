@@ -70,6 +70,13 @@ QScrollArea{
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
+        <widget class="QPushButton" name="testButton">
+         <property name="text">
+          <string>test experimental feature</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="imageGroup">
          <property name="title">
           <string>Image selection</string>

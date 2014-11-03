@@ -35,6 +35,7 @@ public:
 
 protected slots:
 
+    void testButtonPressed();
     void startButtonPressed();
     void imageSelectionChanged();
     void workerHasStarted(unsigned int);
@@ -56,6 +57,7 @@ private:
     void setMandatoryField(QWidget *, bool);
     bool isValidSelection();
     void lockGui(bool);
+    void globalReinit();
     unsigned int m_currentlyActiveWorkerCount;
 };
 
