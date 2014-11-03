@@ -23,8 +23,8 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <QmitkAbstractView.h>
 #include "ui_GraphcutViewControls.h"
 
-//
-#include "GraphcutWorker.h"
+// Utils
+#include "lib/WorkbenchUtils/WorkbenchUtils.h"
 
 class GraphcutView : public QmitkAbstractView {
     Q_OBJECT
@@ -35,8 +35,10 @@ public:
 
 protected slots:
     void startButtonPressed();
-    void appendButtonPressed();
-    void prependButtonPressed();
+    void padLeftButtonPressed();
+    void padRightButtonPressed();
+    void padUpButtonPressed();
+    void padDownButtonPressed();
     void imageSelectionChanged();
     void workerHasStarted(unsigned int);
     void workerProgressUpdate(float progress, unsigned int id);
@@ -53,7 +55,7 @@ protected:
     Ui::GraphcutViewControls m_Controls;
 
 private:
-    void paddingButtonPressed(bool append);
+    void addPadding(WorkbenchUtils::Axis axis, bool append);
     void initializeImageSelector(QmitkDataStorageComboBox *);
     void setMandatoryField(QWidget *, bool);
     bool isValidSelection();
