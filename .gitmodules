@@ -1,0 +1,9 @@
+[submodule "Plugins/ch.zhaw.levelset"]
+	path = Plugins/ch.zhaw.levelset
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.levelset.git
+[submodule "Plugins/ch.zhaw.graphcut"]
+	path = Plugins/ch.zhaw.graphcut
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.graphcut.git
+[submodule "Plugins/ch.zhaw.segmentation"]
+	path = Plugins/ch.zhaw.segmentation
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.segmentation.git
