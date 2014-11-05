@@ -1,2 +1,2 @@
 add_executable(TestImageGraphCut3DFilter TestImageGraphCut3DFilter.cpp)
-target_link_libraries(TestImageGraphCut3DFilter gtest gtest_main ${ITK_LIBRARIES} KolmogorovMaxFlow)
+target_link_libraries(TestImageGraphCut3DFilter gtest gtest_main ${ITK_LIBRARIES} ${Boost_LIBRARIES} KolmogorovMaxFlow)

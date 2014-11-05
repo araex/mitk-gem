@@ -1,4 +1,5 @@
 ADD_EXECUTABLE(ImageGraphCut3DSegmentationExample ImageGraphCut3DSegmentationExample.cpp)
 TARGET_LINK_LIBRARIES(ImageGraphCut3DSegmentationExample
 ${ITK_LIBRARIES}
-${ImageGraphCut3DSegmentation_libraries})
+${ImageGraphCut3DSegmentation_libraries}
+${Boost_LIBRARIES})

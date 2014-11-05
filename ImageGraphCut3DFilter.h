@@ -17,6 +17,8 @@
 // Kolmogorov's code
 #include "Kolmogorov/graph.h"
 
+#include "boost/graph/boykov_kolmogorov_max_flow.hpp"
+
 namespace itk {
     template<typename TInput, typename TForeground, typename TBackground, typename TOutput>
     class ITK_EXPORT ImageGraphCut3DFilter : public ImageToImageFilter<TInput, TOutput> {
