@@ -191,82 +191,67 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     float largeWeight = 1000;
 
     // 
-    GraphWrapper wrapper(numberOfVertices);
+    GraphWrapper graph(numberOfVertices);
 
 
     // get all the descriptors
-    VertexDescriptor vSource = boost::vertex(0, *wrapper.graph);
-    VertexDescriptor v0 = boost::vertex(1, *wrapper.graph);
-    VertexDescriptor v1 = boost::vertex(2, *wrapper.graph);
-    VertexDescriptor v2 = boost::vertex(3, *wrapper.graph);
-    VertexDescriptor v3 = boost::vertex(4, *wrapper.graph);
-    VertexDescriptor v4 = boost::vertex(5, *wrapper.graph);
-    VertexDescriptor v5 = boost::vertex(6, *wrapper.graph);
-    VertexDescriptor v6 = boost::vertex(7, *wrapper.graph);
-    VertexDescriptor v7 = boost::vertex(8, *wrapper.graph);
-    VertexDescriptor v8 = boost::vertex(9, *wrapper.graph);
-    VertexDescriptor v9 = boost::vertex(10, *wrapper.graph);
-    VertexDescriptor v10 = boost::vertex(11, *wrapper.graph);
-    VertexDescriptor v11 = boost::vertex(12, *wrapper.graph);
-    VertexDescriptor v12 = boost::vertex(13, *wrapper.graph);
-    VertexDescriptor v13 = boost::vertex(14, *wrapper.graph);
-    VertexDescriptor v14 = boost::vertex(15, *wrapper.graph);
-    VertexDescriptor vSink = boost::vertex(16, *wrapper.graph);
+    VertexDescriptor vSource = graph.getSourceIndex();
+    VertexDescriptor vSink = graph.getSinkIndex();
 
     // add horizontal edges
-    wrapper.addBidirectionalEdge(v0, v1, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v1, v2, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v2, v3, smallWeight, smallWeight);
-    wrapper.addBidirectionalEdge(v3, v4, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v5, v6, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v6, v7, smallWeight, smallWeight);
-    wrapper.addBidirectionalEdge(v7, v8, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v8, v9, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v10, v11, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v11, v12, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v12, v13, smallWeight, smallWeight);
-    wrapper.addBidirectionalEdge(v13, v14, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(0, 1, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(1, 2, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(2, 3, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(3, 4, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(5, 6, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(6, 7, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(7, 8, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(8, 9, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(10, 11, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(11, 12, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(12, 13, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(13, 14, largeWeight, largeWeight);
 
     // vertical edges
-    wrapper.addBidirectionalEdge(v0, v5, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v1, v6, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v2, v7, smallWeight, smallWeight);
-    wrapper.addBidirectionalEdge(v3, v8, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v4, v9, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v5, v10, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v6, v11, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v7, v12, smallWeight, smallWeight);
-    wrapper.addBidirectionalEdge(v8, v13, largeWeight, largeWeight);
-    wrapper.addBidirectionalEdge(v9, v14, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(0, 5, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(1, 6, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(2, 7, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(3, 8, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(4, 9, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(5, 10, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(6, 11, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(7, 12, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(8, 13, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(9, 14, largeWeight, largeWeight);
 
     // connect the sources
-    std::vector<VertexDescriptor> sourceNodes = boost::assign::list_of(v0)(v1)(v6)(v10)(v11);
+    std::vector<unsigned int> sourceNodes = boost::assign::list_of(0)(1)(6)(10)(11);
     for(int i = 0; i < sourceNodes.size(); ++i){
-        wrapper.addBidirectionalEdge(sourceNodes[i], vSource, largeWeight, largeWeight);
-        wrapper.addBidirectionalEdge(sourceNodes[i], vSink, smallWeight, smallWeight);
+        graph.addBidirectionalEdge(sourceNodes[i], vSource, largeWeight, largeWeight);
+        graph.addBidirectionalEdge(sourceNodes[i], vSink, smallWeight, smallWeight);
     }
 
     // connect the sinks
-    std::vector<VertexDescriptor> sinkNodes = boost::assign::list_of(v3)(v4)(v8)(v13)(v14);
+    std::vector<unsigned int> sinkNodes = boost::assign::list_of(3)(4)(8)(13)(14);
     for(int i = 0; i < sinkNodes.size(); ++i){
-        wrapper.addBidirectionalEdge(sinkNodes[i], vSink, largeWeight, largeWeight);
-        wrapper.addBidirectionalEdge(sinkNodes[i], vSource, smallWeight, smallWeight);
+        graph.addBidirectionalEdge(sinkNodes[i], vSink, largeWeight, largeWeight);
+        graph.addBidirectionalEdge(sinkNodes[i], vSource, smallWeight, smallWeight);
     }
 
     // check if the data structure looks as expected
-    EXPECT_EQ(numberOfVertices, boost::num_vertices(*wrapper.graph));
-    EXPECT_EQ(22 * 2 + sourceNodes.size()*4 + sinkNodes.size()*4, boost::num_edges(*wrapper.graph));
+    EXPECT_EQ(numberOfVertices, graph.getNumberOfVertices());
+    EXPECT_EQ(22 * 2 + sourceNodes.size()*4 + sinkNodes.size()*4, graph.getNumberOfEdges());
 
     // max flow
-    wrapper.calculateMaxFlow();
+    graph.calculateMaxFlow();
 
     // cexpected segmentation
-    std::set<int> expectedForeground = boost::assign::list_of(0)(1)(2)(3)(6)(7)(11)(12)(13);
-    std::set<int> expectedBackground = boost::assign::list_of(4)(5)(8)(9)(10)(14)(15)(16);
+    std::set<unsigned int> expectedForeground = boost::assign::list_of(0)(1)(2)(5)(6)(10)(11)(12)(vSource);
+    std::set<unsigned int> expectedBackground = boost::assign::list_of(3)(4)(7)(8)(9)(13)(14)(vSink);
 
     // check the group of each vertex with the expected results
     for(size_t index=0; index < numberOfVertices; ++index){
-        if(wrapper.groups->at(index) == wrapper.groups->at(vSource)){
+        if(graph.groups->at(index) == graph.groups->at(vSource)){
             if(expectedForeground.find(index) != expectedForeground.end()){
                 SUCCEED();
                 expectedForeground.erase(index);
@@ -274,7 +259,7 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
                 FAIL() << "missing "<<index << " in foreground results";
             }
         }
-        else if(wrapper.groups->at(index) == wrapper.groups->at(vSink)){
+        else if(graph.groups->at(index) == graph.groups->at(vSink)){
             if(expectedBackground.find(index) != expectedBackground.end()){
                 SUCCEED();
                 expectedBackground.erase(index);

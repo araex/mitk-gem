@@ -16,7 +16,7 @@ public:
     typedef boost::graph_traits<GraphType>::edge_descriptor EdgeDescriptor;
 
     GraphWrapper(unsigned int size)
-    : SOURCE(0)
+    : SOURCE(size - 2)
     , SINK(size - 1)
     {
         graph = new GraphType(size);
@@ -60,13 +60,36 @@ public:
             , SINK);
     }
 
-    GraphType *graph;
+    VertexDescriptor getSourceIndex(){
+        return boost::vertex(SOURCE, *graph);
+    }
+
+    VertexDescriptor getSinkIndex(){
+        return boost::vertex(SINK, *graph);
+    }
+
+    unsigned int getNumberOfVertices(){
+        return boost::num_vertices(*graph);
+    }
+
+    unsigned int getNumberOfEdges(){
+        return boost::num_edges(*graph);
+    }
+
+    GraphType& getGraph(){
+        return *graph;
+    }
+
+
+    
     std::vector<EdgeDescriptor> *reverseEdges;
     std::vector<float> *capacity;
     std::vector<int> *groups;
 
     VertexDescriptor SOURCE;
     VertexDescriptor SINK;
+private:
+    GraphType *graph;
 };
 
 #endif
