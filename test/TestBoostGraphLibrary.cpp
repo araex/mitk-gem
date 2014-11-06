@@ -6,7 +6,7 @@
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 
 //
-#include "GraphWrapper.hxx"
+#include "MaxFlowGraph.hxx"
 
 class TestBoostGraph : public ::testing::Test {
 protected:
@@ -186,17 +186,16 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     // same exmaple as in ComputeMaxFlow, but this time with the wrapper
 
     // create graph with 4 vertices
-    int numberOfVertices = 3*5 + 2;
+    int numberOfVertices = 3*5;
     float smallWeight = 1;
     float largeWeight = 1000;
 
     // 
-    GraphWrapper graph(numberOfVertices);
-
+    MaxFlowGraph graph(numberOfVertices);
 
     // get all the descriptors
-    VertexDescriptor vSource = graph.getSourceIndex();
-    VertexDescriptor vSink = graph.getSinkIndex();
+    VertexDescriptor vSource = graph.getSource();
+    VertexDescriptor vSink = graph.getSink();
 
     // add horizontal edges
     graph.addBidirectionalEdge(0, 1, largeWeight, largeWeight);
@@ -239,7 +238,7 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     }
 
     // check if the data structure looks as expected
-    EXPECT_EQ(numberOfVertices, graph.getNumberOfVertices());
+    EXPECT_EQ(numberOfVertices + 2, graph.getNumberOfVertices()); // +2 because a sink + source should've been added
     EXPECT_EQ(22 * 2 + sourceNodes.size()*4 + sinkNodes.size()*4, graph.getNumberOfEdges());
 
     // max flow
@@ -250,8 +249,8 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     std::set<unsigned int> expectedBackground = boost::assign::list_of(3)(4)(7)(8)(9)(13)(14)(vSink);
 
     // check the group of each vertex with the expected results
-    for(size_t index=0; index < numberOfVertices; ++index){
-        if(graph.groups->at(index) == graph.groups->at(vSource)){
+    for(size_t index=0; index < graph.getNumberOfVertices(); ++index){
+        if(graph.groupOf(index) == graph.groupOf(vSource)){
             if(expectedForeground.find(index) != expectedForeground.end()){
                 SUCCEED();
                 expectedForeground.erase(index);
@@ -259,7 +258,7 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
                 FAIL() << "missing "<<index << " in foreground results";
             }
         }
-        else if(graph.groups->at(index) == graph.groups->at(vSink)){
+        else if(graph.groupOf(index) == graph.groupOf(vSink)){
             if(expectedBackground.find(index) != expectedBackground.end()){
                 SUCCEED();
                 expectedBackground.erase(index);
