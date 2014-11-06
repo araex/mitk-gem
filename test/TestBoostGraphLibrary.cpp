@@ -5,6 +5,9 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 
+//
+#include "GraphWrapper.hxx"
+
 class TestBoostGraph : public ::testing::Test {
 protected:
     typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
@@ -138,10 +141,10 @@ TEST_F(TestBoostGraph, ComputeMaxFlow){
 
     // max flow
     boost::boykov_kolmogorov_max_flow(graph
-            , boost::make_iterator_property_map(&capacity[0], boost::get(boost::edge_index, graph))
-            , boost::make_iterator_property_map(&residualCapacity[0], boost::get(boost::edge_index, graph))
-            , boost::make_iterator_property_map(&reverseEdges[0], boost::get(boost::edge_index, graph))
-            , boost::make_iterator_property_map(&groups[0], boost::get(boost::vertex_index, graph))
+            , boost::make_iterator_property_map(&capacity.front(), boost::get(boost::edge_index, graph))
+            , boost::make_iterator_property_map(&residualCapacity.front(), boost::get(boost::edge_index, graph))
+            , boost::make_iterator_property_map(&reverseEdges.front(), boost::get(boost::edge_index, graph))
+            , boost::make_iterator_property_map(&groups.front(), boost::get(boost::vertex_index, graph))
             , boost::get(boost::vertex_index, graph)
             , vSource
             , vSink);
@@ -170,6 +173,117 @@ TEST_F(TestBoostGraph, ComputeMaxFlow){
         }
         else{
             FAIL() << "Vertex is neither foreground nor background, something went wrong.";
+        }
+    }
+
+    // both containers should now be empty
+    EXPECT_EQ(0, expectedForeground.size());
+    EXPECT_EQ(0, expectedBackground.size());
+}
+
+
+TEST_F(TestBoostGraph, TestGraphWrapper){
+    // same exmaple as in ComputeMaxFlow, but this time with the wrapper
+
+    // create graph with 4 vertices
+    int numberOfVertices = 3*5 + 2;
+    float smallWeight = 1;
+    float largeWeight = 1000;
+
+    // 
+    GraphWrapper wrapper(numberOfVertices);
+
+
+    // get all the descriptors
+    VertexDescriptor vSource = boost::vertex(0, *wrapper.graph);
+    VertexDescriptor v0 = boost::vertex(1, *wrapper.graph);
+    VertexDescriptor v1 = boost::vertex(2, *wrapper.graph);
+    VertexDescriptor v2 = boost::vertex(3, *wrapper.graph);
+    VertexDescriptor v3 = boost::vertex(4, *wrapper.graph);
+    VertexDescriptor v4 = boost::vertex(5, *wrapper.graph);
+    VertexDescriptor v5 = boost::vertex(6, *wrapper.graph);
+    VertexDescriptor v6 = boost::vertex(7, *wrapper.graph);
+    VertexDescriptor v7 = boost::vertex(8, *wrapper.graph);
+    VertexDescriptor v8 = boost::vertex(9, *wrapper.graph);
+    VertexDescriptor v9 = boost::vertex(10, *wrapper.graph);
+    VertexDescriptor v10 = boost::vertex(11, *wrapper.graph);
+    VertexDescriptor v11 = boost::vertex(12, *wrapper.graph);
+    VertexDescriptor v12 = boost::vertex(13, *wrapper.graph);
+    VertexDescriptor v13 = boost::vertex(14, *wrapper.graph);
+    VertexDescriptor v14 = boost::vertex(15, *wrapper.graph);
+    VertexDescriptor vSink = boost::vertex(16, *wrapper.graph);
+
+    // add horizontal edges
+    wrapper.addBidirectionalEdge(v0, v1, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v1, v2, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v2, v3, smallWeight, smallWeight);
+    wrapper.addBidirectionalEdge(v3, v4, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v5, v6, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v6, v7, smallWeight, smallWeight);
+    wrapper.addBidirectionalEdge(v7, v8, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v8, v9, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v10, v11, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v11, v12, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v12, v13, smallWeight, smallWeight);
+    wrapper.addBidirectionalEdge(v13, v14, largeWeight, largeWeight);
+
+    // vertical edges
+    wrapper.addBidirectionalEdge(v0, v5, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v1, v6, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v2, v7, smallWeight, smallWeight);
+    wrapper.addBidirectionalEdge(v3, v8, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v4, v9, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v5, v10, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v6, v11, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v7, v12, smallWeight, smallWeight);
+    wrapper.addBidirectionalEdge(v8, v13, largeWeight, largeWeight);
+    wrapper.addBidirectionalEdge(v9, v14, largeWeight, largeWeight);
+
+    // connect the sources
+    std::vector<VertexDescriptor> sourceNodes = boost::assign::list_of(v0)(v1)(v6)(v10)(v11);
+    for(int i = 0; i < sourceNodes.size(); ++i){
+        wrapper.addBidirectionalEdge(sourceNodes[i], vSource, largeWeight, largeWeight);
+        wrapper.addBidirectionalEdge(sourceNodes[i], vSink, smallWeight, smallWeight);
+    }
+
+    // connect the sinks
+    std::vector<VertexDescriptor> sinkNodes = boost::assign::list_of(v3)(v4)(v8)(v13)(v14);
+    for(int i = 0; i < sinkNodes.size(); ++i){
+        wrapper.addBidirectionalEdge(sinkNodes[i], vSink, largeWeight, largeWeight);
+        wrapper.addBidirectionalEdge(sinkNodes[i], vSource, smallWeight, smallWeight);
+    }
+
+    // check if the data structure looks as expected
+    EXPECT_EQ(numberOfVertices, boost::num_vertices(*wrapper.graph));
+    EXPECT_EQ(22 * 2 + sourceNodes.size()*4 + sinkNodes.size()*4, boost::num_edges(*wrapper.graph));
+
+    // max flow
+    wrapper.calculateMaxFlow();
+
+    // cexpected segmentation
+    std::set<int> expectedForeground = boost::assign::list_of(0)(1)(2)(3)(6)(7)(11)(12)(13);
+    std::set<int> expectedBackground = boost::assign::list_of(4)(5)(8)(9)(10)(14)(15)(16);
+
+    // check the group of each vertex with the expected results
+    for(size_t index=0; index < numberOfVertices; ++index){
+        if(wrapper.groups->at(index) == wrapper.groups->at(vSource)){
+            if(expectedForeground.find(index) != expectedForeground.end()){
+                SUCCEED();
+                expectedForeground.erase(index);
+            } else{
+                FAIL() << "missing "<<index << " in foreground results";
+            }
+        }
+        else if(wrapper.groups->at(index) == wrapper.groups->at(vSink)){
+            if(expectedBackground.find(index) != expectedBackground.end()){
+                SUCCEED();
+                expectedBackground.erase(index);
+            } else{
+                FAIL() << "missing "<<index << " in background results";
+            }
+        }
+        else{
+            FAIL() << "Vertex " << index << " is neither foreground nor background, something went wrong.";
         }
     }
 
