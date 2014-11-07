@@ -22,81 +22,75 @@ public:
     MaxFlowGraph(unsigned int size)
     : SOURCE(size)
     , SINK(size + 1)
+    , graph(size + 2)
+    , reverseEdges()
+    , capacity()
+    , groups(size + 2)
     {
-        graph = new GraphType(size + 2);
-        reverseEdges = new std::vector<EdgeDescriptor>();
-        capacity = new std::vector<float>();
-        groups = new std::vector<int>(size + 2);
-    }
-
-    ~MaxFlowGraph(){
-        delete graph;
-        delete reverseEdges;
-        delete capacity;
-        delete groups;
     }
 
     // boykov_kolmogorov_max_flow requires all edges to have a reverse edge. 
     void addBidirectionalEdge(VertexDescriptor source, VertexDescriptor target, float weight, float reverseWeight){
-        int nextEdgeId = num_edges(*graph);
+        int nextEdgeId = num_edges(graph);
     
         // create both edges
-        EdgeDescriptor edge = boost::add_edge(source, target, nextEdgeId, *graph).first;
-        EdgeDescriptor reverseEdge = boost::add_edge(target, source, nextEdgeId + 1, *graph).first;
+        EdgeDescriptor edge = boost::add_edge(source, target, nextEdgeId, graph).first;
+        EdgeDescriptor reverseEdge = boost::add_edge(target, source, nextEdgeId + 1, graph).first;
     
         // add them to out property maps
-        reverseEdges->push_back(reverseEdge);
-        reverseEdges->push_back(edge);
-        capacity->push_back(weight);
-        capacity->push_back(weight);
+        reverseEdges.push_back(reverseEdge);
+        reverseEdges.push_back(edge);
+        capacity.push_back(weight);
+        capacity.push_back(weight);
     }
 
     // start the calculation
     void calculateMaxFlow(){
-        std::vector<float> residualCapacity(boost::num_edges(*graph), 0);
+        std::vector<float> residualCapacity(boost::num_edges(graph), 0);
 
         // max flow
-        boost::boykov_kolmogorov_max_flow(*graph
-            , boost::make_iterator_property_map(&capacity->front(), boost::get(boost::edge_index, *graph))
-            , boost::make_iterator_property_map(&residualCapacity.front(), boost::get(boost::edge_index, *graph))
-            , boost::make_iterator_property_map(&reverseEdges->front(), boost::get(boost::edge_index, *graph))
-            , boost::make_iterator_property_map(&groups->front(), boost::get(boost::vertex_index, *graph))
-            , boost::get(boost::vertex_index, *graph)
+        boost::boykov_kolmogorov_max_flow(graph
+            , boost::make_iterator_property_map(&capacity.front(), boost::get(boost::edge_index, graph))
+            , boost::make_iterator_property_map(&residualCapacity.front(), boost::get(boost::edge_index, graph))
+            , boost::make_iterator_property_map(&reverseEdges.front(), boost::get(boost::edge_index, graph))
+            , boost::make_iterator_property_map(&groups.front(), boost::get(boost::vertex_index, graph))
+            , boost::get(boost::vertex_index, graph)
             , SOURCE
             , SINK);
     }
 
     // query the resulting segmentation group of a vertex. 
     int groupOf(VertexDescriptor vertex){
-        return groups->at(vertex);
+        return groups.at(vertex);
     }
 
     // get the index of the source vertex
     VertexDescriptor getSource(){
-        return boost::vertex(SOURCE, *graph);
+        return boost::vertex(SOURCE, graph);
     }
 
     // get the index of the sink vertex
     VertexDescriptor getSink(){
-        return boost::vertex(SINK, *graph);
+        return boost::vertex(SINK, graph);
     }
 
     unsigned int getNumberOfVertices(){
-        return boost::num_vertices(*graph);
+        return boost::num_vertices(graph);
     }
 
     unsigned int getNumberOfEdges(){
-        return boost::num_edges(*graph);
+        return boost::num_edges(graph);
     }
 
 private:
-    GraphType *graph;
-    std::vector<EdgeDescriptor> *reverseEdges;
-    std::vector<float> *capacity;
-    std::vector<int> *groups;
-
     VertexDescriptor SOURCE;
     VertexDescriptor SINK;
+
+    GraphType graph;
+    std::vector<EdgeDescriptor> reverseEdges;
+    std::vector<float> capacity;
+    std::vector<int> groups;
+
 };
 
 #endif
