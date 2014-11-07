@@ -68,6 +68,13 @@ namespace itk {
             m_BackgroundPixelValue = v;
         }
 
+        int ConvertIndexToVertexDescriptor(itk::Index<3> index, typename InputImageType::Pointer image) {
+            typename InputImageType::RegionType region = image->GetLargestPossibleRegion();
+            typename InputImageType::SizeType size = region.GetSize();
+
+            return index[0] + index[1] * size[0] + index[2] * size[1] * size[2];
+        }
+
         // image setters
         void SetInputImage(const InputImageType *image){
             this->SetNthInput(0, const_cast<InputImageType*>(image));
