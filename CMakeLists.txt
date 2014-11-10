@@ -34,7 +34,7 @@ endif( "${ITK_VERSION_MAJOR}" LESS 4 )
 set(ImageGraphCut3DSegmentation_include_dirs ${ImageGraphCut3DSegmentation_include_dirs} ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Build the graph cut library
-add_subdirectory(Kolmogorov)
+add_subdirectory(lib/kolmogorov-3.03)
 set(ImageGraphCut3DSegmentation_libraries ${ImageGraphCut3DSegmentation_libraries} KolmogorovMaxFlow)
 
 

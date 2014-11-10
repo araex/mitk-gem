@@ -1,11 +1,10 @@
 #ifndef __MaxFlowGraphKolmogorov_hxx_
 #define __MaxFlowGraphKolmogorov_hxx_
 
-#include <Kolmogorov/graph.h>
+#include <lib/kolmogorov-3.03/graph.h>
 
 /*
- * Wraps the boosts graph library for easier use of the boykov_kolmogorov_max_flow algorithm.
- * 
+ * Wraps kolmogorovs graph library
  */
 class MaxFlowGraphKolmogorov {
 public:
@@ -13,7 +12,9 @@ public:
 
     MaxFlowGraphKolmogorov(unsigned int size)
     {
-        graph = new GraphType(size, 10 * size); // TODO: better estimate for number of edges
+        // assuming a 6-connected neighborhood for each pixel, we get 3 edges per pixel.
+        // the lib calculates edges to terminals separately, so we do not include them in our estimate
+        graph = new GraphType(size, 3 * size);
         graph->add_node(size);
     }
 
