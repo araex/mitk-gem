@@ -141,8 +141,7 @@ namespace itk {
             // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything.
             // TODO: figure out some good values
             unsigned int sourceIndex = ConvertIndexToVertexDescriptor(sources[i], images.inputRegion);
-            graph->addBidirectionalEdge(sourceIndex, graph->getSource(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-            graph->addBidirectionalEdge(sourceIndex, graph->getSink(), 0, 0);
+            graph->addTerminalEdges(sourceIndex, std::numeric_limits<float>::max(), 0);
         }
 
         // Set very high sink weights for the pixels that
@@ -151,8 +150,7 @@ namespace itk {
             // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything
             // TODO: figure out some good values
             unsigned int sinkIndex = ConvertIndexToVertexDescriptor(sinks[i], images.inputRegion);
-            graph->addBidirectionalEdge(sinkIndex, graph->getSink(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-            graph->addBidirectionalEdge(sinkIndex, graph->getSource(), 0, 0);
+            graph->addTerminalEdges(sinkIndex, 0, std::numeric_limits<float>::max());
         }
     }
 

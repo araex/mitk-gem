@@ -44,6 +44,11 @@ public:
         capacity.push_back(weight);
     }
 
+    void addTerminalEdges(unsigned int node, float sourceWeight, float sinkWeight){
+        addBidirectionalEdge(node, SOURCE, sourceWeight, sinkWeight);
+        addBidirectionalEdge(node, SINK, sinkWeight, sinkWeight);
+    }
+
     // start the calculation
     void calculateMaxFlow(){
         std::vector<float> residualCapacity(boost::num_edges(graph), 0);

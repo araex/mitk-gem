@@ -226,15 +226,13 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     // connect the sources
     std::vector<unsigned int> sourceNodes = boost::assign::list_of(0)(1)(6)(10)(11);
     for(int i = 0; i < sourceNodes.size(); ++i){
-        graph.addBidirectionalEdge(sourceNodes[i], vSource, largeWeight, largeWeight);
-        graph.addBidirectionalEdge(sourceNodes[i], vSink, smallWeight, smallWeight);
+        graph.addTerminalEdges(sourceNodes[i], largeWeight, smallWeight);
     }
 
     // connect the sinks
     std::vector<unsigned int> sinkNodes = boost::assign::list_of(3)(4)(8)(13)(14);
     for(int i = 0; i < sinkNodes.size(); ++i){
-        graph.addBidirectionalEdge(sinkNodes[i], vSink, largeWeight, largeWeight);
-        graph.addBidirectionalEdge(sinkNodes[i], vSource, smallWeight, smallWeight);
+        graph.addTerminalEdges(sinkNodes[i], smallWeight, largeWeight);
     }
 
     // check if the data structure looks as expected
