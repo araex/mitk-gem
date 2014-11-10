@@ -16,7 +16,7 @@
 #include <vector>
 
 // Graph
-#include "MaxFlowGraphBoost.hxx"
+#include "MaxFlowGraphKolmogorov.hxx"
 
 namespace itk {
     template<typename TInput, typename TForeground, typename TBackground, typename TOutput>
@@ -69,7 +69,7 @@ namespace itk {
         unsigned int ConvertIndexToVertexDescriptor(const itk::Index<3> index, typename InputImageType::RegionType region) {
             typename InputImageType::SizeType size = region.GetSize();
 
-            return index[0] + index[1] * size[0] + index[2] * size[1] * size[2];
+            return index[0] + index[1] * size[0] + index[2] * size[0] * size[1];
         }
 
         // image setters
@@ -96,7 +96,7 @@ namespace itk {
         typedef itk::Vector<typename InputImageType::PixelType, 1> ListSampleMeasurementVectorType;
         typedef itk::Statistics::ListSample<ListSampleMeasurementVectorType> SampleType;
         typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
-        typedef MaxFlowGraphBoost GraphType;
+        typedef MaxFlowGraphKolmogorov GraphType;
 
         ImageGraphCut3DFilter();
         virtual ~ImageGraphCut3DFilter();
