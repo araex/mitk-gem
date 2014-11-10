@@ -190,12 +190,7 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     float smallWeight = 1;
     float largeWeight = 1000;
 
-    // 
     MaxFlowGraphBoost graph(numberOfVertices);
-
-    // get all the descriptors
-    VertexDescriptor vSource = graph.getSource();
-    VertexDescriptor vSink = graph.getSink();
 
     // add horizontal edges
     graph.addBidirectionalEdge(0, 1, largeWeight, largeWeight);
@@ -236,19 +231,19 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     }
 
     // check if the data structure looks as expected
-    EXPECT_EQ(numberOfVertices + 2, graph.getNumberOfVertices()); // +2 because a sink + source should've been added
+    EXPECT_EQ(numberOfVertices, graph.getNumberOfVertices()); // +2 because a sink + source should've been added
     EXPECT_EQ(22 * 2 + sourceNodes.size()*4 + sinkNodes.size()*4, graph.getNumberOfEdges());
 
     // max flow
     graph.calculateMaxFlow();
 
     // cexpected segmentation
-    std::set<unsigned int> expectedForeground = boost::assign::list_of(0)(1)(2)(5)(6)(10)(11)(12)(vSource);
-    std::set<unsigned int> expectedBackground = boost::assign::list_of(3)(4)(7)(8)(9)(13)(14)(vSink);
+    std::set<unsigned int> expectedForeground = boost::assign::list_of(0)(1)(2)(5)(6)(10)(11)(12);
+    std::set<unsigned int> expectedBackground = boost::assign::list_of(3)(4)(7)(8)(9)(13)(14);
 
     // check the group of each vertex with the expected results
     for(size_t index=0; index < graph.getNumberOfVertices(); ++index){
-        if(graph.groupOf(index) == graph.groupOf(vSource)){
+        if(graph.groupOf(index) == graph.groupOfSource()){
             if(expectedForeground.find(index) != expectedForeground.end()){
                 SUCCEED();
                 expectedForeground.erase(index);
@@ -256,7 +251,7 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
                 FAIL() << "missing "<<index << " in foreground results";
             }
         }
-        else if(graph.groupOf(index) == graph.groupOf(vSink)){
+        else if(graph.groupOf(index) == graph.groupOfSink()){
             if(expectedBackground.find(index) != expectedBackground.end()){
                 SUCCEED();
                 expectedBackground.erase(index);

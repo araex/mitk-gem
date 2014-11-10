@@ -164,8 +164,8 @@ namespace itk {
         itk::ImageRegionIterator<OutputImageType> outputImageIterator(images.output, images.outputRegion);
         outputImageIterator.GoToBegin();
 
-        int sourceGroup = graph->groupOf(graph->getSource());
-        int sinkGroup = graph->groupOf(graph->getSink());
+        int sourceGroup = graph->groupOfSource();
+        int sinkGroup = graph->groupOfSink();
         int i = 0;
         while(!outputImageIterator.IsAtEnd()){
             unsigned int graphIndex = ConvertIndexToVertexDescriptor(outputImageIterator.GetIndex(), images.outputRegion);

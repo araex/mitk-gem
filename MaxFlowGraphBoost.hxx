@@ -69,18 +69,16 @@ public:
         return groups.at(vertex);
     }
 
-    // get the index of the source vertex
-    unsigned int getSource(){
-        return boost::vertex(SOURCE, graph);
+    int groupOfSource(){
+        return groupOf(SOURCE);
     }
 
-    // get the index of the sink vertex
-    unsigned int getSink(){
-        return boost::vertex(SINK, graph);
+    int groupOfSink(){
+        return groupOf(SINK);
     }
 
     unsigned int getNumberOfVertices(){
-        return boost::num_vertices(graph);
+        return boost::num_vertices(graph) - 2;
     }
 
     unsigned int getNumberOfEdges(){
