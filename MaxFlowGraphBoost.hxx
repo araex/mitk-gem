@@ -19,24 +19,28 @@ public:
     typedef boost::graph_traits<GraphType>::edge_descriptor EdgeDescriptor;
 
     MaxFlowGraphBoost(unsigned int size)
-    : SOURCE(size)
+    : numberOfVertices(size + 2)
+    , SOURCE(size)
     , SINK(size + 1)
-    , graph(size + 2)
+    , currentEdgeIndex(0)
+    , graph(numberOfVertices)
     , reverseEdges()
     , capacity()
-    , groups(size + 2)
+    , groups(numberOfVertices)
     {
-
     }
 
     // boykov_kolmogorov_max_flow requires all edges to have a reverse edge. 
     void addBidirectionalEdge(unsigned int source, unsigned int target, float weight, float reverseWeight){
-        int nextEdgeId = num_edges(graph);
     
         // create both edges
-        EdgeDescriptor edge = boost::add_edge(source, target, nextEdgeId, graph).first;
-        EdgeDescriptor reverseEdge = boost::add_edge(target, source, nextEdgeId + 1, graph).first;
-    
+        EdgeDescriptor edge = boost::add_edge(source, target, currentEdgeIndex, graph).first;
+        EdgeDescriptor reverseEdge = boost::add_edge(target, source, ++currentEdgeIndex, graph).first;
+
+        // tracking the currentEdgeIndex manually instead of getting it via boost:num_edges(graph) results in a massive
+        // speedup: http://stackoverflow.com/questions/7890857/boost-graph-library-edge-insertion-slow-for-large-graph
+        ++currentEdgeIndex;
+
         // add them to out property maps
         reverseEdges.push_back(reverseEdge);
         reverseEdges.push_back(edge);
@@ -51,7 +55,7 @@ public:
 
     // start the calculation
     void calculateMaxFlow(){
-        std::vector<float> residualCapacity(boost::num_edges(graph), 0);
+        std::vector<float> residualCapacity(currentEdgeIndex + 1, 0);
 
         // max flow
         boost::boykov_kolmogorov_max_flow(graph
@@ -77,17 +81,19 @@ public:
         return groupOf(SINK);
     }
 
-    unsigned int getNumberOfVertices(){
+    long getNumberOfVertices(){
         return boost::num_vertices(graph) - 2;
     }
 
-    unsigned int getNumberOfEdges(){
-        return boost::num_edges(graph);
+    long getNumberOfEdges(){
+        return currentEdgeIndex + 1;
     }
 
 private:
+    long numberOfVertices;
     unsigned int SOURCE;
     unsigned int SINK;
+    long currentEdgeIndex;
 
     GraphType graph;
     std::vector<EdgeDescriptor> reverseEdges;
