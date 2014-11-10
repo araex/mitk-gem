@@ -1,5 +1,5 @@
-#ifndef __GraphWrapper_hxx_
-#define __GraphWrapper_hxx_
+#ifndef __MaxFlowGraphBoost_hxx_
+#define __MaxFlowGraphBoost_hxx_
 
 // boost
 #include <boost/assign/list_of.hpp>
@@ -10,7 +10,7 @@
  * Wraps the boosts graph library for easier use of the boykov_kolmogorov_max_flow algorithm.
  * 
  */
-class MaxFlowGraph {
+class MaxFlowGraphBoost {
 public:
     typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS,
             boost::no_property,
@@ -18,7 +18,7 @@ public:
 
     typedef boost::graph_traits<GraphType>::edge_descriptor EdgeDescriptor;
 
-    MaxFlowGraph(unsigned int size)
+    MaxFlowGraphBoost(unsigned int size)
     : SOURCE(size)
     , SINK(size + 1)
     , graph(size + 2)

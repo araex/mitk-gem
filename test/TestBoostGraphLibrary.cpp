@@ -6,7 +6,7 @@
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 
 //
-#include "MaxFlowGraph.hxx"
+#include "MaxFlowGraphBoost.hxx"
 
 class TestBoostGraph : public ::testing::Test {
 protected:
@@ -191,7 +191,7 @@ TEST_F(TestBoostGraph, TestGraphWrapper){
     float largeWeight = 1000;
 
     // 
-    MaxFlowGraph graph(numberOfVertices);
+    MaxFlowGraphBoost graph(numberOfVertices);
 
     // get all the descriptors
     VertexDescriptor vSource = graph.getSource();

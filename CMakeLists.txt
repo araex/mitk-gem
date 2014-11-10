@@ -54,6 +54,5 @@ if(ImageGraphCut3DSegmentation_BuildTests)
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
   include_directories(src)
   subdirs(test)
-  add_subdirectory(Kolmogorov/Tests)
 endif()
 
