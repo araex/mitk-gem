@@ -34,11 +34,12 @@ public:
     void addBidirectionalEdge(unsigned int source, unsigned int target, float weight, float reverseWeight){
     
         // create both edges
-        EdgeDescriptor edge = boost::add_edge(source, target, currentEdgeIndex, graph).first;
-        EdgeDescriptor reverseEdge = boost::add_edge(target, source, ++currentEdgeIndex, graph).first;
+        EdgeDescriptor edge = boost::add_edge(source, target, graph).first;
+        EdgeDescriptor reverseEdge = boost::add_edge(target, source, graph).first;
 
         // tracking the currentEdgeIndex manually instead of getting it via boost:num_edges(graph) results in a massive
         // speedup: http://stackoverflow.com/questions/7890857/boost-graph-library-edge-insertion-slow-for-large-graph
+        ++currentEdgeIndex;
         ++currentEdgeIndex;
 
         // add them to out property maps
