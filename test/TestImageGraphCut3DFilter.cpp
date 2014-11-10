@@ -43,12 +43,13 @@ protected:
     TStatisticsFilter::Pointer statisticsFilter;
 };
 
-TEST_F(TestImageGraphCut3DFilter, CubeGraphCutTest){
+TEST_F(TestImageGraphCut3DFilter, MiniTest){
     // path to files
-    std::string inputPath = "data/test/cube10x10x10/cube.mhd";
-    std::string forgroundPath = "data/test/cube10x10x10/foregroundMask.mhd";
-    std::string backgroundPath = "data/test/cube10x10x10/backgroundMask.mhd";
-    std::string expectedPath = "data/test/cube10x10x10/expectedResult.mhd";
+    std::string inputPath = "data/test/3x3x3/input.mhd";
+    std::string forgroundPath = "data/test/3x3x3/foregroundMask.mhd";
+    std::string backgroundPath = "data/test/3x3x3/backgroundMask.mhd";
+    std::string expectedPath = "data/test/3x3x3/expectedResult.mhd";
+    std::string outputPath = "data/test/3x3x3/test.mhd";
 
     // read the images
     TInput::Pointer inputImage = IOHelper::readImage<TInput>(inputPath.c_str());
@@ -73,6 +74,46 @@ TEST_F(TestImageGraphCut3DFilter, CubeGraphCutTest){
     substractFilter->SetInput2(expectedResultImage);
     statisticsFilter->SetInput(substractFilter->GetOutput());
     statisticsFilter->Update();
+
+    IOHelper::writeImage<TOutput>(graphCutFilter->GetOutput(), outputPath.c_str());
+
+    double pixelSum = statisticsFilter->GetSum();
+    ASSERT_DOUBLE_EQ(0, pixelSum);
+}
+
+TEST_F(TestImageGraphCut3DFilter, CubeGraphCutTest){
+    // path to files
+    std::string inputPath = "data/test/cube10x10x10/cube.mhd";
+    std::string forgroundPath = "data/test/cube10x10x10/foregroundMask.mhd";
+    std::string backgroundPath = "data/test/cube10x10x10/backgroundMask.mhd";
+    std::string expectedPath = "data/test/cube10x10x10/expectedResult.mhd";
+    std::string outputPath = "data/test/cube10x10x10/test.mhd";
+
+    // read the images
+    TInput::Pointer inputImage = IOHelper::readImage<TInput>(inputPath.c_str());
+    TForeground::Pointer foregroundMask = IOHelper::readImage<TForeground>(forgroundPath.c_str());
+    TBackground::Pointer backgroundMask = IOHelper::readImage<TBackground>(backgroundPath.c_str());
+    TOutput::Pointer expectedResultImage = IOHelper::readImage<TOutput>(expectedPath.c_str());
+
+    // set images
+    graphCutFilter->SetInputImage(inputImage);
+    graphCutFilter->SetForegroundImage(foregroundMask);
+    graphCutFilter->SetBackgroundImage(backgroundMask);
+
+    // set parameters
+    graphCutFilter->SetForegroundPixelValue(255);
+    graphCutFilter->SetBackgroundPixelValue(0);
+    graphCutFilter->SetSigma(50.0);
+    graphCutFilter->SetLambda(1.0);
+    graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
+
+    // compare the results: I_Result(x)-I_Expected(x)==0
+    substractFilter->SetInput1(graphCutFilter->GetOutput());
+    substractFilter->SetInput2(expectedResultImage);
+    statisticsFilter->SetInput(substractFilter->GetOutput());
+    statisticsFilter->Update();
+
+    IOHelper::writeImage<TOutput>(graphCutFilter->GetOutput(), outputPath.c_str());
 
     double pixelSum = statisticsFilter->GetSum();
     ASSERT_DOUBLE_EQ(0, pixelSum);
@@ -215,27 +256,28 @@ TEST_F(TestImageGraphCut3DFilter, ConvertIndex){
     graphCutFilter->SetBackgroundImage(backgroundMask);
 
     // test some indizes
+    TInput::RegionType region = inputImage->GetLargestPossibleRegion();
     itk::Index<3> i1 = {{0,0,0}};
-    int r1 = graphCutFilter->ConvertIndexToVertexDescriptor(i1, inputImage);
+    int r1 = graphCutFilter->ConvertIndexToVertexDescriptor(i1, region);
     ASSERT_EQ(0, r1);
 
     itk::Index<3> i2 = {{9,0,0}};
-    int r2 = graphCutFilter->ConvertIndexToVertexDescriptor(i2, inputImage);
+    int r2 = graphCutFilter->ConvertIndexToVertexDescriptor(i2, region);
     ASSERT_EQ(9, r2);
 
     itk::Index<3> i3 = {{0,1,0}};
-    int r3 = graphCutFilter->ConvertIndexToVertexDescriptor(i3, inputImage);
+    int r3 = graphCutFilter->ConvertIndexToVertexDescriptor(i3, region);
     ASSERT_EQ(10, r3);
 
     itk::Index<3> i4 = {{1,1,0}};
-    int r4 = graphCutFilter->ConvertIndexToVertexDescriptor(i4, inputImage);
+    int r4 = graphCutFilter->ConvertIndexToVertexDescriptor(i4, region);
     ASSERT_EQ(11, r4);
 
     itk::Index<3> i5 = {{0,0,1}};
-    int r5 = graphCutFilter->ConvertIndexToVertexDescriptor(i5, inputImage);
+    int r5 = graphCutFilter->ConvertIndexToVertexDescriptor(i5, region);
     ASSERT_EQ(100, r5);
 
     itk::Index<3> i6 = {{9,9,9}};
-    int r6 = graphCutFilter->ConvertIndexToVertexDescriptor(i6, inputImage);
+    int r6 = graphCutFilter->ConvertIndexToVertexDescriptor(i6, region);
     ASSERT_EQ(999, r6);
 }

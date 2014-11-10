@@ -25,28 +25,23 @@ namespace itk {
         // get all images
         ImageContainer images;
         images.input = GetInputImage();
+        images.inputRegion = images.input->GetLargestPossibleRegion();
         images.foreground = GetForegroundImage();
         images.background = GetBackgroundImage();
         images.output = this->GetOutput();
+        images.outputRegion = images.output->GetRequestedRegion();
 
         // init ITK progress reporter
         // InitializeGraph() traverses the input image once
-        int numberOfPixelDuringInit = images.input->GetLargestPossibleRegion().GetNumberOfPixels();
+        int numberOfPixelDuringInit = images.inputRegion.GetNumberOfPixels();
         // CutGraph() traverses the output image once
-        int numberOfPixelDuringOutput = images.output->GetRequestedRegion().GetNumberOfPixels();
+        int numberOfPixelDuringOutput = images.outputRegion.GetNumberOfPixels();
         // since both report to the same ProgressReporter, we add the total amount of pixels
         ProgressReporter progress(this, 0, numberOfPixelDuringInit + numberOfPixelDuringOutput);
 
         // allocate output
-        images.output->SetBufferedRegion(images.output->GetRequestedRegion());
+        images.output->SetBufferedRegion(images.outputRegion);
         images.output->Allocate();
-
-        // init node image
-        images.node = NodeImageType::New();
-        images.node->SetRegions(images.input->GetLargestPossibleRegion());
-        images.node->Allocate();
-        images.node->SetBufferedRegion(images.node->GetLargestPossibleRegion());
-        images.node->FillBuffer(NULL);
 
         // init samples and histogram
         typename SampleType::Pointer foregroundSample = SampleType::New();
@@ -54,8 +49,11 @@ namespace itk {
         typename SampleToHistogramFilterType::Pointer foregroundHistogramFilter = SampleToHistogramFilterType::New();
         typename SampleToHistogramFilterType::Pointer backgroundHistogramFilter = SampleToHistogramFilterType::New();
 
+        // get the total image size
+        int numberOfVoxels = images.inputRegion.GetNumberOfPixels();
+
         // create graph
-        GraphType graph;
+        GraphType graph(numberOfVoxels);
         InitializeGraph(&graph, images, progress);
 
         // cut graph
@@ -67,15 +65,6 @@ namespace itk {
     ::InitializeGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress){
         IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
         IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(images.background);
-
-        // Add all of the nodes to the graph and store their IDs in a "node image"
-        itk::ImageRegionIterator<NodeImageType> nodeImageIterator(images.node, images.node->GetLargestPossibleRegion());
-        nodeImageIterator.GoToBegin();
-
-        while (!nodeImageIterator.IsAtEnd()) {
-            nodeImageIterator.Set(graph->add_node());
-            ++nodeImageIterator;
-        }
 
         // We are only using a 6-connected structure,
         // so the kernel (iteration neighborhood) must only be
@@ -125,22 +114,22 @@ namespace itk {
                 assert(weight >= 0);
 
                 // Add the edge to the graph
-                void *node1 = images.node->GetPixel(iterator.GetIndex(center));
-                void *node2 = images.node->GetPixel(iterator.GetIndex(neighbors[i]));
+                unsigned int nodeIndex1 = ConvertIndexToVertexDescriptor(iterator.GetIndex(center), images.inputRegion);
+                unsigned int nodeIndex2 = ConvertIndexToVertexDescriptor(iterator.GetIndex(neighbors[i]), images.inputRegion);
 
                 //Determine which direction is used
                 if (m_BoundaryDirectionType == BrightDark) {
                     if (centerPixel > neighborPixel)
-                        graph->add_edge(node1, node2, weight, 1.0);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, weight*0.1);
                     else
-                        graph->add_edge(node1, node2, 1.0, weight);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight*0.1, weight);
                 } else if (m_BoundaryDirectionType == DarkBright) {
                     if (centerPixel > neighborPixel)
-                        graph->add_edge(node1, node2, 1.0, weight);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight*0.1, weight);
                     else
-                        graph->add_edge(node1, node2, weight, 1.0);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, weight*0.1);
                 } else {
-                    graph->add_edge(node1, node2, weight, weight);
+                    graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, weight);
                 }
             }
             progress.CompletedPixel();
@@ -151,7 +140,9 @@ namespace itk {
         for (unsigned int i = 0; i < sources.size(); i++) {
             // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything.
             // TODO: figure out some good values
-            graph->add_tweights(images.node->GetPixel(sources[i]), m_Lambda * std::numeric_limits<float>::max(), 0);
+            unsigned int sourceIndex = ConvertIndexToVertexDescriptor(sources[i], images.inputRegion);
+            graph->addBidirectionalEdge(sourceIndex, graph->getSource(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+            graph->addBidirectionalEdge(sourceIndex, graph->getSink(), 0, 0);
         }
 
         // Set very high sink weights for the pixels that
@@ -159,7 +150,9 @@ namespace itk {
         for (unsigned int i = 0; i < sinks.size(); i++) {
             // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything
             // TODO: figure out some good values
-            graph->add_tweights(images.node->GetPixel(sinks[i]), 0, m_Lambda * std::numeric_limits<float>::max());
+            unsigned int sinkIndex = ConvertIndexToVertexDescriptor(sinks[i], images.inputRegion);
+            graph->addBidirectionalEdge(sinkIndex, graph->getSink(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+            graph->addBidirectionalEdge(sinkIndex, graph->getSource(), 0, 0);
         }
     }
 
@@ -167,24 +160,25 @@ namespace itk {
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::CutGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress){
         // Compute max-flow
-        graph->maxflow();
+        graph->calculateMaxFlow();
 
-        // Setup the output (mask) image
-        images.output->FillBuffer(itk::NumericTraits<typename OutputImageType::PixelType>::Zero); // fill with zeros
+        // Iterate over the output image, querying the graph for the association of each pixel
+        itk::ImageRegionIterator<OutputImageType> outputImageIterator(images.output, images.outputRegion);
+        outputImageIterator.GoToBegin();
 
-        // Iterate over the node image, querying the Kolmorogov graph object for the association of each pixel and storing them as the output mask
-        itk::ImageRegionConstIterator<NodeImageType>
-                nodeImageIterator(images.node, images.node->GetLargestPossibleRegion());
-        nodeImageIterator.GoToBegin();
-
-        while (!nodeImageIterator.IsAtEnd()) {
-            if (graph->what_segment(nodeImageIterator.Get()) == GraphType::SOURCE) {
-                images.output->SetPixel(nodeImageIterator.GetIndex(), m_ForegroundPixelValue);
+        int sourceGroup = graph->groupOf(graph->getSource());
+        int sinkGroup = graph->groupOf(graph->getSink());
+        int i = 0;
+        while(!outputImageIterator.IsAtEnd()){
+            unsigned int graphIndex = ConvertIndexToVertexDescriptor(outputImageIterator.GetIndex(), images.outputRegion);
+            if(graph->groupOf(graphIndex) == sourceGroup){
+                outputImageIterator.Set(m_ForegroundPixelValue);
+            } else {
+                // boost documentation: "If the color of a vertex after running the algorithm is black the vertex belongs
+                // to the source tree else it belongs to the sink-tree (used for minimum cuts)."
+                outputImageIterator.Set(m_BackgroundPixelValue);
             }
-            else if (graph->what_segment(nodeImageIterator.Get()) == GraphType::SINK) {
-                images.output->SetPixel(nodeImageIterator.GetIndex(), m_BackgroundPixelValue);
-            }
-            ++nodeImageIterator;
+            ++outputImageIterator;
             progress.CompletedPixel();
         }
     }

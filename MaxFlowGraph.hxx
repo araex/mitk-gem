@@ -12,11 +12,10 @@
  */
 class MaxFlowGraph {
 public:
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
+    typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS,
             boost::no_property,
             boost::property<boost::edge_index_t, std::size_t> > GraphType;
 
-    typedef boost::graph_traits<GraphType>::vertex_descriptor VertexDescriptor;
     typedef boost::graph_traits<GraphType>::edge_descriptor EdgeDescriptor;
 
     MaxFlowGraph(unsigned int size)
@@ -27,10 +26,11 @@ public:
     , capacity()
     , groups(size + 2)
     {
+
     }
 
     // boykov_kolmogorov_max_flow requires all edges to have a reverse edge. 
-    void addBidirectionalEdge(VertexDescriptor source, VertexDescriptor target, float weight, float reverseWeight){
+    void addBidirectionalEdge(unsigned int source, unsigned int target, float weight, float reverseWeight){
         int nextEdgeId = num_edges(graph);
     
         // create both edges
@@ -60,17 +60,17 @@ public:
     }
 
     // query the resulting segmentation group of a vertex. 
-    int groupOf(VertexDescriptor vertex){
+    int groupOf(unsigned int vertex){
         return groups.at(vertex);
     }
 
     // get the index of the source vertex
-    VertexDescriptor getSource(){
+    unsigned int getSource(){
         return boost::vertex(SOURCE, graph);
     }
 
     // get the index of the sink vertex
-    VertexDescriptor getSink(){
+    unsigned int getSink(){
         return boost::vertex(SINK, graph);
     }
 
@@ -83,8 +83,8 @@ public:
     }
 
 private:
-    VertexDescriptor SOURCE;
-    VertexDescriptor SINK;
+    unsigned int SOURCE;
+    unsigned int SINK;
 
     GraphType graph;
     std::vector<EdgeDescriptor> reverseEdges;

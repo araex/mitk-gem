@@ -4,6 +4,7 @@
 // ITK
 #include "itkImageToImageFilter.h"
 #include "itkImageRegionIterator.h"
+#include <itkImageRegionIteratorWithIndex.h>
 #include "itkShapedNeighborhoodIterator.h"
 #include "itkImage.h"
 #include "itkSampleToHistogramFilter.h"
@@ -14,10 +15,8 @@
 // STL
 #include <vector>
 
-// Kolmogorov's code
-#include "Kolmogorov/graph.h"
-
-#include "boost/graph/boykov_kolmogorov_max_flow.hpp"
+// Graph
+#include "MaxFlowGraph.hxx"
 
 namespace itk {
     template<typename TInput, typename TForeground, typename TBackground, typename TOutput>
@@ -36,7 +35,6 @@ namespace itk {
         typedef TInput                  InputImageType;
         typedef TForeground             ForegroundImageType;
         typedef TBackground             BackgroundImageType;
-        typedef itk::Image<void *, 3>   NodeImageType; // graph node mappings
         typedef TOutput                 OutputImageType;
 
         typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
@@ -68,8 +66,7 @@ namespace itk {
             m_BackgroundPixelValue = v;
         }
 
-        int ConvertIndexToVertexDescriptor(itk::Index<3> index, typename InputImageType::Pointer image) {
-            typename InputImageType::RegionType region = image->GetLargestPossibleRegion();
+        unsigned int ConvertIndexToVertexDescriptor(const itk::Index<3> index, typename InputImageType::RegionType region) {
             typename InputImageType::SizeType size = region.GetSize();
 
             return index[0] + index[1] * size[0] + index[2] * size[1] * size[2];
@@ -90,15 +87,16 @@ namespace itk {
     protected:
         struct ImageContainer{
             typename InputImageType::ConstPointer input;
+            typename InputImageType::RegionType inputRegion;
             typename ForegroundImageType::ConstPointer foreground;
             typename BackgroundImageType::ConstPointer background;
-            typename NodeImageType::Pointer node;
             typename OutputImageType::Pointer output;
+            typename InputImageType::RegionType outputRegion;
         };
         typedef itk::Vector<typename InputImageType::PixelType, 1> ListSampleMeasurementVectorType;
         typedef itk::Statistics::ListSample<ListSampleMeasurementVectorType> SampleType;
         typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
-        typedef Graph GraphType;
+        typedef MaxFlowGraph GraphType;
 
         ImageGraphCut3DFilter();
         virtual ~ImageGraphCut3DFilter();

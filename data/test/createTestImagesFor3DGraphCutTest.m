@@ -26,3 +26,18 @@ writeImagesAsUcharMHD(strcat(outputDir, 'backgroundMask.mhd'), backgroundMask);
 % expected result
 expectedResult = testIm;
 writeImagesAsUcharMHD(strcat(outputDir, 'expectedResult.mhd'), im2uint8(testIm));
+
+% create sample images for automated tests
+outputDir = '3x3x3/';
+testIm = zeros(3,3,3);
+testIm(1:3,1:2,1:2) = 1;
+writeImagesAsUcharMHD(strcat(outputDir, 'input.mhd'), im2uint8(testIm));
+writeImagesAsUcharMHD(strcat(outputDir, 'expectedResult.mhd'), im2uint8(testIm));
+
+forgroundMask = zeros(3,3,3);
+forgroundMask(1:1,1:1,1:1) = 1;
+writeImagesAsUcharMHD(strcat(outputDir, 'foregroundMask.mhd'), im2uint8(forgroundMask));
+
+backgroundMask = zeros(3,3,3);
+backgroundMask(3:3,3:3,3:3) = 1;
+writeImagesAsUcharMHD(strcat(outputDir, 'backgroundMask.mhd'), im2uint8(backgroundMask));
