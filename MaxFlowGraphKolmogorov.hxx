@@ -12,28 +12,32 @@ public:
     typedef Graph<float,float,float> GraphType;
 
     MaxFlowGraphKolmogorov(unsigned int size)
-    : graph(size, 10 * size)
     {
-        graph.add_node(size);
+        graph = new GraphType(size, 10 * size); // TODO: better estimate for number of edges
+        graph->add_node(size);
+    }
+
+    ~MaxFlowGraphKolmogorov(){
+        delete graph;
     }
 
     // boykov_kolmogorov_max_flow requires all edges to have a reverse edge. 
     void addBidirectionalEdge(unsigned int source, unsigned int target, float weight, float reverseWeight){
-        graph.add_edge(source, target, weight, reverseWeight);
+        graph->add_edge(source, target, weight, reverseWeight);
     }
 
     void addTerminalEdges(unsigned int node, float sourceWeight, float sinkWeight){
-        graph.add_tweights(node, sourceWeight, sinkWeight);
+        graph->add_tweights(node, sourceWeight, sinkWeight);
     }
 
     // start the calculation
     void calculateMaxFlow(){
-        graph.maxflow();
+        graph->maxflow();
     }
 
     // query the resulting segmentation group of a vertex. 
     int groupOf(unsigned int vertex){
-        (short) what_segment(vertex);
+        return (short) graph->what_segment(vertex);
     }
 
     int groupOfSource(){
@@ -41,22 +45,22 @@ public:
     }
 
     int groupOfSink(){
-        return (short) GraphType::SOURCE;
+        return (short) GraphType::SINK;
     }
 
     unsigned int getNumberOfVertices(){
-        return graph.get_node_num();
+        return graph->get_node_num();
     }
 
     unsigned int getNumberOfEdges(){
-        return graph.get_arc_num();
+        return graph->get_arc_num();
     }
 
 private:
     unsigned int SOURCE;
     unsigned int SINK;
 
-    GraphType graph;
+    GraphType *graph;
 
 };
 
