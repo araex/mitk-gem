@@ -55,7 +55,6 @@ public:
     // start the calculation
     void calculateMaxFlow(){
         std::vector<float> residualCapacity(getNumberOfEdges(), 0);
-        std::cout << "starting max_flow" << std::endl;
 
         // max flow
         boost::boykov_kolmogorov_max_flow(graph
