@@ -10,12 +10,13 @@ class MaxFlowGraphKolmogorov {
 public:
     typedef Graph<float,float,float> GraphType;
 
-    MaxFlowGraphKolmogorov(unsigned int size)
+    MaxFlowGraphKolmogorov(unsigned int dimension1, unsigned int dimension2, unsigned int dimension3)
     {
-        // assuming a 6-connected neighborhood for each pixel, we get 3 edges per pixel.
-        // the lib calculates edges to terminals separately, so we do not include them in our estimate
-        graph = new GraphType(size, 3 * size);
-        graph->add_node(size);
+        int numberOfVertices = dimension1 * dimension2 * dimension3;
+        int numberOfEdges = calculateNumberOfEdges(dimension1, dimension2, dimension3);
+
+        graph = new GraphType(numberOfVertices, numberOfEdges);
+        graph->add_node(numberOfVertices);
     }
 
     ~MaxFlowGraphKolmogorov(){
@@ -63,6 +64,14 @@ private:
 
     GraphType *graph;
 
+    int calculateNumberOfEdges(unsigned int x, unsigned int y, unsigned int z){
+        int numberOfEdges = 3; // 3 because we're assuming a 6-connected neighborhood which gives us 3 edges / pixel
+        numberOfEdges = (numberOfEdges * x) - 1;
+        numberOfEdges = (numberOfEdges * y) - x;
+        numberOfEdges = (numberOfEdges * z) - x * y;
+        numberOfEdges *= 2; // because kolmogorov adds 2 directed edges instead of 1 bidirectional
+        return numberOfEdges;
+    }
 };
 
 #endif

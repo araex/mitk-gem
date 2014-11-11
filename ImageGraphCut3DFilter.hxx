@@ -50,10 +50,10 @@ namespace itk {
         typename SampleToHistogramFilterType::Pointer backgroundHistogramFilter = SampleToHistogramFilterType::New();
 
         // get the total image size
-        int numberOfVoxels = images.inputRegion.GetNumberOfPixels();
+        typename InputImageType::SizeType size = images.inputRegion.GetSize();
 
         // create graph
-        GraphType graph(numberOfVoxels);
+        GraphType graph(size[0], size[1], size[2]);
         InitializeGraph(&graph, images, progress);
 
         // cut graph

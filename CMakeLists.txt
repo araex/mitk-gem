@@ -36,6 +36,8 @@ set(ImageGraphCut3DSegmentation_include_dirs ${ImageGraphCut3DSegmentation_inclu
 # Build the graph cut library
 add_subdirectory(lib/kolmogorov-3.03)
 set(ImageGraphCut3DSegmentation_libraries ${ImageGraphCut3DSegmentation_libraries} KolmogorovMaxFlow)
+add_subdirectory(lib/ibfs)
+set(ImageGraphCut3DSegmentation_libraries ${ImageGraphCut3DSegmentation_libraries} IBFSMaxFlow)
 
 
 # Give the compiler all of the required include directories

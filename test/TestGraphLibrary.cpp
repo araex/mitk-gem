@@ -8,6 +8,7 @@
 //
 #include "MaxFlowGraphBoost.hxx"
 #include "MaxFlowGraphKolmogorov.hxx"
+#include "MaxFlowGraphIBFS.hxx"
 
 class TestGraphLibrary : public ::testing::Test {
 protected:
@@ -191,7 +192,7 @@ TEST_F(TestGraphLibrary, MaxFlowGraphBoost){
     float smallWeight = 1;
     float largeWeight = 1000;
 
-    MaxFlowGraphBoost graph(numberOfVertices);
+    MaxFlowGraphBoost graph(3, 5, 1);
 
     // add horizontal edges
     graph.addBidirectionalEdge(0, 1, largeWeight, largeWeight);
@@ -279,7 +280,93 @@ TEST_F(TestGraphLibrary, MaxFlowGraphKolmogorov){
     float smallWeight = 1;
     float largeWeight = 1000;
 
-    MaxFlowGraphKolmogorov graph(numberOfVertices);
+    MaxFlowGraphKolmogorov graph(3, 5, 1);
+
+    // add horizontal edges
+    graph.addBidirectionalEdge(0, 1, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(1, 2, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(2, 3, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(3, 4, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(5, 6, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(6, 7, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(7, 8, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(8, 9, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(10, 11, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(11, 12, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(12, 13, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(13, 14, largeWeight, largeWeight);
+
+    // vertical edges
+    graph.addBidirectionalEdge(0, 5, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(1, 6, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(2, 7, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(3, 8, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(4, 9, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(5, 10, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(6, 11, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(7, 12, smallWeight, smallWeight);
+    graph.addBidirectionalEdge(8, 13, largeWeight, largeWeight);
+    graph.addBidirectionalEdge(9, 14, largeWeight, largeWeight);
+
+    // connect the sources
+    std::vector<unsigned int> sourceNodes = boost::assign::list_of(0)(1)(6)(10)(11);
+    for(int i = 0; i < sourceNodes.size(); ++i){
+        graph.addTerminalEdges(sourceNodes[i], largeWeight, smallWeight);
+    }
+
+    // connect the sinks
+    std::vector<unsigned int> sinkNodes = boost::assign::list_of(3)(4)(8)(13)(14);
+    for(int i = 0; i < sinkNodes.size(); ++i){
+        graph.addTerminalEdges(sinkNodes[i], smallWeight, largeWeight);
+    }
+
+    // check if the data structure looks as expected
+    EXPECT_EQ(numberOfVertices, graph.getNumberOfVertices()); // +2 because a sink + source should've been added
+
+    // max flow
+    graph.calculateMaxFlow();
+
+    // cexpected segmentation
+    std::set<unsigned int> expectedForeground = boost::assign::list_of(0)(1)(2)(5)(6)(10)(11)(12);
+    std::set<unsigned int> expectedBackground = boost::assign::list_of(3)(4)(7)(8)(9)(13)(14);
+
+    // check the group of each vertex with the expected results
+    for(size_t index=0; index < graph.getNumberOfVertices(); ++index){
+        if(graph.groupOf(index) == graph.groupOfSource()){
+            if(expectedForeground.find(index) != expectedForeground.end()){
+                SUCCEED();
+                expectedForeground.erase(index);
+            } else{
+                FAIL() << "missing "<<index << " in foreground results";
+            }
+        }
+        else if(graph.groupOf(index) == graph.groupOfSink()){
+            if(expectedBackground.find(index) != expectedBackground.end()){
+                SUCCEED();
+                expectedBackground.erase(index);
+            } else{
+                FAIL() << "missing "<<index << " in background results";
+            }
+        }
+        else{
+            FAIL() << "Vertex " << index << " is neither foreground nor background, something went wrong.";
+        }
+    }
+
+    // both containers should now be empty
+    EXPECT_EQ(0, expectedForeground.size());
+    EXPECT_EQ(0, expectedBackground.size());
+}
+
+TEST_F(TestGraphLibrary, MaxFlowGraphIBFS){
+    // same example as in MaxFlowGraphBoost
+
+    // create graph
+    int numberOfVertices = 3*5;
+    float smallWeight = 1;
+    float largeWeight = 1000;
+
+    MaxFlowGraphIBFS graph(3, 5, 1);
 
     // add horizontal edges
     graph.addBidirectionalEdge(0, 1, largeWeight, largeWeight);

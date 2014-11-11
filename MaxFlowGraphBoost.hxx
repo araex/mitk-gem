@@ -18,10 +18,10 @@ public:
 
     typedef boost::graph_traits<GraphType>::edge_descriptor EdgeDescriptor;
 
-    MaxFlowGraphBoost(unsigned int size)
-            : numberOfVertices(size + 2)
-            , SOURCE(size)
-            , SINK(size + 1)
+    MaxFlowGraphBoost(unsigned int dimension1, unsigned int dimension2, unsigned int dimension3)
+            : numberOfVertices(dimension1 * dimension2 * dimension3 + 2)
+            , SOURCE(numberOfVertices - 2)
+            , SINK(numberOfVertices - 1)
             , currentEdgeIndex(-1)
             , graph(numberOfVertices)
             , reverseEdges()
@@ -87,7 +87,6 @@ public:
     long getNumberOfEdges(){
         return boost::num_edges(graph);
     }
-
 private:
     long numberOfVertices;
     unsigned int SOURCE;
