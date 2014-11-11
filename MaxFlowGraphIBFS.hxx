@@ -4,7 +4,15 @@
 #include <lib/ibfs/ibfs.h>
 
 /*
+ * Wrapper for the IBFS max flow project
+ * http://www.cs.tau.ac.il/~sagihed/ibfs/index.html
  *
+ * The IBFS implementation is rather fast (~20% faster than kolmogorovs library). However, it uses 31bit (signed) ints
+ * for capacities. Our weight calculations are in the range of 0.0 - 1.0 calculated in double precision. We would have
+ * to convert this to an appropriate interval in 30bit int and still be able to set a maximum flow that (numerically)
+ * equals infinity to define the Terminal->Node->Terminal edges.
+ *
+ * I was not able to find such an interval that works for larger images.
  */
 class MaxFlowGraphIBFS {
 public:
@@ -26,7 +34,7 @@ public:
     }
 
     void addBidirectionalEdge(unsigned int source, unsigned int target, float weight, float reverseWeight){
-        graph->addEdge(source, target, weight, reverseWeight);
+        graph->addEdge(source, target, weight * 100, reverseWeight * 100);
     }
 
     void addTerminalEdges(unsigned int node, float sourceWeight, float sinkWeight){
