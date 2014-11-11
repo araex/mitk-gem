@@ -8,16 +8,6 @@ project(ImageGraphCut3DSegmentation)
 #  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++11") # gcc >= 4.7
 #endif(UNIX)
 
-# Boost
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.55.0 COMPONENTS graph)
-
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-endif()
-
 # ITK
 FIND_PACKAGE(ITK REQUIRED ITKCommon ITKIOImageBase ITKIOPNG ITKIOMeta
                           ITKImageIntensity ITKImageFeature
@@ -36,9 +26,6 @@ set(ImageGraphCut3DSegmentation_include_dirs ${ImageGraphCut3DSegmentation_inclu
 # Build the graph cut library
 add_subdirectory(lib/kolmogorov-3.03)
 set(ImageGraphCut3DSegmentation_libraries ${ImageGraphCut3DSegmentation_libraries} KolmogorovMaxFlow)
-add_subdirectory(lib/ibfs)
-set(ImageGraphCut3DSegmentation_libraries ${ImageGraphCut3DSegmentation_libraries} IBFSMaxFlow)
-
 
 # Give the compiler all of the required include directories
 include_directories(${ImageGraphCut3DSegmentation_include_dirs})
@@ -51,10 +38,24 @@ endif()
 
 option(ImageGraphCut3DSegmentation_BuildTests "Build ImageGraphCut3DSegmentation tests?" ON)
 if(ImageGraphCut3DSegmentation_BuildTests)
+  # gtest
   add_subdirectory(lib/gtest-1.7.0)
   enable_testing()
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
   include_directories(src)
+
+  # experimental max flow libraries
+  set(Boost_USE_STATIC_LIBS OFF)
+  set(Boost_USE_MULTITHREADED ON)
+  set(Boost_USE_STATIC_RUNTIME OFF)
+  find_package(Boost 1.55.0 COMPONENTS graph)
+
+  if(Boost_FOUND)
+      include_directories(${Boost_INCLUDE_DIRS})
+  endif()
+  add_subdirectory(lib/ibfs)
+
+  # build the tests
   subdirs(test)
 endif()
 

@@ -27,7 +27,7 @@ $ ccmake ../
   set Release
   set /home/visualcomputing/code/InsightToolkit-4.4.2/build
   'c'
-  Set build tests to ON
+  Set build tests to OFF
   Set build examples to ON
   'c'
   'g'
@@ -37,6 +37,9 @@ $ make
 Dependencies
 ------------
 - ITK >= 4
+
+If tests enabled: 
+- Boost >=1.55
 
 Example
 -------
