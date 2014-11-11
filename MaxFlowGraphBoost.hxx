@@ -7,9 +7,9 @@
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 
 /*
- * Wraps the boosts graph library for easier use of the boykov_kolmogorov_max_flow algorithm.
- * 
- */
+* Wraps the boosts graph library for easier use of the boykov_kolmogorov_max_flow algorithm.
+*
+*/
 class MaxFlowGraphBoost {
 public:
     typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS,
@@ -19,28 +19,26 @@ public:
     typedef boost::graph_traits<GraphType>::edge_descriptor EdgeDescriptor;
 
     MaxFlowGraphBoost(unsigned int size)
-    : numberOfVertices(size + 2)
-    , SOURCE(size)
-    , SINK(size + 1)
-    , currentEdgeIndex(0)
-    , graph(numberOfVertices)
-    , reverseEdges()
-    , capacity()
-    , groups(numberOfVertices)
+            : numberOfVertices(size + 2)
+            , SOURCE(size)
+            , SINK(size + 1)
+            , currentEdgeIndex(-1)
+            , graph(numberOfVertices)
+            , reverseEdges()
+            , capacity()
+            , groups(numberOfVertices)
     {
     }
 
-    // boykov_kolmogorov_max_flow requires all edges to have a reverse edge. 
+    // boykov_kolmogorov_max_flow requires all edges to have a reverse edge.
     void addBidirectionalEdge(unsigned int source, unsigned int target, float weight, float reverseWeight){
-    
-        // create both edges
-        EdgeDescriptor edge = boost::add_edge(source, target, graph).first;
-        EdgeDescriptor reverseEdge = boost::add_edge(target, source, graph).first;
 
         // tracking the currentEdgeIndex manually instead of getting it via boost:num_edges(graph) results in a massive
         // speedup: http://stackoverflow.com/questions/7890857/boost-graph-library-edge-insertion-slow-for-large-graph
-        ++currentEdgeIndex;
-        ++currentEdgeIndex;
+
+        // create both edges
+        EdgeDescriptor edge = boost::add_edge(source, target, ++currentEdgeIndex, graph).first;
+        EdgeDescriptor reverseEdge = boost::add_edge(target, source, ++currentEdgeIndex, graph).first;
 
         // add them to out property maps
         reverseEdges.push_back(reverseEdge);
@@ -56,20 +54,21 @@ public:
 
     // start the calculation
     void calculateMaxFlow(){
-        std::vector<float> residualCapacity(currentEdgeIndex + 1, 0);
+        std::vector<float> residualCapacity(getNumberOfEdges(), 0);
+        std::cout << "starting max_flow" << std::endl;
 
         // max flow
         boost::boykov_kolmogorov_max_flow(graph
-            , boost::make_iterator_property_map(&capacity.front(), boost::get(boost::edge_index, graph))
-            , boost::make_iterator_property_map(&residualCapacity.front(), boost::get(boost::edge_index, graph))
-            , boost::make_iterator_property_map(&reverseEdges.front(), boost::get(boost::edge_index, graph))
-            , boost::make_iterator_property_map(&groups.front(), boost::get(boost::vertex_index, graph))
-            , boost::get(boost::vertex_index, graph)
-            , SOURCE
-            , SINK);
+                , boost::make_iterator_property_map(&capacity.front(), boost::get(boost::edge_index, graph))
+                , boost::make_iterator_property_map(&residualCapacity.front(), boost::get(boost::edge_index, graph))
+                , boost::make_iterator_property_map(&reverseEdges.front(), boost::get(boost::edge_index, graph))
+                , boost::make_iterator_property_map(&groups.front(), boost::get(boost::vertex_index, graph))
+                , boost::get(boost::vertex_index, graph)
+                , SOURCE
+                , SINK);
     }
 
-    // query the resulting segmentation group of a vertex. 
+    // query the resulting segmentation group of a vertex.
     int groupOf(unsigned int vertex){
         return groups.at(vertex);
     }
@@ -87,7 +86,7 @@ public:
     }
 
     long getNumberOfEdges(){
-        return currentEdgeIndex + 1;
+        return boost::num_edges(graph);
     }
 
 private:
