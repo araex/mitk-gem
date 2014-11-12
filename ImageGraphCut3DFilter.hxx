@@ -120,14 +120,14 @@ namespace itk {
                 //Determine which direction is used
                 if (m_BoundaryDirectionType == BrightDark) {
                     if (centerPixel > neighborPixel)
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, weight*0.1);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, 1.0);
                     else
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight*0.1, weight);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, 1.0, weight);
                 } else if (m_BoundaryDirectionType == DarkBright) {
                     if (centerPixel > neighborPixel)
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight*0.1, weight);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, 1.0, weight);
                     else
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, weight*0.1);
+                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, 1.0);
                 } else {
                     graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, weight);
                 }
