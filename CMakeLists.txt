@@ -31,12 +31,12 @@ set(ImageGraphCut3DSegmentation_libraries ${ImageGraphCut3DSegmentation_librarie
 include_directories(${ImageGraphCut3DSegmentation_include_dirs})
 
 # Options
-option(ImageGraphCut3DSegmentation_BuildExamples "Build ImageGraphCut3DSegmentation examples?")
+option(ImageGraphCut3DSegmentation_BuildExamples "Build ImageGraphCut3DSegmentation examples?" ON)
 if(ImageGraphCut3DSegmentation_BuildExamples)
   add_subdirectory(Examples)
 endif()
 
-option(ImageGraphCut3DSegmentation_BuildTests "Build ImageGraphCut3DSegmentation tests?" ON)
+option(ImageGraphCut3DSegmentation_BuildTests "Build ImageGraphCut3DSegmentation tests?" OFF)
 if(ImageGraphCut3DSegmentation_BuildTests)
   # gtest
   add_subdirectory(lib/gtest-1.7.0)
