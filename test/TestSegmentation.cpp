@@ -66,7 +66,6 @@ TEST_F(TestSegmentation, MiniTest){
     graphCutFilter->SetForegroundPixelValue(255);
     graphCutFilter->SetBackgroundPixelValue(0);
     graphCutFilter->SetSigma(50.0);
-    graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
 
     // compare the results: I_Result(x)-I_Expected(x)==0
@@ -104,7 +103,6 @@ TEST_F(TestSegmentation, CubeGraphCutTest){
     graphCutFilter->SetForegroundPixelValue(255);
     graphCutFilter->SetBackgroundPixelValue(0);
     graphCutFilter->SetSigma(50.0);
-    graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
 
     // compare the results: I_Result(x)-I_Expected(x)==0
@@ -141,7 +139,6 @@ TEST_F(TestSegmentation, CubeGraphCutTestWithNoise){
     graphCutFilter->SetForegroundPixelValue(255);
     graphCutFilter->SetBackgroundPixelValue(0);
     graphCutFilter->SetSigma(50.0);
-    graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
 
     // compare the results: I_Result(x)-I_Expected(x)==0
@@ -177,7 +174,6 @@ TEST_F(TestSegmentation, FemurGraphCutTest){
     graphCutFilter->SetForegroundPixelValue(255);
     graphCutFilter->SetBackgroundPixelValue(0);
     graphCutFilter->SetSigma(50.0);
-    graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToNoDirection();
 
     // compare the results: I_Result(x)-I_Expected(x)==0
@@ -212,7 +208,6 @@ TEST_F(TestSegmentation, SetPixelValues){
 
     // set parameters
     graphCutFilter->SetSigma(50.0);
-    graphCutFilter->SetLambda(1.0);
     graphCutFilter->SetBoundaryDirectionTypeToBrightDark();
 
     // set pixel values

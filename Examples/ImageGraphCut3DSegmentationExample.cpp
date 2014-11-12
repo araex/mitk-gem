@@ -120,7 +120,6 @@ int main(int argc, char *argv[]) {
 
     // set graph cut parameters
     graphCutFilter->SetSigma(sigma);
-    graphCutFilter->SetLambda(lambda);
     switch (boundaryDirection) {
         case 1:
             graphCutFilter->SetBoundaryDirectionTypeToBrightDark();

@@ -47,9 +47,6 @@ namespace itk {
         void SetSigma(double d){
             m_Sigma = d;
         }
-        void SetLambda(double d){
-            m_Lambda = d;
-        }
         void SetBoundaryDirectionTypeToNoDirection(){
             m_BoundaryDirectionType = NoDirection;
         }
@@ -121,7 +118,6 @@ namespace itk {
 
         // parameters
         double                                    m_Sigma;                     // noise in boundary term
-        double                                    m_Lambda;                    // weighting of hard constraints
         int                                       m_NumberOfHistogramBins;     // bins per dimension of histograms
         BoundaryDirectionType                     m_BoundaryDirectionType;
         typename OutputImageType::PixelType       m_ForegroundPixelValue;
