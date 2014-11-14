@@ -1,7 +1,7 @@
 #ifndef __MaxFlowGraphKolmogorov_hxx_
 #define __MaxFlowGraphKolmogorov_hxx_
 
-#include <lib/kolmogorov-3.03/graph.h>
+#include "lib/kolmogorov-3.03/graph.h"
 
 /*
  * Wraps kolmogorovs graph library
