@@ -96,9 +96,11 @@ void GraphcutView::startButtonPressed() {
         mitk::Image::Pointer backgroundMask = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
 
         // create worker. QThreadPool will take care of the deconstruction of the worker once it has finished
+        MITK_INFO("ch.zhaw.graphcut") << "create the worker";
         GraphcutWorker *worker = new GraphcutWorker();
 
         // cast the images to ITK
+        MITK_INFO("ch.zhaw.graphcut") << "cast the images to ITK";
         typename GraphcutWorker::InputImageType::Pointer greyscaleImageItk;
         typename GraphcutWorker::MaskImageType::Pointer foregroundMaskItk;
         typename GraphcutWorker::MaskImageType::Pointer backgroundMaskItk;
@@ -107,6 +109,7 @@ void GraphcutView::startButtonPressed() {
         mitk::CastToItkImage(backgroundMask, backgroundMaskItk);
 
         // set images in worker
+        MITK_INFO("ch.zhaw.graphcut") << "init worker";
         worker->setInputImage(greyscaleImageItk);
         worker->setForegroundMask(foregroundMaskItk);
         worker->setBackgroundMask(backgroundMaskItk);
@@ -116,16 +119,19 @@ void GraphcutView::startButtonPressed() {
         worker->setBoundaryDirection((GraphcutWorker::BoundaryDirection) m_Controls.paramBoundaryDirectionComboBox->currentIndex());
 
         // set up signals
+        MITK_INFO("ch.zhaw.graphcut") << "register signals";
         qRegisterMetaType<itk::DataObject::Pointer>("itk::DataObject::Pointer");
         QObject::connect(worker, SIGNAL(started(unsigned int)), this, SLOT(workerHasStarted(unsigned int)));
         QObject::connect(worker, SIGNAL(finished(itk::DataObject::Pointer, unsigned int)), this, SLOT(workerIsDone(itk::DataObject::Pointer, unsigned int)));
         QObject::connect(worker, SIGNAL(progress(float, unsigned int)), this, SLOT(workerProgressUpdate(float, unsigned int)));
 
         // prepare the progress bar
+        MITK_INFO("ch.zhaw.graphcut") << "prepare GUI";
         m_Controls.progressBar->setValue(0);
         m_Controls.progressBar->setMinimum(0);
         m_Controls.progressBar->setMaximum(100);
 
+        MITK_INFO("ch.zhaw.graphcut") << "start the worker";
         QThreadPool::globalInstance()->start(worker);
     }
 }

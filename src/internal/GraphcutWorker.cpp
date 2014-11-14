@@ -8,7 +8,7 @@ GraphcutWorker::GraphcutWorker()
 }
 
 void GraphcutWorker::preparePipeline() {
-    MITK_DEBUG("ch.zhaw.graphcut") << "prepare pipeline...";
+    MITK_INFO("ch.zhaw.graphcut") << "prepare pipeline...";
 
     m_graphCut = GraphCutFilterType::New();
     m_graphCut->SetInputImage(m_input);
@@ -33,11 +33,11 @@ void GraphcutWorker::preparePipeline() {
     static_cast<ProgressObserverCommand*>(m_progressCommand.GetPointer())->SetCallbackWorker(this);
     m_graphCut->AddObserver(itk::ProgressEvent(), m_progressCommand);
 
-    MITK_DEBUG("ch.zhaw.graphcut") << "... pipeline prepared";
+    MITK_INFO("ch.zhaw.graphcut") << "... pipeline prepared";
 }
 
 void GraphcutWorker::process() {
-    MITK_DEBUG("ch.zhaw.graphcut") << "worker started";
+    MITK_INFO("ch.zhaw.graphcut") << "worker started";
     emit Worker::started(id);
 
     try{
@@ -45,11 +45,11 @@ void GraphcutWorker::process() {
         m_graphCut->Update();
         m_output = m_graphCut->GetOutput();
     } catch (itk::ExceptionObject &e){
-        std::cerr << "Exception caught during execution of pipeline 'GraphcutWorker'." << std::endl;
-        std::cerr << e << std::endl;
+        MITK_ERROR("ch.zhaw.graphcut") << "Exception caught during execution of pipeline 'GraphcutWorker'.";
+        MITK_ERROR("ch.zhaw.graphcut") << e;
     }
 
-    MITK_DEBUG("ch.zhaw.graphcut") << "worker done";
+    MITK_INFO("ch.zhaw.graphcut") << "worker done";
     emit Worker::finished((itk::DataObject::Pointer) m_output, id);
 }
 
