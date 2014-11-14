@@ -181,7 +181,6 @@ namespace itk {
         outputImageIterator.GoToBegin();
 
         int sourceGroup = graph->groupOfSource();
-        int i = 0;
         while(!outputImageIterator.IsAtEnd()){
             unsigned int graphIndex = ConvertIndexToVertexDescriptor(outputImageIterator.GetIndex(), images.outputRegion);
             if(graph->groupOf(graphIndex) == sourceGroup){
