@@ -173,6 +173,85 @@ void GraphcutView::workerIsDone(itk::DataObject::Pointer data, unsigned int work
 
 void GraphcutView::imageSelectionChanged() {
     MITK_DEBUG("ch.zhaw.graphcut") << "selector changed image";
+
+    // estimate required memory and computation time
+    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
+    if(greyscaleImageNode){
+        // numberOfVertices is straightforward
+        mitk::Image::Pointer greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
+        unsigned int x = greyscaleImage->GetDimension(0);
+        unsigned int y = greyscaleImage->GetDimension(1);
+        unsigned int z = greyscaleImage->GetDimension(2);
+        long numberOfVertices = x*y*z;
+
+        // numberOfEdges are a bit more tricky
+        long numberOfEdges = 3; // 3 because we're assuming a 6-connected neighborhood which gives us 3 edges / pixel
+        numberOfEdges = (numberOfEdges * x) - 1;
+        numberOfEdges = (numberOfEdges * y) - x;
+        numberOfEdges = (numberOfEdges * z) - x * y;
+        numberOfEdges *= 2; // because kolmogorov adds 2 directed edges instead of 1 bidirectional
+
+        // the input image will be cast to short
+        long itkImageSizeInMemory = numberOfVertices * sizeof(short);
+
+        // both mask are cast to unsigned chars
+        itkImageSizeInMemory += (2 * numberOfVertices * sizeof(unsigned char));
+
+        // node struct is 48byte, arc is 28byte as defined by Kolmogorov max flow v3.0.03
+        long memoryRequiredInBytes=numberOfVertices * 48 + numberOfEdges * 28 + itkImageSizeInMemory;
+
+        updateMemoryRequirements(memoryRequiredInBytes);
+        updateTimeEstimate(numberOfEdges);
+    }
+}
+
+void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
+    QString memory = QString::number(memoryRequiredInBytes / 1024 / 1024);
+    memory.append("MB");
+    m_Controls.estimatedMemory->setText(memory);
+    if(memoryRequiredInBytes > 2048000000){
+        setWarningField(m_Controls.estimatedMemory, true);
+    } else{
+        setWarningField(m_Controls.estimatedMemory, false);
+    }
+}
+
+void GraphcutView::updateTimeEstimate(long numberOfEdges){
+    // trendlines based on dataset of 20 images with incremental sizes
+
+    // graph init / reading results
+    // y = c0*x + c1
+    double c0 = 0.0000002; // 2e-07
+    double c1 = 0.0915;
+    long x = numberOfEdges;
+    double estimatedSetupAndBreakdownTimeInSeconds = c0*x + c1;
+
+    // the max flow computation
+    // y = c0*x^2 - c1*x - c2
+    c0 = 0.00000000000001; // 1e-14
+    c1 = 0.0000006; // 6e-7
+    double c2 = 1.531;
+    double estimatedComputeTimeInSeconds = c0*(x*x) - c1*x - c2;
+    MITK_INFO << numberOfEdges;
+
+    double estimateInSeconds = 0;
+
+    // the trendline is quite inaccurate for lower edge values. since the max flow calculation is really fast (<1s) with
+    // this many edges, we just ignore the compute time.
+    if(numberOfEdges < 35000000){
+        estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds;
+    } else{
+        estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds + estimatedComputeTimeInSeconds;
+    }
+
+    QString time = QString::number(estimateInSeconds);
+    time.append("s");
+    m_Controls.estimatedTime->setText(time);
+    if(estimateInSeconds > 30){
+        setWarningField(m_Controls.estimatedTime, true);
+    } else{
+        setWarningField(m_Controls.estimatedTime, false);
+    }
 }
 
 void GraphcutView::initializeImageSelector(QmitkDataStorageComboBox *selector){
@@ -182,6 +261,13 @@ void GraphcutView::initializeImageSelector(QmitkDataStorageComboBox *selector){
 
 void GraphcutView::setMandatoryField(QWidget *widget, bool bMandatory){
     widget->setProperty("mandatoryField", bMandatory);
+    widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
+    widget->style()->polish(widget);
+    widget->update();
+}
+
+void GraphcutView::setWarningField(QWidget *widget, bool bEnabled){
+    widget->setProperty("warningField", bEnabled);
     widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
     widget->style()->polish(widget);
     widget->update();
