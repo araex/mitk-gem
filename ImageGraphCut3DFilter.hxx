@@ -1,6 +1,8 @@
 #ifndef __ImageGraphCut3DFilter_hxx_
 #define __ImageGraphCut3DFilter_hxx_
 
+#include "itkTimeProbesCollectorBase.h"
+
 namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
@@ -21,6 +23,9 @@ namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::GenerateData() {
+        itk::TimeProbesCollectorBase timer;
+
+        timer.Start("ITK init");
         // get all images
         ImageContainer images;
         images.input = GetInputImage();
@@ -50,13 +55,27 @@ namespace itk {
 
         // get the total image size
         typename InputImageType::SizeType size = images.inputRegion.GetSize();
+        timer.Stop("ITK init");
 
         // create graph
+        timer.Start("Graph creation");
         GraphType graph(size[0], size[1], size[2]);
+        timer.Stop("Graph creation");
+
+        timer.Start("Graph init");
         InitializeGraph(&graph, images, progress);
+        timer.Stop("Graph init");
 
         // cut graph
+        timer.Start("Graph cut");
+        graph.calculateMaxFlow();
+        timer.Stop("Graph cut");
+
+        timer.Start("Query results");
         CutGraph(&graph, images, progress);
+        timer.Stop("Query results");
+
+        timer.Report( std::cout );
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
@@ -156,8 +175,6 @@ namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::CutGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress){
-        // Compute max-flow
-        graph->calculateMaxFlow();
 
         // Iterate over the output image, querying the graph for the association of each pixel
         itk::ImageRegionIterator<OutputImageType> outputImageIterator(images.output, images.outputRegion);

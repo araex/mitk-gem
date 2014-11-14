@@ -15,6 +15,8 @@ public:
         int numberOfVertices = dimension1 * dimension2 * dimension3;
         int numberOfEdges = calculateNumberOfEdges(dimension1, dimension2, dimension3);
 
+        std::cout << "Number of vertices: " << numberOfVertices << ", number of edges: " << numberOfEdges << std::endl;
+
         graph = new GraphType(numberOfVertices, numberOfEdges);
         graph->add_node(numberOfVertices);
     }
