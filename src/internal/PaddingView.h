@@ -24,6 +24,8 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include "ui_PaddingViewControls.h"
 
+#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+
 
 /**
   \brief PaddingView
@@ -33,8 +35,7 @@ See LICENSE.txt or http://www.mitk.org for details.
   \sa QmitkAbstractView
   \ingroup ${plugin_target}_internal
 */
-class PaddingView : public QmitkAbstractView
-{
+class PaddingView : public QmitkAbstractView {
   // this is needed for all Qt objects that should have a Qt meta-object
   // (everything that derives from QObject and wants to have signal/slots)
   Q_OBJECT
@@ -44,9 +45,10 @@ class PaddingView : public QmitkAbstractView
     static const std::string VIEW_ID;
 
   protected slots:
-
-    /// \brief Called when the user clicks the GUI button
-    void DoImageProcessing();
+    void padLeftButtonPressed();
+    void padRightButtonPressed();
+    void padUpButtonPressed();
+    void padDownButtonPressed();
 
   protected:
 
@@ -59,6 +61,10 @@ class PaddingView : public QmitkAbstractView
                                      const QList<mitk::DataNode::Pointer>& nodes );
 
     Ui::PaddingViewControls m_Controls;
+
+private:
+    void addPadding(WorkbenchUtils::Axis axis, bool append);
+    void refreshBoundaries();
 
 };
 

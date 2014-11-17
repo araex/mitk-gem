@@ -30,72 +30,101 @@ const std::string PaddingView::VIEW_ID = "org.mitk.views.paddingview";
 
 void PaddingView::SetFocus()
 {
-  m_Controls.buttonPerformImageProcessing->setFocus();
 }
 
 void PaddingView::CreateQtPartControl( QWidget *parent )
 {
   // create GUI widgets from the Qt Designer's .ui file
   m_Controls.setupUi( parent );
-  connect( m_Controls.buttonPerformImageProcessing, SIGNAL(clicked()), this, SLOT(DoImageProcessing()) );
+
+    connect(m_Controls.padLeft, SIGNAL(clicked()), this, SLOT(padLeftButtonPressed()));
+    connect(m_Controls.padUp, SIGNAL(clicked()), this, SLOT(padUpButtonPressed()));
+    connect(m_Controls.padRight, SIGNAL(clicked()), this, SLOT(padRightButtonPressed()));
+    connect(m_Controls.padDown, SIGNAL(clicked()), this, SLOT(padDownButtonPressed()));
 }
 
-void PaddingView::OnSelectionChanged( berry::IWorkbenchPart::Pointer /*source*/,
-                                             const QList<mitk::DataNode::Pointer>& nodes )
-{
-  // iterate all selected objects, adjust warning visibility
-  foreach( mitk::DataNode::Pointer node, nodes )
-  {
-    if( node.IsNotNull() && dynamic_cast<mitk::Image*>(node->GetData()) )
-    {
-      m_Controls.labelWarning->setVisible( false );
-      m_Controls.buttonPerformImageProcessing->setEnabled( true );
-      return;
-    }
-  }
+void PaddingView::OnSelectionChanged( berry::IWorkbenchPart::Pointer /*source*/, const QList<mitk::DataNode::Pointer>& ) {
 
-  m_Controls.labelWarning->setVisible( true );
-  m_Controls.buttonPerformImageProcessing->setEnabled( false );
 }
 
+void PaddingView::padLeftButtonPressed() {
+    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
-void PaddingView::DoImageProcessing()
-{
-  QList<mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
-  if (nodes.empty()) return;
-
-  mitk::DataNode* node = nodes.front();
-
-  if (!node)
-  {
-    // Nothing selected. Inform the user and return
-    QMessageBox::information( NULL, "Template", "Please load and select an image before starting image processing.");
-    return;
-  }
-
-  // here we have a valid mitk::DataNode
-
-  // a node itself is not very useful, we need its data item (the image)
-  mitk::BaseData* data = node->GetData();
-  if (data)
-  {
-    // test if this data item is an image or not (could also be a surface or something totally different)
-    mitk::Image* image = dynamic_cast<mitk::Image*>( data );
-    if (image)
-    {
-      std::stringstream message;
-      std::string name;
-      message << "Performing image processing for image ";
-      if (node->GetName(name))
-      {
-        // a property called "name" was found for this DataNode
-        message << "'" << name << "'";
-      }
-      message << ".";
-      MITK_INFO << message.str();
-
-      // actually do something here...
-
+    switch(axis){
+        case WorkbenchUtils::AXIAL:
+            addPadding(WorkbenchUtils::SAGITTAL, false);
+            return;
+        case WorkbenchUtils::SAGITTAL:
+            addPadding(WorkbenchUtils::CORONAL, false);
+        case WorkbenchUtils::CORONAL:
+            addPadding(WorkbenchUtils::SAGITTAL, false);
+            return;
     }
-  }
+}
+
+void PaddingView::padRightButtonPressed() {
+    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
+
+    switch(axis){
+        case WorkbenchUtils::AXIAL:
+            addPadding(WorkbenchUtils::SAGITTAL, true);
+            return;
+        case WorkbenchUtils::SAGITTAL:
+            addPadding(WorkbenchUtils::CORONAL, true);
+        case WorkbenchUtils::CORONAL:
+            addPadding(WorkbenchUtils::SAGITTAL, true);
+            return;
+    }
+
+}
+
+void PaddingView::padUpButtonPressed() {
+    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
+
+    switch(axis){
+        case WorkbenchUtils::AXIAL:
+            addPadding(WorkbenchUtils::CORONAL, false);
+            return;
+        case WorkbenchUtils::SAGITTAL:
+            addPadding(WorkbenchUtils::AXIAL, true);
+        case WorkbenchUtils::CORONAL:
+            addPadding(WorkbenchUtils::AXIAL, true);
+            return;
+    }
+}
+
+void PaddingView::padDownButtonPressed() {
+    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
+
+    switch(axis){
+        case WorkbenchUtils::AXIAL:
+            addPadding(WorkbenchUtils::CORONAL, true);
+            return;
+        case WorkbenchUtils::SAGITTAL:
+            addPadding(WorkbenchUtils::AXIAL, false);
+        case WorkbenchUtils::CORONAL:
+            addPadding(WorkbenchUtils::AXIAL, false);
+            return;
+    }
+}
+
+void PaddingView::addPadding(WorkbenchUtils::Axis axis, bool append) {
+    // get nodes
+    QList<mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
+
+    // get params
+    float voxelValue = m_Controls.voxelValueSpinBox->value();
+    unsigned int amountOfPadding = m_Controls.amountOfPaddingSpinBox->value();
+
+    foreach(mitk::DataNode::Pointer node, nodes){
+        mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(node->GetData());
+        img = WorkbenchUtils::addPadding<float>(img, axis, append, amountOfPadding, voxelValue);
+        node->SetData(img);
+    }
+
+    refreshBoundaries();
+}
+
+void PaddingView::refreshBoundaries(){
+    mitk::RenderingManager::GetInstance()->InitializeViewsByBoundingObjects(this->GetDataStorage());
 }
