@@ -11,6 +11,7 @@ namespace itk {
         , m_BoundaryDirectionType(NoDirection)
         , m_ForegroundPixelValue(255)
         , m_BackgroundPixelValue(0)
+        , m_PrintTimer(false)
     {
         this->SetNumberOfRequiredInputs(3);
     }
@@ -75,7 +76,9 @@ namespace itk {
         CutGraph(&graph, images, progress);
         timer.Stop("Query results");
 
-        timer.Report( std::cout );
+        if(m_PrintTimer){
+            timer.Report( std::cout );
+        }
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>

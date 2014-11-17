@@ -79,6 +79,9 @@ namespace itk {
         void SetBackgroundImage(const BackgroundImageType *image){
             this->SetNthInput(2, const_cast<BackgroundImageType*>(image));
         }
+        void SetVerboseOutput(bool b){
+            m_PrintTimer = b;
+        }
 
 
     protected:
@@ -122,6 +125,7 @@ namespace itk {
         BoundaryDirectionType                     m_BoundaryDirectionType;
         typename OutputImageType::PixelType       m_ForegroundPixelValue;
         typename OutputImageType::PixelType       m_BackgroundPixelValue;
+        bool                                      m_PrintTimer;
 
 
     private:

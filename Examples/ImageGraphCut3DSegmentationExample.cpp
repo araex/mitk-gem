@@ -116,6 +116,7 @@ int main(int argc, char *argv[]) {
     graphCutFilter->SetBackgroundImage(backgroundMaskReader->GetOutput());
 
     // set graph cut parameters
+    graphCutFilter->SetVerboseOutput(true);
     graphCutFilter->SetSigma(sigma);
     switch (boundaryDirection) {
         case 1:
