@@ -211,9 +211,9 @@ void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
     QString memory = QString::number(memoryRequiredInBytes / 1024 / 1024);
     memory.append("MB");
     m_Controls.estimatedMemory->setText(memory);
-    if(memoryRequiredInBytes > 2048000000){
+    if(memoryRequiredInBytes > 3072000000){
         setErrorField(m_Controls.estimatedMemory, true);
-    } else if(memoryRequiredInBytes > 1024000000){
+    } else if(memoryRequiredInBytes > 1536000000){
         setWarningField(m_Controls.estimatedMemory, true);
     } else{
         setErrorField(m_Controls.estimatedMemory, false);
@@ -223,29 +223,33 @@ void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
 }
 
 void GraphcutView::updateTimeEstimate(long numberOfEdges){
-    // trendlines based on dataset of 20 images with incremental sizes
+    // trendlines based on dataset of 50 images with incremental sizes calculated on a 32GB machine
 
-    // graph init / reading results
+    // graph init / reading results. linear
     // y = c0*x + c1
-    double c0 = 0.0000002; // 2e-07
-    double c1 = 0.0915;
-    long x = numberOfEdges;
+    double c0 = 2.0e-07;
+    double c1 = 0.1148;
+    double x = numberOfEdges;
     double estimatedSetupAndBreakdownTimeInSeconds = c0*x + c1;
 
-    // the max flow computation
-    // y = c0*x^2 - c1*x - c2
-    c0 = 0.00000000000001; // 1e-14
-    c1 = 0.0000006; // 6e-7
-    double c2 = 1.531;
-    double estimatedComputeTimeInSeconds = c0*(x*x) - c1*x - c2;
-    double estimateInSeconds = 0;
+    // the max flow computation.
+    // c0*x^(c1)
+    c0 = 2.0e-18;
+    c1 = 2.4391;
+    x = numberOfEdges;
 
-    // max flow on less than 30mega edges is calculated in <0.5s
+    double estimatedComputeTimeInSeconds = c0*pow(x, c1);
+    double estimateInSeconds;
+
+    // max flow on < 30mega has a irregular time complexity and is thus excluded from the trendline
     if(numberOfEdges < 30000000){
+        // max flow is very (<0.03s) fast in this range
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds;
     } else{
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds + estimatedComputeTimeInSeconds;
     }
+
+    MITK_INFO << estimateInSeconds;
 
     QString time = QString::number(estimateInSeconds);
     time.append("s");
