@@ -64,10 +64,6 @@ void GraphcutView::CreateQtPartControl(QWidget *parent) {
     connect(m_Controls.greyscaleImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.foregroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
-    connect(m_Controls.padLeft, SIGNAL(clicked()), this, SLOT(padLeftButtonPressed()));
-    connect(m_Controls.padUp, SIGNAL(clicked()), this, SLOT(padUpButtonPressed()));
-    connect(m_Controls.padRight, SIGNAL(clicked()), this, SLOT(padRightButtonPressed()));
-    connect(m_Controls.padDown, SIGNAL(clicked()), this, SLOT(padDownButtonPressed()));
 
     // init defaults
     m_currentlyActiveWorkerCount = 0;
@@ -329,96 +325,4 @@ void GraphcutView::workerProgressUpdate(float progress, unsigned int){
     int progressInt = (int) (progress * 100.0f);
     m_Controls.progressBar->setValue(progressInt);
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
-}
-
-void GraphcutView::padLeftButtonPressed() {
-    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
-
-    switch(axis){
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::SAGITTAL, false);
-            return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::CORONAL, false);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::SAGITTAL, false);
-            return;
-    }
-}
-
-void GraphcutView::padRightButtonPressed() {
-    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
-
-    switch(axis){
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::SAGITTAL, true);
-            return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::CORONAL, true);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::SAGITTAL, true);
-            return;
-    }
-
-}
-
-void GraphcutView::padUpButtonPressed() {
-    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
-
-    switch(axis){
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::CORONAL, false);
-            return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::AXIAL, true);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::AXIAL, true);
-            return;
-    }
-}
-
-void GraphcutView::padDownButtonPressed() {
-    WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
-
-    switch(axis){
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::CORONAL, true);
-            return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::AXIAL, false);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::AXIAL, false);
-            return;
-    }
-}
-
-void GraphcutView::addPadding(WorkbenchUtils::Axis axis, bool append) {
-    // get nodes
-    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
-    std::vector<mitk::DataNode::Pointer> maskNodes = this->GetDataStorage()->GetDerivations(greyscaleImageNode, NULL, true)->CastToSTLConstContainer();
-
-    // get params
-    float voxelValue = m_Controls.voxelValueSpinBox->value();
-    unsigned int amountOfPadding = m_Controls.amountOfPaddingSpinBox->value();
-
-    // add padding to the image
-    if(greyscaleImageNode){
-        mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
-        img = WorkbenchUtils::addPadding<float>(img, axis, append, amountOfPadding, voxelValue);
-        greyscaleImageNode->SetData(img);
-    }
-
-    // add padding to all childs of image
-    for(std::vector<mitk::DataNode::Pointer>::iterator it = maskNodes.begin(); it != maskNodes.end(); ++it) {
-        mitk::Image::Pointer img = dynamic_cast<mitk::Image *>((*it)->GetData());
-        img = WorkbenchUtils::addPadding<unsigned char>(img, axis, append, amountOfPadding, 0);
-        (*it)->SetData(img);
-    }
-
-    refreshBoundaries();
-}
-
-void GraphcutView::refreshBoundaries(){
-    mitk::DataNode *greyscaleImageNode = m_Controls.greyscaleImageSelector->GetSelectedNode();
-    mitk::RenderingManager::GetInstance()->InitializeViews(greyscaleImageNode->GetData()->GetTimeGeometry ());
 }

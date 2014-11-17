@@ -35,10 +35,6 @@ public:
 
 protected slots:
     void startButtonPressed();
-    void padLeftButtonPressed();
-    void padRightButtonPressed();
-    void padUpButtonPressed();
-    void padDownButtonPressed();
     void imageSelectionChanged();
     void workerHasStarted(unsigned int);
     void workerProgressUpdate(float progress, unsigned int id);
@@ -57,14 +53,12 @@ protected:
 private:
     void updateMemoryRequirements(long memoryRequiredInBytes);
     void updateTimeEstimate(long numberOfEdges);
-    void addPadding(WorkbenchUtils::Axis axis, bool append);
     void initializeImageSelector(QmitkDataStorageComboBox *);
     void setMandatoryField(QWidget *, bool);
     void setWarningField(QWidget *, bool);
     void setErrorField(QWidget *, bool);
     bool isValidSelection();
     void lockGui(bool);
-    void refreshBoundaries();
     unsigned int m_currentlyActiveWorkerCount;
 };
 
