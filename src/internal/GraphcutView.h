@@ -61,6 +61,7 @@ private:
     void initializeImageSelector(QmitkDataStorageComboBox *);
     void setMandatoryField(QWidget *, bool);
     void setWarningField(QWidget *, bool);
+    void setErrorField(QWidget *, bool);
     bool isValidSelection();
     void lockGui(bool);
     void refreshBoundaries();

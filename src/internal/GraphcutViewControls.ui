@@ -49,6 +49,10 @@ QScrollArea{
 
 [warningField=true]{
 	background-color: rgb(255, 204, 0);
+}
+
+[errorField=true]{
+	background-color: rgb(255, 150, 150);
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">

@@ -200,6 +200,8 @@ void GraphcutView::imageSelectionChanged() {
         // node struct is 48byte, arc is 28byte as defined by Kolmogorov max flow v3.0.03
         long memoryRequiredInBytes=numberOfVertices * 48 + numberOfEdges * 28 + itkImageSizeInMemory;
 
+        MITK_INFO("ch.zhaw.graphcut") << "Image has " << numberOfVertices << " vertices and " <<  numberOfEdges << " edges";
+
         updateMemoryRequirements(memoryRequiredInBytes);
         updateTimeEstimate(numberOfEdges);
     }
@@ -210,10 +212,14 @@ void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
     memory.append("MB");
     m_Controls.estimatedMemory->setText(memory);
     if(memoryRequiredInBytes > 2048000000){
+        setErrorField(m_Controls.estimatedMemory, true);
+    } else if(memoryRequiredInBytes > 1024000000){
         setWarningField(m_Controls.estimatedMemory, true);
     } else{
+        setErrorField(m_Controls.estimatedMemory, false);
         setWarningField(m_Controls.estimatedMemory, false);
     }
+    MITK_INFO("ch.zhaw.graphcut") <<  "Representing the full graph will require " << memoryRequiredInBytes << " Bytes of memory to compute.";
 }
 
 void GraphcutView::updateTimeEstimate(long numberOfEdges){
@@ -232,13 +238,10 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     c1 = 0.0000006; // 6e-7
     double c2 = 1.531;
     double estimatedComputeTimeInSeconds = c0*(x*x) - c1*x - c2;
-    MITK_INFO << numberOfEdges;
-
     double estimateInSeconds = 0;
 
-    // the trendline is quite inaccurate for lower edge values. since the max flow calculation is really fast (<1s) with
-    // this many edges, we just ignore the compute time.
-    if(numberOfEdges < 35000000){
+    // max flow on less than 30mega edges is calculated in <0.5s
+    if(numberOfEdges < 30000000){
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds;
     } else{
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds + estimatedComputeTimeInSeconds;
@@ -248,10 +251,15 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     time.append("s");
     m_Controls.estimatedTime->setText(time);
     if(estimateInSeconds > 30){
+        setErrorField(m_Controls.estimatedTime, true);
+    } else if (estimateInSeconds > 15) {
         setWarningField(m_Controls.estimatedTime, true);
-    } else{
+    }else {
+        setErrorField(m_Controls.estimatedTime, false);
         setWarningField(m_Controls.estimatedTime, false);
     }
+
+    MITK_INFO("ch.zhaw.graphcut") << "Graphcut computation will take about " << estimateInSeconds << " seconds.";
 }
 
 void GraphcutView::initializeImageSelector(QmitkDataStorageComboBox *selector){
@@ -268,6 +276,13 @@ void GraphcutView::setMandatoryField(QWidget *widget, bool bMandatory){
 
 void GraphcutView::setWarningField(QWidget *widget, bool bEnabled){
     widget->setProperty("warningField", bEnabled);
+    widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
+    widget->style()->polish(widget);
+    widget->update();
+}
+
+void GraphcutView::setErrorField(QWidget *widget, bool bEnabled){
+    widget->setProperty("errorField", bEnabled);
     widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
     widget->style()->polish(widget);
     widget->update();
