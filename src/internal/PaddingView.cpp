@@ -28,29 +28,25 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 const std::string PaddingView::VIEW_ID = "org.mitk.views.paddingview";
 
-void PaddingView::SetFocus()
-{
-}
+void PaddingView::CreateQtPartControl(QWidget *parent) {
+    // create GUI widgets from the Qt Designer's .ui file
+    m_Controls.setupUi(parent);
 
-void PaddingView::CreateQtPartControl( QWidget *parent )
-{
-  // create GUI widgets from the Qt Designer's .ui file
-  m_Controls.setupUi( parent );
-
+    // setup padding buttons
     connect(m_Controls.padLeft, SIGNAL(clicked()), this, SLOT(padLeftButtonPressed()));
     connect(m_Controls.padUp, SIGNAL(clicked()), this, SLOT(padUpButtonPressed()));
     connect(m_Controls.padRight, SIGNAL(clicked()), this, SLOT(padRightButtonPressed()));
     connect(m_Controls.padDown, SIGNAL(clicked()), this, SLOT(padDownButtonPressed()));
 }
 
-void PaddingView::OnSelectionChanged( berry::IWorkbenchPart::Pointer /*source*/, const QList<mitk::DataNode::Pointer>& ) {
+void PaddingView::SetFocus() {}
 
-}
+void PaddingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &) {}
 
 void PaddingView::padLeftButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
-    switch(axis){
+    switch (axis) {
         case WorkbenchUtils::AXIAL:
             addPadding(WorkbenchUtils::SAGITTAL, false);
             return;
@@ -65,7 +61,7 @@ void PaddingView::padLeftButtonPressed() {
 void PaddingView::padRightButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
-    switch(axis){
+    switch (axis) {
         case WorkbenchUtils::AXIAL:
             addPadding(WorkbenchUtils::SAGITTAL, true);
             return;
@@ -81,7 +77,7 @@ void PaddingView::padRightButtonPressed() {
 void PaddingView::padUpButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
-    switch(axis){
+    switch (axis) {
         case WorkbenchUtils::AXIAL:
             addPadding(WorkbenchUtils::CORONAL, false);
             return;
@@ -96,7 +92,7 @@ void PaddingView::padUpButtonPressed() {
 void PaddingView::padDownButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
-    switch(axis){
+    switch (axis) {
         case WorkbenchUtils::AXIAL:
             addPadding(WorkbenchUtils::CORONAL, true);
             return;
@@ -110,13 +106,14 @@ void PaddingView::padDownButtonPressed() {
 
 void PaddingView::addPadding(WorkbenchUtils::Axis axis, bool append) {
     // get nodes
-    QList<mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
+    QList <mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
 
     // get params
     float voxelValue = m_Controls.voxelValueSpinBox->value();
     unsigned int amountOfPadding = m_Controls.amountOfPaddingSpinBox->value();
 
-    foreach(mitk::DataNode::Pointer node, nodes){
+    foreach(mitk::DataNode::Pointer
+    node, nodes){
         mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(node->GetData());
         img = WorkbenchUtils::addPadding<float>(img, axis, append, amountOfPadding, voxelValue);
         node->SetData(img);
@@ -125,6 +122,6 @@ void PaddingView::addPadding(WorkbenchUtils::Axis axis, bool append) {
     refreshBoundaries();
 }
 
-void PaddingView::refreshBoundaries(){
+void PaddingView::refreshBoundaries() {
     mitk::RenderingManager::GetInstance()->InitializeViewsByBoundingObjects(this->GetDataStorage());
 }
