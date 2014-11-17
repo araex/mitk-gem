@@ -578,16 +578,6 @@ QScrollArea{
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="labelWarning">
-         <property name="styleSheet">
-          <string notr="true">QLabel { color: rgb(255, 0, 0) }</string>
-         </property>
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Please select an image!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="spacer1_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
