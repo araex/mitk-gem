@@ -155,20 +155,12 @@ namespace itk {
             progress.CompletedPixel();
         }
 
-        // Set very high source weights for the pixels that were
-        // selected as foreground by the user
+        // set the terminal connection capacity to max float
         for (unsigned int i = 0; i < sources.size(); i++) {
-            // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything.
-            // TODO: figure out some good values
             unsigned int sourceIndex = ConvertIndexToVertexDescriptor(sources[i], images.inputRegion);
             graph->addTerminalEdges(sourceIndex, std::numeric_limits<float>::max(), 0);
         }
-
-        // Set very high sink weights for the pixels that
-        // were selected as background by the user
         for (unsigned int i = 0; i < sinks.size(); i++) {
-            // TODO: lambda scales the hard constraints, but since we'e using max float, it doesn' really do anything
-            // TODO: figure out some good values
             unsigned int sinkIndex = ConvertIndexToVertexDescriptor(sinks[i], images.inputRegion);
             graph->addTerminalEdges(sinkIndex, 0, std::numeric_limits<float>::max());
         }
