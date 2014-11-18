@@ -65,7 +65,7 @@ void GraphcutView::CreateQtPartControl(QWidget *parent) {
     connect(m_Controls.foregroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
 
-    // init defaults
+    // init default state
     m_currentlyActiveWorkerCount = 0;
     lockGui(false);
 }
@@ -75,8 +75,7 @@ void GraphcutView::OnSelectionChanged(berry::IWorkbenchPart::Pointer, const QLis
 }
 
 void GraphcutView::startButtonPressed() {
-    MITK_DEBUG("ch.zhaw.graphcut") << "start button pressed";
-
+    MITK_INFO("ch.zhaw.graphcut") << "start button pressed";
 
     if (isValidSelection()) {
         MITK_INFO("ch.zhaw.graphcut") << "processing input";
@@ -145,11 +144,11 @@ void GraphcutView::workerIsDone(itk::DataObject::Pointer data, unsigned int work
     GraphcutWorker::OutputImageType *resultImageItk = dynamic_cast<GraphcutWorker::OutputImageType *>(data.GetPointer());
     mitk::Image::Pointer resultImage = mitk::GrabItkImageMemory(resultImageItk);
 
-    // create the node
+    // create the node and store the result
     mitk::DataNode::Pointer newNode = mitk::DataNode::New();
     newNode->SetData(resultImage);
 
-    // set some properties
+    // set some node properties
     newNode->SetProperty("binary", mitk::BoolProperty::New(true));
     newNode->SetProperty("name", mitk::StringProperty::New("graphcut segmentation"));
     newNode->SetProperty("color", mitk::ColorProperty::New(1.0,0.0,0.0));
@@ -157,7 +156,7 @@ void GraphcutView::workerIsDone(itk::DataObject::Pointer data, unsigned int work
     newNode->SetProperty("layer", mitk::IntProperty::New(1));
     newNode->SetProperty("opacity", mitk::FloatProperty::New(0.5));
 
-    // add result to data tree
+    // add result to the storage
     this->GetDataStorage()->Add( newNode );
 
     // update gui
@@ -181,7 +180,7 @@ void GraphcutView::imageSelectionChanged() {
         long numberOfVertices = x*y*z;
 
         // numberOfEdges are a bit more tricky
-        long numberOfEdges = 3; // 3 because we're assuming a 6-connected neighborhood which gives us 3 edges / pixel
+        long numberOfEdges = 3; // 3 because we're using a 6-connected neighborhood which gives us 3 edges / pixel
         numberOfEdges = (numberOfEdges * x) - 1;
         numberOfEdges = (numberOfEdges * y) - x;
         numberOfEdges = (numberOfEdges * z) - x * y;
@@ -237,15 +236,13 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     double estimatedComputeTimeInSeconds = c0*pow(x, c1);
     double estimateInSeconds;
 
-    // max flow on < 30mega has a irregular time complexity and is thus excluded from the trendline
+    // max flow on < 30mega edges has a irregular time complexity and is thus excluded from the trendline
     if(numberOfEdges < 30000000){
         // max flow is very (<0.03s) fast in this range
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds;
     } else{
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds + estimatedComputeTimeInSeconds;
     }
-
-    MITK_INFO << estimateInSeconds;
 
     QString time = QString::number(estimateInSeconds);
     time.append("s");
@@ -303,13 +300,13 @@ bool GraphcutView::isValidSelection() {
         if(foregroundMaskNode->GetName() == backgroundMaskNode->GetName()){
             setMandatoryField(m_Controls.foregroundSelector, true);
             setMandatoryField(m_Controls.backgroundSelector, true);
-            MITK_INFO("ch.zhaw.graphcut") << "invalid selection: foreground and background seem to be the same image.";
+            MITK_ERROR("ch.zhaw.graphcut") << "invalid selection: foreground and background seem to be the same image.";
             return false;
         }
         MITK_DEBUG("ch.zhaw.graphcut") << "valid selection";
         return true;
     } else{
-        MITK_INFO("ch.zhaw.graphcut") << "invalid selection: missing input.";
+        MITK_ERROR("ch.zhaw.graphcut") << "invalid selection: missing input.";
         return false;
     }
 }
