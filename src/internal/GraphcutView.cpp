@@ -209,6 +209,7 @@ void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
     if(memoryRequiredInBytes > 4096000000){
         setErrorField(m_Controls.estimatedMemory, true);
     } else if(memoryRequiredInBytes > 2048000000){
+        setErrorField(m_Controls.estimatedMemory, false);
         setWarningField(m_Controls.estimatedMemory, true);
     } else{
         setErrorField(m_Controls.estimatedMemory, false);
@@ -250,6 +251,7 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     if(estimateInSeconds > 60){
         setErrorField(m_Controls.estimatedTime, true);
     } else if (estimateInSeconds > 30) {
+        setErrorField(m_Controls.estimatedTime, false);
         setWarningField(m_Controls.estimatedTime, true);
     }else {
         setErrorField(m_Controls.estimatedTime, false);
@@ -264,22 +266,20 @@ void GraphcutView::initializeImageSelector(QmitkDataStorageComboBox *selector){
     selector->SetAutoSelectNewItems(false);
 }
 
-void GraphcutView::setMandatoryField(QWidget *widget, bool bMandatory){
-    widget->setProperty("mandatoryField", bMandatory);
-    widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
-    widget->style()->polish(widget);
-    widget->update();
+void GraphcutView::setMandatoryField(QWidget *widget, bool bEnabled){
+    setQStyleSheetField(widget, "mandatoryField", bEnabled);
 }
 
 void GraphcutView::setWarningField(QWidget *widget, bool bEnabled){
-    widget->setProperty("warningField", bEnabled);
-    widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
-    widget->style()->polish(widget);
-    widget->update();
+    setQStyleSheetField(widget, "warningField", bEnabled);
 }
 
 void GraphcutView::setErrorField(QWidget *widget, bool bEnabled){
-    widget->setProperty("errorField", bEnabled);
+    setQStyleSheetField(widget, "errorField", bEnabled);
+}
+
+void GraphcutView::setQStyleSheetField(QWidget *widget, const char *fieldName, bool bEnabled){
+    widget->setProperty(fieldName, bEnabled);
     widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
     widget->style()->polish(widget);
     widget->update();

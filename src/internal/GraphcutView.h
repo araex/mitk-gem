@@ -57,6 +57,7 @@ private:
     void setMandatoryField(QWidget *, bool);
     void setWarningField(QWidget *, bool);
     void setErrorField(QWidget *, bool);
+    void setQStyleSheetField(QWidget *, const char *, bool);
     bool isValidSelection();
     void lockGui(bool);
     unsigned int m_currentlyActiveWorkerCount;
