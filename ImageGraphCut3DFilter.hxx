@@ -120,14 +120,13 @@ namespace itk {
             typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
 
             for (unsigned int i = 0; i < neighbors.size(); i++) {
-                bool valid;
-                iterator.GetPixel(neighbors[i], valid);
+                bool pixelIsValid;
+                typename InputImageType::PixelType neighborPixel  = iterator.GetPixel(neighbors[i], pixelIsValid);
 
                 // If the current neighbor is outside the image, skip it
-                if (!valid) {
+                if (!pixelIsValid) {
                     continue;
                 }
-                typename InputImageType::PixelType neighborPixel = iterator.GetPixel(neighbors[i]);
 
                 // Compute the edge weight
                 double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * m_Sigma * m_Sigma));
