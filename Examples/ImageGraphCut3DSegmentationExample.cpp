@@ -20,7 +20,6 @@ int main(int argc, char *argv[]) {
         std::cerr << "                     Foreground as 127 and Background as 255" << std::endl;
         std::cerr << "sigma                estimated noise in boundary term, try 50.0" << std::endl;
         std::cerr << "boundaryDirection    0->bidirectional; 1->bright to dark; 2->dark to bright" << std::endl;
-
         return EXIT_FAILURE;
     }
 
@@ -64,14 +63,13 @@ int main(int argc, char *argv[]) {
     backgroundMaskReader->SetFileName(backgroundFilename);
 
     // Set up the graph cut
-    std::cout << "*** Performing Graph Cut ***" << std::endl;
     typedef itk::ImageGraphCut3DFilter<ImageType, ForegroundMaskType, BackgroundMaskType, OutputImageType> GraphCutFilterType;
     GraphCutFilterType::Pointer graphCutFilter = GraphCutFilterType::New();
     graphCutFilter->SetInputImage(reader->GetOutput());
     graphCutFilter->SetForegroundImage(foregroundMaskReader->GetOutput());
     graphCutFilter->SetBackgroundImage(backgroundMaskReader->GetOutput());
 
-    // set graph cut parameters
+    // Set graph cut parameters
     graphCutFilter->SetVerboseOutput(true);
     graphCutFilter->SetSigma(sigma);
     switch (boundaryDirection) {
@@ -85,9 +83,12 @@ int main(int argc, char *argv[]) {
             graphCutFilter->SetBoundaryDirectionTypeToNoDirection();
     }
 
-    // define the color values of the output
+    // Define the color values of the output
     graphCutFilter->SetForegroundPixelValue(255);
     graphCutFilter->SetBackgroundPixelValue(0);
+
+    // Start the computation
+    std::cout << "*** Performing Graph Cut ***" << std::endl;
     graphCutFilter->Update();
 
     // Get and write the result
