@@ -1,9 +1,10 @@
-Institute of Applied Information Technology
-Zurich Unsiversity of Applied Sciences
+Image GraphCut 3D Segmentation
+Copyright (c) 2014 Institute of Applied Information Technology,
+Zurich University of Applied Sciences
 
-GraphCut3D is free software: you can redistribute it and/or modify
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
+the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -12,6 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 The following libraries are used and distributed with GraphCut3d:
+
 *   MAXFLOW
     Copyright Vladimir Kolmogorov (vnk@ist.ac.at), Yuri Boykov (yuri@csd.uwo.ca)
     MAXFLOW is free software: you can redistribute it and/or modify
@@ -38,3 +40,16 @@ The following libraries are used and distributed with GraphCut3d:
     * Neither the name of Google Inc. nor the names of its
       contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
+
+*   ImageGraphCutSegmentation
+    Copyright (c) David Doria
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
