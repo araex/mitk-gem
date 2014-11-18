@@ -207,9 +207,9 @@ void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
     QString memory = QString::number(memoryRequiredInBytes / 1024 / 1024);
     memory.append("MB");
     m_Controls.estimatedMemory->setText(memory);
-    if(memoryRequiredInBytes > 3072000000){
+    if(memoryRequiredInBytes > 4096000000){
         setErrorField(m_Controls.estimatedMemory, true);
-    } else if(memoryRequiredInBytes > 1536000000){
+    } else if(memoryRequiredInBytes > 2048000000){
         setWarningField(m_Controls.estimatedMemory, true);
     } else{
         setErrorField(m_Controls.estimatedMemory, false);
@@ -231,7 +231,7 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     // the max flow computation.
     // c0*x^(c1)
     c0 = 2.0e-18;
-    c1 = 2.4391;
+    c1 = 2.4;
     x = numberOfEdges;
 
     double estimatedComputeTimeInSeconds = c0*pow(x, c1);
@@ -250,9 +250,9 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     QString time = QString::number(estimateInSeconds);
     time.append("s");
     m_Controls.estimatedTime->setText(time);
-    if(estimateInSeconds > 30){
+    if(estimateInSeconds > 60){
         setErrorField(m_Controls.estimatedTime, true);
-    } else if (estimateInSeconds > 15) {
+    } else if (estimateInSeconds > 30) {
         setWarningField(m_Controls.estimatedTime, true);
     }else {
         setErrorField(m_Controls.estimatedTime, false);
