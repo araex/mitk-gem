@@ -7,12 +7,11 @@ namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
     ::ImageGraphCut3DFilter()
-        : m_Sigma(5.0)
-        , m_BoundaryDirectionType(NoDirection)
-        , m_ForegroundPixelValue(255)
-        , m_BackgroundPixelValue(0)
-        , m_PrintTimer(false)
-    {
+            : m_Sigma(5.0),
+              m_BoundaryDirectionType(NoDirection),
+              m_ForegroundPixelValue(255),
+              m_BackgroundPixelValue(0),
+              m_PrintTimer(false) {
         this->SetNumberOfRequiredInputs(3);
     }
 
@@ -76,14 +75,14 @@ namespace itk {
         CutGraph(&graph, images, progress);
         timer.Stop("Query results");
 
-        if(m_PrintTimer){
-            timer.Report( std::cout );
+        if (m_PrintTimer) {
+            timer.Report(std::cout);
         }
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::InitializeGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress){
+    ::InitializeGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress) {
         IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
         IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(images.background);
 
@@ -177,16 +176,16 @@ namespace itk {
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::CutGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress){
+    ::CutGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress) {
 
         // Iterate over the output image, querying the graph for the association of each pixel
         itk::ImageRegionIterator<OutputImageType> outputImageIterator(images.output, images.outputRegion);
         outputImageIterator.GoToBegin();
 
         int sourceGroup = graph->groupOfSource();
-        while(!outputImageIterator.IsAtEnd()){
+        while (!outputImageIterator.IsAtEnd()) {
             unsigned int graphIndex = ConvertIndexToVertexDescriptor(outputImageIterator.GetIndex(), images.outputRegion);
-            if(graph->groupOf(graphIndex) == sourceGroup){
+            if (graph->groupOf(graphIndex) == sourceGroup) {
                 outputImageIterator.Set(m_ForegroundPixelValue);
             } else {
                 // boost documentation: "If the color of a vertex after running the algorithm is black the vertex belongs
