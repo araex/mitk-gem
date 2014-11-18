@@ -63,12 +63,6 @@ namespace itk {
             m_BackgroundPixelValue = v;
         }
 
-        unsigned int ConvertIndexToVertexDescriptor(const itk::Index<3> index, typename InputImageType::RegionType region) {
-            typename InputImageType::SizeType size = region.GetSize();
-
-            return index[0] + index[1] * size[0] + index[2] * size[0] * size[1];
-        }
-
         // image setters
         void SetInputImage(const InputImageType *image){
             this->SetNthInput(0, const_cast<InputImageType*>(image));
@@ -105,8 +99,11 @@ namespace itk {
         void InitializeGraph(GraphType*, ImageContainer, ProgressReporter &progress);
         void CutGraph(GraphType*, ImageContainer, ProgressReporter &progress);
 
-        // helper to convert masks to >0 indices
+        // convert masks to >0 indices
         template<typename TIndexImage> std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
+
+        // convert 3d itk indices to a continously numbered indices
+        unsigned int ConvertIndexToVertexDescriptor(const itk::Index<3>, typename InputImageType::RegionType);
 
         // image getters
         const InputImageType * GetInputImage(){

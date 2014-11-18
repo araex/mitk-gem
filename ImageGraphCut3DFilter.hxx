@@ -214,6 +214,14 @@ namespace itk {
 
         return pixelsWithValueLargerThanZero;
     }
+
+    template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
+    unsigned int ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
+    ::ConvertIndexToVertexDescriptor(const itk::Index<3> index, typename TImage::RegionType region) {
+        typename TImage::SizeType size = region.GetSize();
+
+        return index[0] + index[1] * size[0] + index[2] * size[0] * size[1];
+    }
 }
 
 #endif // __ImageGraphCut3DFilter_hxx_
