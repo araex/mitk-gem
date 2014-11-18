@@ -86,19 +86,19 @@ namespace itk {
         IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
         IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(images.background);
 
-        // We are only using a 6-connected structure,
-        // so the kernel (iteration neighborhood) must only be
-        // 3x3x3 (specified by a radius of 1)
+        // We are only using a 6-connected structure, so the kernel (iteration neighborhood) must only be 3x3x3
+        // (specified by a radius of 1)
         itk::Size<3> radius;
         radius.Fill(1);
 
         typedef itk::ShapedNeighborhoodIterator<InputImageType> IteratorType;
 
-        // Traverse the image adding an edge between the current pixel
-        // and the pixel below it and the current pixel and the pixel to the right of it
-        // and the pixel in front of it.
-        // This prevents duplicate edges (i.e. we cannot add an edge to
-        // all 6-connected neighbors of every pixel or almost every edge would be duplicated.
+        // Traverses the image adding the following bidirectional edges:
+        // 1. currentPixel <-> pixel below it
+        // 2. currentPixel <-> pixel to the right of it
+        // 3. currentPixel <-> pixel in front of it
+        // This prevents duplicate edges (i.e. we cannot add an edge to all 6-connected neighbors of every pixel or
+        // almost every edge would be duplicated.
         std::vector<typename IteratorType::OffsetType> neighbors;
         typename IteratorType::OffsetType bottom = {{0, 1, 0}};
         neighbors.push_back(bottom);
