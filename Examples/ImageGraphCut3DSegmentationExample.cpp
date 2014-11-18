@@ -5,24 +5,6 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 
-
-/** Adapted version of GetPixelsWithValue from ITKHelpers */
-template<typename TImage>
-std::vector<itk::Index<3> > GetPixelsWithValueLargerThanZero(const TImage *const image) {
-
-    std::vector<itk::Index<3> > pixelsWithValueLargerThanZero;
-
-    itk::ImageRegionConstIterator<TImage> regionIterator(image, image->GetLargestPossibleRegion());
-    while (!regionIterator.IsAtEnd()) {
-        if (regionIterator.Get() > itk::NumericTraits<typename TImage::PixelType>::Zero) {
-            pixelsWithValueLargerThanZero.push_back(regionIterator.GetIndex());
-        }
-        ++regionIterator;
-    }
-
-    return pixelsWithValueLargerThanZero;
-}
-
 /** This example segments an image and writes the segmentation mask to a file.
 * It can operate on a 3D image with one component per dimension (i.e.
 * grayscale).
@@ -47,10 +29,10 @@ int main(int argc, char *argv[]) {
     std::string foregroundFilename = argv[2];   // This image should have non-zero pixels indicating foreground pixels and 0 elsewhere.
     std::string backgroundFilename = argv[3];   // This image should have non-zero pixels indicating background pixels and 0 elsewhere.
     std::string outputFilename = argv[4];
-    double sigma = atof(argv[5]);                //Noise parameter
-    int boundaryDirection = atoi(argv[6]);      //0->bidirectional; 1->bright to dark; 2->dark to bright
+    double sigma = atof(argv[5]);               // Noise parameter
+    int boundaryDirection = atoi(argv[6]);      // 0->bidirectional; 1->bright to dark; 2->dark to bright
 
-    // Output arguments
+    // Print arguments
     std::cout << "imageFilename: " << imageFilename << std::endl
             << "foregroundFilename: " << foregroundFilename << std::endl
             << "backgroundFilename: " << backgroundFilename << std::endl
@@ -58,7 +40,7 @@ int main(int argc, char *argv[]) {
             << "sigma: " << sigma << std::endl
             << "boundaryDirection: " << boundaryDirection << std::endl;
 
-    // define all the image types
+    // Define all image types
     typedef itk::Image<short, 3> ImageType;
     typedef itk::Image<unsigned char, 3> ForegroundMaskType;
     typedef itk::Image<unsigned char, 3> BackgroundMaskType;
