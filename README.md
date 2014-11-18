@@ -1,12 +1,6 @@
 ImageGraphCut3DSegmentation
 ===========================
-
 An extensions of ITKs (D Doria) 2D Graph cut segmentation to 3D grayscale images
-
-
-Getting the code
-----------------
-
 
 Overview
 --------
@@ -15,7 +9,7 @@ This implementation is based on "Graph Cuts and Efficient N-D Image Segmentation
 
 License
 --------
-GPLv3 (See LICENSE.txt). This is required because of the use of Kolmogorov's code.
+GPLv3 (See LICENSE.txt). This is required because of the use of Kolmogorovs and Dorias code.
 
 Build notes
 ------------------
@@ -38,7 +32,7 @@ Dependencies
 ------------
 - ITK >= 4
 
-If tests enabled: 
+If tests are enabled: 
 - Boost >=1.55
 
 Example
