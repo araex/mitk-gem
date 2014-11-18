@@ -176,12 +176,14 @@ namespace itk {
 
         int sourceGroup = graph->groupOfSource();
         while (!outputImageIterator.IsAtEnd()) {
-            unsigned int graphIndex = ConvertIndexToVertexDescriptor(outputImageIterator.GetIndex(), images.outputRegion);
-            if (graph->groupOf(graphIndex) == sourceGroup) {
+            unsigned int voxelIndex = ConvertIndexToVertexDescriptor(outputImageIterator.GetIndex(), images.outputRegion);
+            if (graph->groupOf(voxelIndex) == sourceGroup) {
                 outputImageIterator.Set(m_ForegroundPixelValue);
-            } else {
-                // boost documentation: "If the color of a vertex after running the algorithm is black the vertex belongs
-                // to the source tree else it belongs to the sink-tree (used for minimum cuts)."
+            }
+            // Libraries differ to some degree in how they define the terminal groups. however, the tested ones
+            // (kolmogorvs MAXFLOW, boost graph, IBFS) use a fixed value for the source group and define other
+            // values as background.
+            else {
                 outputImageIterator.Set(m_BackgroundPixelValue);
             }
             ++outputImageIterator;
