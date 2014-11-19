@@ -4,7 +4,7 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 project(ImageGraphCut3DSegmentation)
 
 # ITK
-FIND_PACKAGE(ITK REQUIRED ITKCommon ITKIOImageBase ITKIOPNG ITKIOMeta
+FIND_PACKAGE(ITK REQUIRED ITKCommon ITKIOImageBase ITKIOPNG ITKIOMeta ITKIONRRD
                           ITKImageIntensity ITKImageFeature
                           ITKMathematicalMorphology
                           ITKBinaryMathematicalMorphology ITKDistanceMap
