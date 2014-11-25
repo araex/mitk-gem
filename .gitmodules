@@ -4,9 +4,6 @@
 [submodule "Plugins/ch.zhaw.graphcut"]
 	path = Plugins/ch.zhaw.graphcut
 	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.graphcut.git
-[submodule "Plugins/ch.zhaw.segmentation"]
-	path = Plugins/ch.zhaw.segmentation
-	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.segmentation.git
 [submodule "Plugins/ch.zhaw.padding"]
 	path = Plugins/ch.zhaw.padding
 	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.padding.git
