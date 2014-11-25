@@ -231,7 +231,7 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     // the max flow computation.
     // c0*x^(c1)
     c0 = 2.0e-18;
-    c1 = 2.4;
+    c1 = 2.8;
     x = numberOfEdges;
 
     double estimatedComputeTimeInSeconds = c0*pow(x, c1);
