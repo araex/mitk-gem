@@ -44,7 +44,7 @@ void PaddingView::SetFocus() {}
 void PaddingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &nodes) {
 
     if(nodes.count() == 0){
-        m_Controls.affectedImages->setText("-");
+        m_Controls.affectedImages->setText("no image selected");
         return;
     }
     else{

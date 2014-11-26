@@ -98,7 +98,7 @@ QScrollArea{
              <item>
               <widget class="QLabel" name="label_10">
                <property name="text">
-                <string>Amount</string>
+                <string>Nr. of slices</string>
                </property>
               </widget>
              </item>
