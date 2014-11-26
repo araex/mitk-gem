@@ -41,7 +41,30 @@ void PaddingView::CreateQtPartControl(QWidget *parent) {
 
 void PaddingView::SetFocus() {}
 
-void PaddingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &) {}
+void PaddingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &nodes) {
+
+    if(nodes.count() == 0){
+        m_Controls.affectedImages->setText("-");
+        return;
+    }
+    else{
+        QString selectedImageNames;
+
+        bool firstImage = true;
+        foreach(mitk::DataNode::Pointer
+        node, nodes){
+            if(!firstImage) {
+                selectedImageNames.append(", ");
+            } else{
+                firstImage = false;
+            }
+            mitk::StringProperty* nameProperty= (mitk::StringProperty*)(node->GetProperty("name"));
+            selectedImageNames.append(nameProperty->GetValue());
+        }
+        m_Controls.affectedImages->setText(selectedImageNames);
+    }
+
+}
 
 void PaddingView::padLeftButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
