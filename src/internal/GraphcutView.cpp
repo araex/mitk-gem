@@ -127,7 +127,7 @@ void GraphcutView::startButtonPressed() {
         m_Controls.progressBar->setMaximum(100);
 
         MITK_INFO("ch.zhaw.graphcut") << "start the worker";
-        QThreadPool::globalInstance()->start(worker);
+        QThreadPool::globalInstance()->start(worker, QThread::HighestPriority);
     }
 }
 
@@ -231,7 +231,7 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
     // the max flow computation.
     // c0*x^(c1)
     c0 = 2.0e-18;
-    c1 = 2.8;
+    c1 = 2.4;
     x = numberOfEdges;
 
     double estimatedComputeTimeInSeconds = c0*pow(x, c1);
@@ -242,7 +242,7 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
         // max flow is very (<0.03s) fast in this range
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds;
     } else{
-        estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds + estimatedComputeTimeInSeconds;
+        estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds + estimatedComputeTimeInSeconds * 2; // * 2 because the estimation is off anyways. better estimate pessimistically
     }
 
     QString time = QString::number(estimateInSeconds);
