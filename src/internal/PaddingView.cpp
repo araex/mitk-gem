@@ -115,7 +115,7 @@ void PaddingView::addPadding(WorkbenchUtils::Axis axis, bool append) {
     foreach(mitk::DataNode::Pointer
     node, nodes){
         mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(node->GetData());
-        img = WorkbenchUtils::addPadding<float>(img, axis, append, amountOfPadding, voxelValue);
+        img = WorkbenchUtils::addPadding(img, axis, append, amountOfPadding, voxelValue);
         node->SetData(img);
     }
 
