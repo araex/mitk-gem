@@ -58,9 +58,9 @@ public:
     }
 
     // image typedefs
-    typedef typename itk::Image<short, 3> InputImageType;
-    typedef typename itk::Image<unsigned char, 3> MaskImageType;
-    typedef typename itk::Image<unsigned char, 3> OutputImageType;
+    typedef itk::Image<short, 3> InputImageType;
+    typedef itk::Image<unsigned char, 3> MaskImageType;
+    typedef itk::Image<unsigned char, 3> OutputImageType;
 
     // typedef for pipeline
     typedef itk::ImageGraphCut3DFilter<InputImageType, MaskImageType, MaskImageType, OutputImageType> GraphCutFilterType;
