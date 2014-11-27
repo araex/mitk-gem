@@ -73,12 +73,30 @@ void ResampleView::resampleButtonPressed() {
         newDimensions[0] = m_Controls.resampleDim1->value();
         newDimensions[1] = m_Controls.resampleDim2->value();
         newDimensions[2] = m_Controls.resampleDim3->value();
+        bool inplaceResample = m_Controls.inplaceCheckBox->isChecked();
 
-        img = WorkbenchUtils::resampleImage(img, newDimensions);
+        mitk::Image::Pointer resultImg = WorkbenchUtils::resampleImage(img, newDimensions);
 
-        nodes.at(0)->SetData(img);
+        if (inplaceResample){
+            nodes.at(0)->SetData(resultImg);
+        } else {
+            // create the node and store the result
+            mitk::DataNode::Pointer newNode = mitk::DataNode::New();
+            newNode->SetData(resultImg);
+
+            // set some node properties
+            newNode->SetProperty("name", mitk::StringProperty::New("Resample Result"));
+
+            // add result to the storage
+            this->GetDataStorage()->Add( newNode );
+        }
+
+        // global reinit to get all the mitk plugins to notice the spacing changes
+        mitk::RenderingManager::GetInstance()->InitializeViewsByBoundingObjects(this->GetDataStorage());
+
+        // update our own plugin
+        updateDimensions(resultImg);
     }
-    // TODO: handle invalid selections
 }
 
 void ResampleView::copyButtonPressed() {
