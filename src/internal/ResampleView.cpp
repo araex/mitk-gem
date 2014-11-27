@@ -47,20 +47,39 @@ void ResampleView::CreateQtPartControl(QWidget * parent) {
 void ResampleView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &nodes) {
     if (nodes.count() == 0) {
         m_Controls.selectedImage->setText("no image selected");
+        setOriginDimension(0, 0, 0);
         return;
     } else if (nodes.count() == 1) {
         mitk::DataNode::Pointer node = nodes.at(0);
-        mitk::StringProperty *nameProperty = (mitk::StringProperty * )(node->GetProperty("name"));
+        mitk::StringProperty *nameProperty = (mitk::StringProperty *)(node->GetProperty("name"));
         m_Controls.selectedImage->setText(nameProperty->GetValue());
         updateDimensions(WorkbenchUtils::getImageByDataIndex(nodes, 0));
     } else {
         m_Controls.selectedImage->setText("invalid selection");
+        setOriginDimension(0, 0, 0);
     }
 }
 
 
 void ResampleView::resampleButtonPressed() {
+    // get nodes
+    QList <mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
 
+    // check if the selection is valid
+    if (nodes.count() == 1){
+        // gather input
+        mitk::Image::Pointer img = WorkbenchUtils::getImageByDataIndex(nodes, 0);
+        unsigned int oldDimension[3];
+        oldDimension[0] = img->GetDimension(0);
+        oldDimension[1] = img->GetDimension(1);
+        oldDimension[2] = img->GetDimension(2);
+        unsigned int newDimension[3];
+        newDimension[0] = m_Controls.resampleDim1->value();
+        newDimension[1] = m_Controls.resampleDim2->value();
+        newDimension[2] = m_Controls.resampleDim3->value();
+
+    }
+    // TODO: handle invalid selections
 }
 
 void ResampleView::copyButtonPressed() {
