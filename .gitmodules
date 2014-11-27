@@ -1,0 +1,3 @@
+[submodule "src/internal/lib/WorkbenchUtils"]
+	path = src/internal/lib/WorkbenchUtils
+	url = git@github.engineering.zhaw.ch:fitz/MITK_WorkbenchUtils.git
