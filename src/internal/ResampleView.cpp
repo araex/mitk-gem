@@ -69,15 +69,14 @@ void ResampleView::resampleButtonPressed() {
     if (nodes.count() == 1){
         // gather input
         mitk::Image::Pointer img = WorkbenchUtils::getImageByDataIndex(nodes, 0);
-        unsigned int oldDimension[3];
-        oldDimension[0] = img->GetDimension(0);
-        oldDimension[1] = img->GetDimension(1);
-        oldDimension[2] = img->GetDimension(2);
-        unsigned int newDimension[3];
-        newDimension[0] = m_Controls.resampleDim1->value();
-        newDimension[1] = m_Controls.resampleDim2->value();
-        newDimension[2] = m_Controls.resampleDim3->value();
+        unsigned int newDimensions[3];
+        newDimensions[0] = m_Controls.resampleDim1->value();
+        newDimensions[1] = m_Controls.resampleDim2->value();
+        newDimensions[2] = m_Controls.resampleDim3->value();
 
+        img = WorkbenchUtils::resampleImage(img, newDimensions);
+
+        nodes.at(0)->SetData(img);
     }
     // TODO: handle invalid selections
 }
