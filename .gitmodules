@@ -7,3 +7,6 @@
 [submodule "Plugins/ch.zhaw.padding"]
 	path = Plugins/ch.zhaw.padding
 	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.padding.git
+[submodule "Plugins/ch.zhaw.resample"]
+	path = Plugins/ch.zhaw.resample
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.resample.git
