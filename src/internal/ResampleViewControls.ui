@@ -171,10 +171,13 @@ QScrollArea{
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                  <property name="minimum">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <property name="maximum">
                   <number>9999</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -196,10 +199,13 @@ QScrollArea{
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                  <property name="minimum">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <property name="maximum">
                   <number>9999</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -221,19 +227,22 @@ QScrollArea{
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                  <property name="minimum">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <property name="maximum">
                   <number>9999</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
               </layout>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton">
+              <widget class="QToolButton" name="copyButton">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="styleSheet">
                 <string notr="true"/>
@@ -255,6 +264,28 @@ QScrollArea{
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_2">
                <item>
+                <widget class="QSpinBox" name="resampleDim1">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <number>9999</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QSpinBox" name="resampleDim2">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -262,11 +293,17 @@ QScrollArea{
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="minimum">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <property name="maximum">
                   <number>9999</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
@@ -278,27 +315,17 @@ QScrollArea{
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="minimum">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <property name="maximum">
                   <number>9999</number>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="resampleDim1">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>9999</number>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
