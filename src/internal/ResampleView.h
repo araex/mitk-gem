@@ -31,7 +31,7 @@ class ResampleView : public QmitkAbstractView {
     static const std::string VIEW_ID;
 
   protected slots:
-    void ApplyButtonPressed();
+    void ResampleButtonPressed();
 
   protected:
     virtual void CreateQtPartControl(QWidget *parent);
