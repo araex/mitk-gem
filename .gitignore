@@ -74,3 +74,4 @@ Makefile*
 .idea/*
 */.idea/*
 
+.DS_Store
