@@ -3,9 +3,9 @@
 
   <extension point="org.blueberry.ui.views">
     <view id="org.mitk.views.resampleview"
-          name="ResampleView"
+          name="Resample"
           class="ResampleView"
-          icon="resources/icon.xpm" />
+          icon="resources/icon.png" />
   </extension>
 
 </plugin>
