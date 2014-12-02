@@ -89,7 +89,6 @@ private:
         numberOfEdges = (numberOfEdges * x) - 1;
         numberOfEdges = (numberOfEdges * y) - x;
         numberOfEdges = (numberOfEdges * z) - x * y;
-        numberOfEdges *= 2; // because kolmogorov adds 2 directed edges instead of 1 bidirectional
         return numberOfEdges;
     }
 };
