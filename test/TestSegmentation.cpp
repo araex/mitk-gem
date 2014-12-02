@@ -171,11 +171,11 @@ TEST_F(TestSegmentation, CubeGraphCutTestWithNoise){
 
 TEST_F(TestSegmentation, FemurGraphCutTest){
     // path to files
-    std::string inputPath = "data/test/femur/input.nrrd";
-    std::string forgroundPath = "data/test/femur/foreground.nrrd";
-    std::string backgroundPath = "data/test/femur/background.nrrd";
-    std::string expectedPath = "data/test/femur/expectedResult.nrrd";
-    std::string resultPath = "data/test/femur/output.nrrd";
+    std::string inputPath = "data/test/left_femur/input.nrrd";
+    std::string forgroundPath = "data/test/left_femur/foreground.nrrd";
+    std::string backgroundPath = "data/test/left_femur/background.nrrd";
+    std::string expectedPath = "data/test/left_femur/expectedResult.nrrd";
+    std::string resultPath = "data/test/left_femur/output.nrrd";
 
     // read the images
     TInput::Pointer inputImage = IOHelper::readImage<TInput>(inputPath.c_str());
