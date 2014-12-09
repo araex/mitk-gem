@@ -10,3 +10,6 @@
 [submodule "Plugins/ch.zhaw.resample"]
 	path = Plugins/ch.zhaw.resample
 	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.resample.git
+[submodule "Plugins/ch.zhaw.splitcomponents"]
+	path = Plugins/ch.zhaw.splitcomponents
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.splitcomponents.git
