@@ -302,10 +302,33 @@ bool GraphcutView::isValidSelection() {
         if(foregroundMaskNode->GetName() == backgroundMaskNode->GetName()){
             setMandatoryField(m_Controls.foregroundSelector, true);
             setMandatoryField(m_Controls.backgroundSelector, true);
-            QMessageBox::warning ( NULL, "Error", "invalid selection: foreground and background seem to be the same image.");
-            MITK_ERROR("ch.zhaw.graphcut") << "invalid selection: foreground and background seem to be the same image.";
+            QMessageBox::warning ( NULL, "Error", "foreground and background seem to be the same image.");
             return false;
         }
+
+        // gather input images
+        mitk::Image::Pointer grey = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
+        mitk::Image::Pointer fg = dynamic_cast<mitk::Image *>(foregroundMaskNode->GetData());
+        mitk::Image::Pointer bg = dynamic_cast<mitk::Image *>(backgroundMaskNode->GetData());
+
+        MITK_INFO << grey->GetDimension() << fg->GetDimension() << bg->GetDimension();
+        if((grey->GetDimension() == fg->GetDimension()) && (fg->GetDimension() == bg->GetDimension())){
+            for(int i = 0, max = grey->GetDimension(); i < max ; ++i){
+                if(grey->GetDimensions()[i] == fg->GetDimensions()[i] == bg->GetDimensions()[i]){
+                    continue;
+                } else{
+                    QString msg("Image dimension mismatch in dimension ");
+                    msg.append(QString::number(i));
+                    msg.append(". Please resample the images.");
+                    QMessageBox::warning ( NULL, "Error", msg);
+                    return false;
+                }
+            }
+        } else{
+            QMessageBox::warning ( NULL, "Error", "Image dimensions do not match.");
+            return false;
+        }
+
         MITK_DEBUG("ch.zhaw.graphcut") << "valid selection";
         return true;
     } else{
