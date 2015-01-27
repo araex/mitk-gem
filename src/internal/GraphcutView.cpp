@@ -61,6 +61,8 @@ void GraphcutView::CreateQtPartControl(QWidget *parent) {
 
     // setup signals
     connect(m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonPressed()));
+    connect(m_Controls.refreshTimeButton, SIGNAL(clicked()), this, SLOT(refreshButtonPressed()));
+    connect(m_Controls.refreshMemoryButton, SIGNAL(clicked()), this, SLOT(refreshButtonPressed()));
     connect(m_Controls.greyscaleImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.foregroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
     connect(m_Controls.backgroundImageSelector, SIGNAL(OnSelectionChanged (const mitk::DataNode *)), this, SLOT(imageSelectionChanged()));
@@ -322,4 +324,8 @@ void GraphcutView::workerProgressUpdate(float progress, unsigned int){
     int progressInt = (int) (progress * 100.0f);
     m_Controls.progressBar->setValue(progressInt);
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
+}
+
+void GraphcutView::refreshButtonPressed(){
+    imageSelectionChanged();
 }

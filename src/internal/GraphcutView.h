@@ -35,6 +35,7 @@ public:
 
 protected slots:
     void startButtonPressed();
+    void refreshButtonPressed();
     void imageSelectionChanged();
     void workerHasStarted(unsigned int);
     void workerProgressUpdate(float progress, unsigned int id);

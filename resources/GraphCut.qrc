@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/GraphCutPlugin">
         <file>logo.png</file>
+        <file>icon_refresh.png</file>
     </qresource>
 </RCC>
