@@ -41,7 +41,9 @@ void ResampleView::CreateQtPartControl(QWidget * parent) {
 
     // setup buttons
     connect(m_Controls.resampleButton, SIGNAL(clicked()), this, SLOT(resampleButtonPressed()));
+    connect(m_Controls.mul2Button, SIGNAL(clicked()), this, SLOT(mul2ButtonPressed()));
     connect(m_Controls.copyButton, SIGNAL(clicked()), this, SLOT(copyButtonPressed()));
+    connect(m_Controls.div2Button, SIGNAL(clicked()), this, SLOT(div2ButtonPressed()));
 }
 
 void ResampleView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &nodes) {
@@ -100,11 +102,25 @@ void ResampleView::resampleButtonPressed() {
     }
 }
 
+void ResampleView::mul2ButtonPressed() {
+    unsigned int dim1 = m_Controls.originDim1->value();
+    unsigned int dim2 = m_Controls.originDim2->value();
+    unsigned int dim3 = m_Controls.originDim3->value();
+    setResampleDimension(dim1 * 2, dim2 * 2, dim3 * 2);
+}
+
 void ResampleView::copyButtonPressed() {
     unsigned int dim1 = m_Controls.originDim1->value();
     unsigned int dim2 = m_Controls.originDim2->value();
     unsigned int dim3 = m_Controls.originDim3->value();
     setResampleDimension(dim1, dim2, dim3);
+}
+
+void ResampleView::div2ButtonPressed() {
+    unsigned int dim1 = m_Controls.originDim1->value();
+    unsigned int dim2 = m_Controls.originDim2->value();
+    unsigned int dim3 = m_Controls.originDim3->value();
+    setResampleDimension(dim1 / 2, dim2 / 2, dim3 / 2);
 }
 
 void ResampleView::updateDimensions(mitk::Image::Pointer img) {

@@ -33,7 +33,9 @@ class ResampleView : public QmitkAbstractView {
 
   protected slots:
     void resampleButtonPressed();
+    void mul2ButtonPressed();
     void copyButtonPressed();
+    void div2ButtonPressed();
 
   protected:
     virtual void CreateQtPartControl(QWidget *parent);
