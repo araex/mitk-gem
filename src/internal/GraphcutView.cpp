@@ -302,6 +302,7 @@ bool GraphcutView::isValidSelection() {
         if(foregroundMaskNode->GetName() == backgroundMaskNode->GetName()){
             setMandatoryField(m_Controls.foregroundSelector, true);
             setMandatoryField(m_Controls.backgroundSelector, true);
+            QMessageBox::warning ( NULL, "Error", "invalid selection: foreground and background seem to be the same image.");
             MITK_ERROR("ch.zhaw.graphcut") << "invalid selection: foreground and background seem to be the same image.";
             return false;
         }
