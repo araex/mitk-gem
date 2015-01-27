@@ -139,7 +139,7 @@ QToolButton{
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="refreshButton">
+          <widget class="QToolButton" name="refreshTimeButton">
            <property name="minimumSize">
             <size>
              <width>16</width>
@@ -222,7 +222,7 @@ QToolButton{
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="refreshButton_2">
+          <widget class="QToolButton" name="refreshMemoryButton">
            <property name="minimumSize">
             <size>
              <width>16</width>
