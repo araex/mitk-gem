@@ -327,5 +327,5 @@ void GraphcutView::workerProgressUpdate(float progress, unsigned int){
 }
 
 void GraphcutView::refreshButtonPressed(){
-    MITK_INFO << "Click";
+    imageSelectionChanged();
 }
