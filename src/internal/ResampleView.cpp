@@ -51,7 +51,7 @@ void ResampleView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/,
         return;
     } else if (nodes.count() == 1) {
         mitk::DataNode::Pointer node = nodes.at(0);
-        mitk::StringProperty *nameProperty = (mitk::StringProperty *)(node->GetProperty("name"));
+        mitk::StringProperty *nameProperty = static_cast<mitk::StringProperty *>(node->GetProperty("name"));
         m_Controls.selectedImage->setText(nameProperty->GetValue());
         updateDimensions(WorkbenchUtils::getImageByDataIndex(nodes, 0));
     } else {
@@ -74,8 +74,9 @@ void ResampleView::resampleButtonPressed() {
         newDimensions[1] = m_Controls.resampleDim2->value();
         newDimensions[2] = m_Controls.resampleDim3->value();
         bool inplaceResample = m_Controls.inplaceCheckBox->isChecked();
+        WorkbenchUtils::Interpolator interpolationMethod = (WorkbenchUtils::Interpolator) m_Controls.interpolatorComboBox->currentIndex();
 
-        mitk::Image::Pointer resultImg = WorkbenchUtils::resampleImage(img, newDimensions);
+        mitk::Image::Pointer resultImg = WorkbenchUtils::resampleImage(img, newDimensions, interpolationMethod);
 
         if (inplaceResample){
             nodes.at(0)->SetData(resultImg);
