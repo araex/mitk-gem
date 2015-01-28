@@ -314,7 +314,7 @@ bool GraphcutView::isValidSelection() {
         MITK_INFO << grey->GetDimension() << fg->GetDimension() << bg->GetDimension();
         if((grey->GetDimension() == fg->GetDimension()) && (fg->GetDimension() == bg->GetDimension())){
             for(int i = 0, max = grey->GetDimension(); i < max ; ++i){
-                if(grey->GetDimensions()[i] == fg->GetDimensions()[i] == bg->GetDimensions()[i]){
+                if((grey->GetDimensions()[i] == fg->GetDimensions()[i]) && (fg->GetDimensions()[i] == bg->GetDimensions()[i])){
                     continue;
                 } else{
                     QString msg("Image dimension mismatch in dimension ");
