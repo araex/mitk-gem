@@ -98,9 +98,9 @@ void GraphcutView::startButtonPressed() {
 
         // cast the images to ITK
         MITK_INFO("ch.zhaw.graphcut") << "cast the images to ITK";
-        typename GraphcutWorker::InputImageType::Pointer greyscaleImageItk;
-        typename GraphcutWorker::MaskImageType::Pointer foregroundMaskItk;
-        typename GraphcutWorker::MaskImageType::Pointer backgroundMaskItk;
+        GraphcutWorker::InputImageType::Pointer greyscaleImageItk;
+        GraphcutWorker::MaskImageType::Pointer foregroundMaskItk;
+        GraphcutWorker::MaskImageType::Pointer backgroundMaskItk;
         mitk::CastToItkImage(greyscaleImage, greyscaleImageItk);
         mitk::CastToItkImage(foregroundMask, foregroundMaskItk);
         mitk::CastToItkImage(backgroundMask, backgroundMaskItk);
