@@ -23,16 +23,15 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 namespace mitk {
 
-void ch_zhaw_voxel2mesh_Activator::start(ctkPluginContext* context)
-{
-  BERRY_REGISTER_EXTENSION_CLASS(Voxel2MeshView, context)
-}
+    void ch_zhaw_voxel2mesh_Activator::start(ctkPluginContext * context) {
+        BERRY_REGISTER_EXTENSION_CLASS(Voxel2MeshView, context)
+    }
 
-void ch_zhaw_voxel2mesh_Activator::stop(ctkPluginContext* context)
-{
-  Q_UNUSED(context)
-}
+    void ch_zhaw_voxel2mesh_Activator::stop(ctkPluginContext * context) {
+        Q_UNUSED(context)
+    }
 
 }
 
-Q_EXPORT_PLUGIN2(ch_zhaw_voxel2mesh, mitk::ch_zhaw_voxel2mesh_Activator)
+Q_EXPORT_PLUGIN2(ch_zhaw_voxel2mesh, mitk::ch_zhaw_voxel2mesh_Activator
+)

@@ -22,18 +22,18 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 namespace mitk {
 
-class ch_zhaw_voxel2mesh_Activator :
-  public QObject, public ctkPluginActivator
-{
-  Q_OBJECT
-  Q_INTERFACES(ctkPluginActivator)
+    class ch_zhaw_voxel2mesh_Activator :
+            public QObject, public ctkPluginActivator {
+        Q_OBJECT
+                Q_INTERFACES(ctkPluginActivator)
 
-public:
+    public:
 
-  void start(ctkPluginContext* context);
-  void stop(ctkPluginContext* context);
+        void start(ctkPluginContext *context);
 
-}; // ch_zhaw_voxel2mesh_Activator
+        void stop(ctkPluginContext *context);
+
+    }; // ch_zhaw_voxel2mesh_Activator
 
 }
 
