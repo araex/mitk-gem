@@ -21,6 +21,8 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <berryISelectionListener.h>
 
 #include <QmitkAbstractView.h>
+#include <mitkImage.h>
+#include <mitkSurface.h>
 
 #include "ui_Voxel2MeshViewControls.h"
 
@@ -28,16 +30,39 @@ class Voxel2MeshView : public QmitkAbstractView {
     Q_OBJECT
 
 public:
+    struct SurfaceGeneratorParameters{
+        bool doMedian;
+        int kernelX;
+        int kernelY;
+        int kernelZ;
+
+        bool doGaussian;
+        float deviation;
+        float radius;
+
+        int threshold;
+
+        bool doSmoothing;
+        int iterations;
+        float relaxation;
+
+        bool doDecimation;
+        float reduction;
+    };
 
     static const std::string VIEW_ID;
 
 protected slots:
+    void generateSurfaceButtonPressed();
 
 protected:
     virtual void CreateQtPartControl(QWidget *parent);
 
     virtual void SetFocus();
     virtual void OnSelectionChanged(berry::IWorkbenchPart::Pointer source, const QList <mitk::DataNode::Pointer> &nodes);
+
+    SurfaceGeneratorParameters getParameters();
+    mitk::Surface::Pointer createSurface(mitk::Image::Pointer);
 
     Ui::Voxel2MeshViewControls m_Controls;
 
