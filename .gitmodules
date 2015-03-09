@@ -13,3 +13,6 @@
 [submodule "Plugins/ch.zhaw.splitcomponents"]
 	path = Plugins/ch.zhaw.splitcomponents
 	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.splitcomponents.git
+[submodule "Plugins/ch.zhaw.voxel2mesh"]
+	path = Plugins/ch.zhaw.voxel2mesh
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.voxel2mesh.git
