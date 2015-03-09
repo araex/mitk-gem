@@ -4,4 +4,5 @@ set(PROJECT_PLUGINS
   Plugins/ch.zhaw.padding:ON
   Plugins/ch.zhaw.resample:ON
   Plugins/ch.zhaw.splitcomponents:ON
+  Plugins/ch.zhaw.voxel2mesh:ON
 )
