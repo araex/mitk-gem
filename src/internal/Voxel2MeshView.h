@@ -31,17 +31,12 @@ public:
 
     static const std::string VIEW_ID;
 
-protected
-    slots:
-    void
-
-    DoImageProcessing();
+protected slots:
 
 protected:
     virtual void CreateQtPartControl(QWidget *parent);
 
     virtual void SetFocus();
-
     virtual void OnSelectionChanged(berry::IWorkbenchPart::Pointer source, const QList <mitk::DataNode::Pointer> &nodes);
 
     Ui::Voxel2MeshViewControls m_Controls;
