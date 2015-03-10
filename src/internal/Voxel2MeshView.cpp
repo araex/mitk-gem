@@ -112,14 +112,6 @@ mitk::Surface::Pointer Voxel2MeshView::createSurface(mitk::Image::Pointer img, S
     surfaceFilter->SetSmoothIteration(params.iterations);
     surfaceFilter->SetSmoothRelaxation(params.relaxation);
 
-    if(params.doDecimation){
-        surfaceFilter->SetDecimate(mitk::ImageToSurfaceFilter::DecimatePro);
-
-    } else {
-        surfaceFilter->SetDecimate(mitk::ImageToSurfaceFilter::NoDecimation);
-    }
-    surfaceFilter->SetTargetReduction(params.reduction);
-
     surfaceFilter->SetInput(img);
     surfaceFilter->Update();
     return surfaceFilter->GetOutput();
@@ -141,9 +133,6 @@ Voxel2MeshView::SurfaceGeneratorParameters Voxel2MeshView::getParameters() {
     ret.doSmoothing = m_Controls.smoothingGroup->isChecked();
     ret.iterations = m_Controls.iterationSpinBox->value();
     ret.relaxation = m_Controls.relaxationSpinBox->value();
-
-    ret.doDecimation = m_Controls.decimationGroup->isChecked();
-    ret.reduction = m_Controls.reductionSpinBox->value();
 
     return ret;
 }

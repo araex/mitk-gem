@@ -40,14 +40,11 @@ public:
         float deviation;
         float radius;
 
-        int threshold;
+        double threshold;
 
         bool doSmoothing;
         int iterations;
         float relaxation;
-
-        bool doDecimation;
-        float reduction;
     };
 
     static const std::string VIEW_ID;
