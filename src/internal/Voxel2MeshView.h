@@ -62,7 +62,7 @@ protected:
     virtual void OnSelectionChanged(berry::IWorkbenchPart::Pointer source, const QList <mitk::DataNode::Pointer> &nodes);
 
     SurfaceGeneratorParameters getParameters();
-    mitk::Surface::Pointer createSurface(mitk::Image::Pointer);
+    mitk::Surface::Pointer createSurface(mitk::Image::Pointer, SurfaceGeneratorParameters params);
 
     Ui::Voxel2MeshViewControls m_Controls;
 

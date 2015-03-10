@@ -28,6 +28,8 @@ See LICENSE.txt or http://www.mitk.org for details.
 //mitk image
 #include <mitkImage.h>
 
+#include "mitkGraphcutSegmentationToSurfaceFilter.h"
+
 const std::string Voxel2MeshView::VIEW_ID = "org.mitk.views.voxelmasktopolygonmesh";
 
 void Voxel2MeshView::SetFocus() {
@@ -63,17 +65,15 @@ void Voxel2MeshView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*
 }
 
 void Voxel2MeshView::generateSurfaceButtonPressed() {
-    MITK_INFO("ch.zhaw.voxel2mesh") << "Generating surfaces";
-
     // get data
     QList <mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
     SurfaceGeneratorParameters params = getParameters();
 
     foreach(mitk::DataNode::Pointer node, nodes){
         mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(node->GetData());
-        mitk::Surface::Pointer surface = createSurface(img);
+        mitk::Surface::Pointer surface = createSurface(img, params);
         mitk::DataNode::Pointer surfaceNode = mitk::DataNode::New();
-        QString name("surface");
+        QString name("Surface");
         surfaceNode->SetProperty("name", mitk::StringProperty::New(name.toUtf8().constData()));
         surfaceNode->SetData(surface);
         this->GetDataStorage()->Add( surfaceNode );
@@ -82,8 +82,33 @@ void Voxel2MeshView::generateSurfaceButtonPressed() {
     mitk::RenderingManager::GetInstance()->RequestUpdateAll();
 }
 
-mitk::Surface::Pointer Voxel2MeshView::createSurface(mitk::Image::Pointer img){
-    // TODO: do the actual work
+mitk::Surface::Pointer Voxel2MeshView::createSurface(mitk::Image::Pointer img, SurfaceGeneratorParameters params){
+    mitk::GraphcutSegmentationToSurfaceFilter::Pointer surfaceFilter = mitk::GraphcutSegmentationToSurfaceFilter::New();
+
+    // set params
+    surfaceFilter->SetUseMedian(params.doMedian);
+    surfaceFilter->SetMedianKernelSize(params.kernelX, params.kernelY, params.kernelZ);
+
+    surfaceFilter->SetUseGaussianSmoothing(params.doGaussian);
+    surfaceFilter->SetGaussianStandardDeviation(params.deviation);
+    surfaceFilter->SetGaussianRadius(params.radius);
+
+    surfaceFilter->SetThreshold(params.threshold);
+
+    surfaceFilter->SetSmooth(params.doSmoothing);
+    surfaceFilter->SetSmoothIteration(params.iterations);
+    surfaceFilter->SetSmoothRelaxation(params.relaxation);
+
+    if(params.doDecimation){
+        surfaceFilter->SetDecimate(mitk::ImageToSurfaceFilter::NoDecimation);
+    } else {
+        surfaceFilter->SetDecimate(mitk::ImageToSurfaceFilter::DecimatePro);
+    }
+    surfaceFilter->SetTargetReduction(params.reduction);
+
+    surfaceFilter->SetInput(img);
+    surfaceFilter->Update();
+    return surfaceFilter->GetOutput();
 }
 
 Voxel2MeshView::SurfaceGeneratorParameters Voxel2MeshView::getParameters() {
