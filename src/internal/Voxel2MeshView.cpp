@@ -48,6 +48,7 @@ void Voxel2MeshView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*
         return;
     }
     else {
+        setMandatoryField(m_Controls.selectedImages, false);
         QString selectedImageNames;
 
         bool firstImage = true;
@@ -68,6 +69,10 @@ void Voxel2MeshView::generateSurfaceButtonPressed() {
     // get data
     QList <mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
     SurfaceGeneratorParameters params = getParameters();
+
+    if(nodes.empty()){
+        setMandatoryField(m_Controls.selectedImages, true);
+    }
 
     foreach(mitk::DataNode::Pointer node, nodes){
         mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(node->GetData());
@@ -100,9 +105,10 @@ mitk::Surface::Pointer Voxel2MeshView::createSurface(mitk::Image::Pointer img, S
     surfaceFilter->SetSmoothRelaxation(params.relaxation);
 
     if(params.doDecimation){
-        surfaceFilter->SetDecimate(mitk::ImageToSurfaceFilter::NoDecimation);
-    } else {
         surfaceFilter->SetDecimate(mitk::ImageToSurfaceFilter::DecimatePro);
+
+    } else {
+        surfaceFilter->SetDecimate(mitk::ImageToSurfaceFilter::NoDecimation);
     }
     surfaceFilter->SetTargetReduction(params.reduction);
 
@@ -132,4 +138,15 @@ Voxel2MeshView::SurfaceGeneratorParameters Voxel2MeshView::getParameters() {
     ret.reduction = m_Controls.reductionSpinBox->value();
 
     return ret;
+}
+
+void Voxel2MeshView::setMandatoryField(QWidget *widget, bool bEnabled){
+    setQStyleSheetField(widget, "mandatoryField", bEnabled);
+}
+
+void Voxel2MeshView::setQStyleSheetField(QWidget *widget, const char *fieldName, bool bEnabled){
+    widget->setProperty(fieldName, bEnabled);
+    widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
+    widget->style()->polish(widget);
+    widget->update();
 }

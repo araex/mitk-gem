@@ -63,6 +63,8 @@ protected:
 
     SurfaceGeneratorParameters getParameters();
     mitk::Surface::Pointer createSurface(mitk::Image::Pointer, SurfaceGeneratorParameters params);
+    void setMandatoryField(QWidget *widget, bool bEnabled);
+    void setQStyleSheetField(QWidget *, const char *, bool);
 
     Ui::Voxel2MeshViewControls m_Controls;
 

@@ -376,6 +376,9 @@ QScrollArea{
                     <property name="maximum">
                      <double>1000.000000000000000</double>
                     </property>
+                    <property name="singleStep">
+                     <double>0.050000000000000</double>
+                    </property>
                     <property name="value">
                      <double>2.200000000000000</double>
                     </property>
@@ -419,6 +422,9 @@ QScrollArea{
                     </property>
                     <property name="maximum">
                      <double>1000.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.010000000000000</double>
                     </property>
                     <property name="value">
                      <double>0.490000000000000</double>
@@ -569,7 +575,7 @@ QScrollArea{
                      <number>1</number>
                     </property>
                     <property name="maximum">
-                     <number>1000</number>
+                     <number>1000000</number>
                     </property>
                     <property name="value">
                      <number>50</number>
@@ -611,6 +617,9 @@ QScrollArea{
                     </property>
                     <property name="decimals">
                      <number>3</number>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.100000000000000</double>
                     </property>
                     <property name="value">
                      <double>0.100000000000000</double>
@@ -686,8 +695,11 @@ QScrollArea{
                     <property name="maximum">
                      <double>1.000000000000000</double>
                     </property>
+                    <property name="singleStep">
+                     <double>0.050000000000000</double>
+                    </property>
                     <property name="value">
-                     <double>0.000000000000000</double>
+                     <double>0.500000000000000</double>
                     </property>
                    </widget>
                   </item>
@@ -702,11 +714,6 @@ QScrollArea{
               <property name="text">
                <string>Generate surface</string>
               </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QWidget" name="widget" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_12"/>
              </widget>
             </item>
             <item>
