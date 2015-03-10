@@ -1,5 +1,5 @@
 set(Plugin-Name "Voxel2mesh")
 set(Plugin-Version "0.1")
-set(Plugin-Vendor "DKFZ")
+set(Plugin-Vendor "ZHAW")
 set(Plugin-ContactAddress "")
 set(Require-Plugin org.mitk.gui.qt.common)

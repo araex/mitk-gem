@@ -5,7 +5,7 @@
     <view id="org.mitk.views.voxelmasktopolygonmesh"
           name="Voxel mask to polygon mesh"
           class="Voxel2MeshView"
-          icon="resources/icon.xpm" />
+          icon="resources/icon.png" />
   </extension>
 
 </plugin>
