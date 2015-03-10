@@ -27,6 +27,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 //mitk image
 #include <mitkImage.h>
+#include <mitkNodePredicateProperty.h>
 
 #include "mitkGraphcutSegmentationToSurfaceFilter.h"
 
@@ -74,7 +75,14 @@ void Voxel2MeshView::generateSurfaceButtonPressed() {
         setMandatoryField(m_Controls.selectedImages, true);
     }
 
+    mitk::NodePredicateProperty::Pointer isBinaryPredicate = mitk::NodePredicateProperty::New("binary", mitk::BoolProperty::New(true));
+
     foreach(mitk::DataNode::Pointer node, nodes){
+        if(!isBinaryPredicate->CheckNode(node)){
+            setMandatoryField(m_Controls.selectedImages, true);
+            QMessageBox::warning(NULL, "Invalid selection", "Invalid selection. Selected node is not a segmentation.");
+            return;
+        }
         mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(node->GetData());
         mitk::Surface::Pointer surface = createSurface(img, params);
         mitk::DataNode::Pointer surfaceNode = mitk::DataNode::New();
