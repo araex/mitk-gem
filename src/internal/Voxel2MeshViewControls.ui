@@ -390,7 +390,7 @@ QScrollArea{
                <item>
                 <widget class="QWidget" name="iterationWidget_6" native="true">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determine how far out in physical units [mm] the gaussian kernel will go before being clamped to zero. If you increase this value, you'll have to adjust the threshold to prevent a dilated result. The MITK default is 0.49 while ITK-SNAP uses 0.50.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determine how far out in physical units [mm] the gaussian kernel will go before being clamped to zero. If you increase this value, you'll have to adjust the threshold to prevent a dilated result. The MITK default is 0.49 while ITK-SNAP uses 1.50.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,1">
                   <property name="leftMargin">
