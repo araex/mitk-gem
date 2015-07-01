@@ -2,7 +2,6 @@
 #define _MITKGRAPHCUTSEGMENTATIONTOSURFACEFILTER_h__
 
 #include <mitkImageToSurfaceFilter.h>
-#include <MitkSegmentationExports.h>
 
 #include <vtkImageGaussianSmooth.h>
 #include <vtkImageMedian3D.h>
