@@ -78,9 +78,6 @@ public:
         return graph->get_arc_num();
     }
 
-private:
-    unsigned int SOURCE;
-    unsigned int SINK;
 
     GraphType *graph;
 
