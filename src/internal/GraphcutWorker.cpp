@@ -4,6 +4,7 @@
 GraphcutWorker::GraphcutWorker()
         : id(WorkbenchUtils::getId())
         , m_Sigma(50)
+        , m_ForegroundPixelValue(255)
 {
 }
 
@@ -14,6 +15,7 @@ void GraphcutWorker::preparePipeline() {
     m_graphCut->SetInputImage(m_input);
     m_graphCut->SetForegroundImage(m_foreground);
     m_graphCut->SetBackgroundImage(m_background);
+    m_graphCut->SetForegroundPixelValue(m_ForegroundPixelValue);
 
     m_graphCut->SetSigma(m_Sigma);
     switch (m_boundaryDirection) {

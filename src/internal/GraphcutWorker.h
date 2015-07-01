@@ -59,8 +59,9 @@ public:
 
     // image typedefs
     typedef itk::Image<short, 3> InputImageType;
-    typedef itk::Image<unsigned char, 3> MaskImageType;
-    typedef itk::Image<unsigned char, 3> OutputImageType;
+    typedef unsigned char BinaryPixelType;
+    typedef itk::Image<BinaryPixelType, 3> MaskImageType;
+    typedef itk::Image<BinaryPixelType, 3> OutputImageType;
 
     // typedef for pipeline
     typedef itk::ImageGraphCut3DFilter<InputImageType, MaskImageType, MaskImageType, OutputImageType> GraphCutFilterType;
@@ -99,7 +100,9 @@ public:
         m_boundaryDirection = i;
     }
 
-
+    void SetForegroundPixelValue(BinaryPixelType u){
+        m_ForegroundPixelValue = u;
+    }
 
     unsigned int id;
 
@@ -118,6 +121,7 @@ private:
     // parameters
     double m_Sigma;
     BoundaryDirection m_boundaryDirection;
+    BinaryPixelType m_ForegroundPixelValue;
 };
 
 #endif // __GraphcutWorker_h__
