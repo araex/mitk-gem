@@ -21,6 +21,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <mitkWorkbenchUtil.h>
 #include <ctkUtils.h>
 #include <QApplication>
+#include <berryPlatform.h>
 
 #include "GraphcutView.h"
 
@@ -31,7 +32,9 @@ void ch_zhaw_graphcut_Activator::start(ctkPluginContext* context)
     BERRY_REGISTER_EXTENSION_CLASS(GraphcutView, context)
 
     // set the logo
-    mitk::WorkbenchUtil::SetDepartmentLogoPreference(":/GraphCutPlugin/logo.png", context);
+    // TODO: setting the logo does not work anymore so we disable it for now...
+    berry::Platform::GetPreferencesService()->GetSystemPreferences()->Node("org.mitk.editors.stdmultiwidget")->Put("DepartmentLogo", "");
+//    mitk::WorkbenchUtil::SetDepartmentLogoPreference(":/PluginResources/logo.png", context);
 }
 
 void ch_zhaw_graphcut_Activator::stop(ctkPluginContext* context)
