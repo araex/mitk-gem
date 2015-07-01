@@ -100,7 +100,7 @@ public:
         m_boundaryDirection = i;
     }
 
-    void SetForegroundPixelValue(BinaryPixelType u){
+    void setForegroundPixelValue(BinaryPixelType u){
         m_ForegroundPixelValue = u;
     }
 
