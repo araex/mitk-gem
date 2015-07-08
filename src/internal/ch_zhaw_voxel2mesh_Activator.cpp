@@ -33,5 +33,6 @@ namespace mitk {
 
 }
 
-Q_EXPORT_PLUGIN2(ch_zhaw_voxel2mesh, mitk::ch_zhaw_voxel2mesh_Activator
-)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+Q_EXPORT_PLUGIN2(ch_zhaw_voxel2mesh, mitk::ch_zhaw_voxel2mesh_Activator)
+#endif
