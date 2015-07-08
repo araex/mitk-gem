@@ -35,4 +35,6 @@ void ch_zhaw_padding_Activator::stop(ctkPluginContext* context)
 
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(ch_zhaw_padding, mitk::ch_zhaw_padding_Activator)
+#endif
