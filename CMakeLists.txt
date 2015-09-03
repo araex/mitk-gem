@@ -118,7 +118,12 @@ mitkFunctionFindWhitelists(MITK)
 #-----------------------------------------------------------------------------
 # QT stuff
 #-----------------------------------------------------------------------------
-find_package(Qt4 4.7 REQUIRED)
+if(APPLE)
+  find_package(Qt4 4.7 REQUIRED)
+else()
+  find_package(Qt5 REQUIRED)
+endif()
+
 
 #-----------------------------------------------------------------------------
 # Superbuild script
