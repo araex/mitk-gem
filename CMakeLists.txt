@@ -13,11 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED 1)
 set(CMAKE_CXX_EXTENSIONS 0)
 
 #-----------------------------------------------------------------------------
-# Append search path for qt5 on osx
-#-----------------------------------------------------------------------------
-list(APPEND CMAKE_PREFIX_PATH "/Users/fitz/Work/Libs/qt5/5.4/clang_64")
-
-#-----------------------------------------------------------------------------
 # Set a default build type if none was specified
 #-----------------------------------------------------------------------------
 
