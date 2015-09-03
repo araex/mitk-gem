@@ -116,7 +116,7 @@ mitkFunctionFindWhitelists(MITK)
 if(APPLE)
   find_package(Qt4 4.7 REQUIRED)
 else()
-  find_package(Qt5 REQUIRED)
+  find_package(Qt5Widgets REQUIRED)
 endif()
 
 
