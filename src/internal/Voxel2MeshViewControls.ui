@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>529</width>
+    <width>417</width>
     <height>777</height>
    </rect>
   </property>
@@ -91,7 +91,7 @@ QScrollArea{
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>529</width>
+           <width>417</width>
            <height>777</height>
           </rect>
          </property>
@@ -136,6 +136,12 @@ QScrollArea{
             </item>
             <item>
              <widget class="QLabel" name="selectedImages">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="font">
                <font>
                 <pointsize>18</pointsize>
@@ -143,11 +149,17 @@ QScrollArea{
                 <bold>true</bold>
                </font>
               </property>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
               <property name="text">
                <string>no segmentation selected</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
