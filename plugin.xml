@@ -3,7 +3,7 @@
 
   <extension point="org.blueberry.ui.views">
     <view id="org.mitk.views.voxelmasktopolygonmesh"
-          name="Voxel mask to polygon mesh"
+          name="Mesher"
           class="Voxel2MeshView"
           icon="resources/icon.png" />
   </extension>
