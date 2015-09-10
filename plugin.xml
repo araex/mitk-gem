@@ -5,7 +5,7 @@
     <view id="org.mitk.views.paddingview"
           name="Expand image dimensions"
           class="PaddingView"
-          icon="resources/icon.xpm" />
+          icon="resources/icon.png" />
   </extension>
 
 </plugin>
