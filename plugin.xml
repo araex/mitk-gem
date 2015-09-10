@@ -3,7 +3,7 @@
 
   <extension point="org.blueberry.ui.views">
     <view id="org.mitk.views.paddingview"
-          name="Expand image dimensions"
+          name="Padding"
           class="PaddingView"
           icon="resources/icon.png" />
   </extension>
