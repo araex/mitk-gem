@@ -32,9 +32,7 @@ void ch_zhaw_graphcut_Activator::start(ctkPluginContext* context)
     BERRY_REGISTER_EXTENSION_CLASS(GraphcutView, context)
 
     // set the logo
-    // TODO: setting the logo does not work anymore so we disable it for now...
-    berry::Platform::GetPreferencesService()->GetSystemPreferences()->Node("org.mitk.editors.stdmultiwidget")->Put("DepartmentLogo", "");
-//    mitk::WorkbenchUtil::SetDepartmentLogoPreference(":/PluginResources/logo.png", context);
+    mitk::WorkbenchUtil::SetDepartmentLogoPreference(":/GraphCutPlugin/logo.png", context);
 }
 
 void ch_zhaw_graphcut_Activator::stop(ctkPluginContext* context)
