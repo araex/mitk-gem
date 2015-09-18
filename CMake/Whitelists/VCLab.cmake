@@ -6,6 +6,7 @@ set(enabled_modules
   CppMicroServices
   DataTypesExt
   DICOMReader
+  DicomUI
   GraphAlgorithms
   ImageExtraction
   ImageStatistics
@@ -39,6 +40,7 @@ set(enabled_plugins
   "org.mitk.gui.qt.application"
   "org.mitk.gui.qt.common"
   "org.mitk.gui.qt.common.legacy"
+  "org.mitk.gui.qt.dicom"
   "org.mitk.gui.qt.extapplication"
   "org.mitk.gui.qt.ext"
   "org.mitk.gui.qt.stdmultiwidgeteditor"
@@ -46,4 +48,5 @@ set(enabled_plugins
   "org.mitk.gui.qt.segmentation"
   "org.mitk.gui.qt.registration"
   "org.mitk.gui.qt.imagecropper"
+  "org.mitk.gui.qt.volumevisualization"
 )

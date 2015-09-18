@@ -36,6 +36,8 @@ if(NOT MITK_DIR)
   option(MITK_BUILD_org.mitk.gui.qt.segmentation "" ON)
   option(MITK_BUILD_org.mitk.gui.qt.registration "" ON)
   option(MITK_BUILD_org.mitk.gui.qt.imagecropper "" ON)
+  option(MITK_BUILD_org.mitk.gui.qt.volumevisualization "" ON)
+  option(MITK_BUILD_org.mitk.gui.qt.dicom "" ON)
 
 
   if(MITK_USE_BLUEBERRY AND NOT MITK_USE_CTK)
