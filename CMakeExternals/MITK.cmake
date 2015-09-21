@@ -15,7 +15,7 @@ if(NOT MITK_DIR)
   option(MITK_USE_SUPERBUILD "Use superbuild for MITK" ON)
   option(MITK_USE_BLUEBERRY "Build the BlueBerry platform in MITK" ON)
   option(MITK_BUILD_EXAMPLES "Build the MITK examples" OFF)
-  option(MITK_BUILD_ALL_PLUGINS "Build all MITK plugins" OFF)
+  option(MITK_BUILD_ALL_PLUGINS "Build all MITK plugins" ON)
   option(MITK_BUILD_TESTING "Build the MITK unit tests" OFF)
   option(MITK_USE_ACVD "Use Approximated Centroidal Voronoi Diagrams" OFF)
   option(MITK_USE_CTK "Use CTK in MITK" ${MITK_USE_BLUEBERRY})
@@ -141,6 +141,13 @@ if(NOT MITK_DIR)
   list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_EXTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_EXTERNAL_PATH}")
   get_filename_component(MITK_WHITELISTS_INTERNAL_PATH_ABS ${MITK_WHITELISTS_INTERNAL_PATH} ABSOLUTE)
   list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_INTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_INTERNAL_PATH_ABS}")
+  list(APPEND additional_mitk_cmakevars "-DMITK_BUILD_ALL_PLUGINS:BOOL=${MITK_BUILD_ALL_PLUGINS}")
+
+  MESSAGE( STATUS "WHITELIST VARIABLES ON MITK LEVEL" )
+  MESSAGE( STATUS "WHITELIST:                          " ${MITK_WHITELIST} )
+  MESSAGE( STATUS "MITK_WHITELISTS_EXTERNAL_PATH:      " ${MITK_WHITELISTS_EXTERNAL_PATH} )
+  MESSAGE( STATUS "MITK_WHITELISTS_INTERNAL_PATH:      " ${MITK_WHITELISTS_INTERNAL_PATH} )
+  MESSAGE( STATUS "MITK_WHITELISTS_INTERNAL_PATH_ABS:  " ${MITK_WHITELISTS_INTERNAL_PATH_ABS} )
 
   #-----------------------------------------------------------------------------
   # Additional MITK CMake variables

@@ -46,7 +46,7 @@ set(enabled_plugins
   "org.mitk.gui.qt.stdmultiwidgeteditor"
   "org.mitk.gui.qt.datamanager"
   "org.mitk.gui.qt.segmentation"
-  "org.mitk.gui.qt.registration"
   "org.mitk.gui.qt.imagecropper"
   "org.mitk.gui.qt.volumevisualization"
+  "org.mitk.gui.qt.measurementtoolbox"
 )
