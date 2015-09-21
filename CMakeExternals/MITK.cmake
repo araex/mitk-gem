@@ -32,13 +32,6 @@ if(NOT MITK_DIR)
   option(MITK_USE_OpenCV "Use Intel's OpenCV library" OFF)
   option(MITK_USE_SOFA "Use Simulation Open Framework Architecture" OFF)
   option(MITK_USE_Python "Enable Python wrapping in MITK" OFF)
-  option(MITK_BUILD_org.mitk.gui.qt.datamanager "" ON)
-  option(MITK_BUILD_org.mitk.gui.qt.segmentation "" ON)
-  option(MITK_BUILD_org.mitk.gui.qt.registration "" ON)
-  option(MITK_BUILD_org.mitk.gui.qt.imagecropper "" ON)
-  option(MITK_BUILD_org.mitk.gui.qt.volumevisualization "" ON)
-  option(MITK_BUILD_org.mitk.gui.qt.dicom "" ON)
-
 
   if(MITK_USE_BLUEBERRY AND NOT MITK_USE_CTK)
     message("Forcing MITK_USE_CTK to ON because of MITK_USE_BLUEBERRY")
@@ -140,6 +133,14 @@ if(NOT MITK_DIR)
   foreach(mitk_cmake_arg ${mitk_cmake_boolean_args})
     list(APPEND mitk_boolean_args -D${mitk_cmake_arg}:BOOL=${${mitk_cmake_arg}})
   endforeach()
+
+  #-----------------------------------------------------------------------------
+  # pass the whitelist to MITK build
+  #-----------------------------------------------------------------------------
+  list(APPEND additional_mitk_cmakevars "-DMITK_WHITELIST:STRING=${MITK_WHITELIST}")
+  list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_EXTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_EXTERNAL_PATH}")
+  get_filename_component(MITK_WHITELISTS_INTERNAL_PATH_ABS ${MITK_WHITELISTS_INTERNAL_PATH} ABSOLUTE)
+  list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_INTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_INTERNAL_PATH_ABS}")
 
   #-----------------------------------------------------------------------------
   # Additional MITK CMake variables
