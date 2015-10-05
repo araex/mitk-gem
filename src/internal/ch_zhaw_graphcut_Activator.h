@@ -26,6 +26,9 @@ class ch_zhaw_graphcut_Activator :
   public QObject, public ctkPluginActivator
 {
   Q_OBJECT
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    Q_PLUGIN_METADATA(IID "ch_zhaw_graphcut")
+#endif
   Q_INTERFACES(ctkPluginActivator)
 
 public:
