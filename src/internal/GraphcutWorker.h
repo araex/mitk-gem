@@ -19,11 +19,11 @@ class ProgressObserverCommand : public itk::Command {
 public:
     itkNewMacro(ProgressObserverCommand);
 
-    void Execute(itk::Object *caller, const itk::EventObject &event){
+    void Execute(itk::Object *caller, const itk::EventObject &event) override {
         Execute(const_cast<const itk::Object *>(caller), event);
     }
 
-    void Execute(const itk::Object *caller, const itk::EventObject &event){
+    void Execute(const itk::Object *caller, const itk::EventObject &event) override{
         itk::ProcessObject *processObject = (itk::ProcessObject*)caller;
         if (typeid(event) == typeid(itk::ProgressEvent)) {
             if(m_worker){
