@@ -52,8 +52,8 @@ protected:
     Ui::GraphcutViewControls m_Controls;
 
 private:
-    void updateMemoryRequirements(long memoryRequiredInBytes);
-    void updateTimeEstimate(long numberOfEdges);
+    void updateMemoryRequirements(double memoryRequiredInBytes);
+    void updateTimeEstimate(long long numberOfEdges);
     void initializeImageSelector(QmitkDataStorageComboBox *);
     void setMandatoryField(QWidget *, bool);
     void setWarningField(QWidget *, bool);

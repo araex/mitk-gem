@@ -177,13 +177,13 @@ void GraphcutView::imageSelectionChanged() {
     if(greyscaleImageNode){
         // numberOfVertices is straightforward
         mitk::Image::Pointer greyscaleImage = dynamic_cast<mitk::Image *>(greyscaleImageNode->GetData());
-        unsigned int x = greyscaleImage->GetDimension(0);
-        unsigned int y = greyscaleImage->GetDimension(1);
-        unsigned int z = greyscaleImage->GetDimension(2);
-        long numberOfVertices = x*y*z;
+        auto x = greyscaleImage->GetDimension(0);
+        auto y = greyscaleImage->GetDimension(1);
+        auto z = greyscaleImage->GetDimension(2);
+        auto numberOfVertices = x*y*z;
 
         // numberOfEdges are a bit more tricky
-        long numberOfEdges = 3; // 3 because we're using a 6-connected neighborhood which gives us 3 edges / pixel
+        auto numberOfEdges = 3; // 3 because we're using a 6-connected neighborhood which gives us 3 edges / pixel
         numberOfEdges = (numberOfEdges * x) - 1;
         numberOfEdges = (numberOfEdges * y) - x;
         numberOfEdges = (numberOfEdges * z) - x * y;
@@ -196,7 +196,7 @@ void GraphcutView::imageSelectionChanged() {
         itkImageSizeInMemory += (2 * numberOfVertices * sizeof(unsigned char));
 
         // node struct is 48byte, arc is 28byte as defined by Kolmogorov max flow v3.0.03
-        auto memoryRequiredInBytes=numberOfVertices * 48 + numberOfEdges * 28 + itkImageSizeInMemory;
+        auto memoryRequiredInBytes = numberOfVertices * 48 + numberOfEdges * 28 + itkImageSizeInMemory;
 
         MITK_INFO("ch.zhaw.graphcut") << "Image has " << numberOfVertices << " vertices and " <<  numberOfEdges << " edges";
 
@@ -205,8 +205,8 @@ void GraphcutView::imageSelectionChanged() {
     }
 }
 
-void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
-    QString memory = QString::number(memoryRequiredInBytes / 1024 / 1024);
+void GraphcutView::updateMemoryRequirements(double memoryRequiredInBytes){
+    QString memory = QString::number(memoryRequiredInBytes / 1024.0 / 1024.0, 'f', 0);
     memory.append("MB");
     m_Controls.estimatedMemory->setText(memory);
     if(memoryRequiredInBytes > 4096000000){
@@ -221,7 +221,7 @@ void GraphcutView::updateMemoryRequirements(long memoryRequiredInBytes){
     MITK_INFO("ch.zhaw.graphcut") <<  "Representing the full graph will require " << memoryRequiredInBytes << " Bytes of memory to compute.";
 }
 
-void GraphcutView::updateTimeEstimate(long numberOfEdges){
+void GraphcutView::updateTimeEstimate(long long numberOfEdges){
     // trendlines based on dataset of 50 images with incremental sizes calculated on a 32GB machine
 
     // graph init / reading results. linear
@@ -248,7 +248,7 @@ void GraphcutView::updateTimeEstimate(long numberOfEdges){
         estimateInSeconds = estimatedSetupAndBreakdownTimeInSeconds + estimatedComputeTimeInSeconds * 2; // * 2 because the estimation is off anyways. better estimate pessimistically
     }
 
-    QString time = QString::number(estimateInSeconds);
+    QString time = QString::number(estimateInSeconds, 'f', 2);
     time.append("s");
     m_Controls.estimatedTime->setText(time);
     if(estimateInSeconds > 60){
