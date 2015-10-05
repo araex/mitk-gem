@@ -75,14 +75,7 @@ void Voxel2MeshView::generateSurfaceButtonPressed() {
         setMandatoryField(m_Controls.selectedImages, true);
     }
 
-    mitk::NodePredicateProperty::Pointer isBinaryPredicate = mitk::NodePredicateProperty::New("binary", mitk::BoolProperty::New(true));
-
     foreach(mitk::DataNode::Pointer node, nodes){
-        if(!isBinaryPredicate->CheckNode(node)){
-            setMandatoryField(m_Controls.selectedImages, true);
-            QMessageBox::warning(NULL, "Invalid selection", "Invalid selection. Selected node is not a segmentation.");
-            return;
-        }
         mitk::Image::Pointer img = dynamic_cast<mitk::Image *>(node->GetData());
         mitk::Surface::Pointer surface = createSurface(img, params);
         mitk::DataNode::Pointer surfaceNode = mitk::DataNode::New();
@@ -128,7 +121,8 @@ Voxel2MeshView::SurfaceGeneratorParameters Voxel2MeshView::getParameters() {
     ret.deviation = m_Controls.deviationSpinBox->value();
     ret.radius = m_Controls.radiusSpinBox->value();
 
-    ret.threshold = m_Controls.thresholdSpinBox->value();
+    auto thresholdPercentage = m_Controls.thresholdSpinBox->value();
+    ret.threshold = thresholdPercentage * 255.0 / 100.0;
 
     ret.doSmoothing = m_Controls.smoothingGroup->isChecked();
     ret.iterations = m_Controls.iterationSpinBox->value();

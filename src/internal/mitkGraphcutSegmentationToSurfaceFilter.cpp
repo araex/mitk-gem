@@ -2,11 +2,13 @@
 
 #include <vtkSmartPointer.h>
 #include <vtkImageShiftScale.h>
+#include <vtkImageThreshold.h>
 
 #include "mitkProgressBar.h"
 
 mitk::GraphcutSegmentationToSurfaceFilter::GraphcutSegmentationToSurfaceFilter()
         : m_UseMedian(false),
+          m_UseThresholding(true),
           m_MedianKernelSizeX(3),
           m_MedianKernelSizeY(3),
           m_MedianKernelSizeZ(3),
@@ -36,7 +38,19 @@ void mitk::GraphcutSegmentationToSurfaceFilter::GenerateData() {
     for (int t = tstart; t < tmax; ++t) {
         vtkSmartPointer <vtkImageData> vtkimage = image->GetVtkImageData(t);
 
-        // Median
+        if (m_UseThresholding) {
+            auto threshold = vtkImageThreshold::New();
+            threshold->SetInputData(vtkimage);
+            threshold->SetOutputScalarTypeToUnsignedChar();
+            threshold->ThresholdByLower(1);
+            threshold->SetOutValue(255);
+            threshold->ReleaseDataFlagOn();
+            threshold->UpdateInformation();
+            threshold->Update();
+            vtkimage = threshold->GetOutput();
+            threshold->Delete();
+        }
+
         if (m_UseMedian) {
             vtkImageMedian3D *median = vtkImageMedian3D::New();
             median->SetInputData(vtkimage);

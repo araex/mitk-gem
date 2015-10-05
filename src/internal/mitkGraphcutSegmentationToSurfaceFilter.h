@@ -14,7 +14,7 @@ namespace mitk {
         mitkClassMacro(GraphcutSegmentationToSurfaceFilter,ImageToSurfaceFilter);
 
         typedef double vtkDouble;
-        virtual void GenerateData();
+        virtual void GenerateData() override;
         itkFactorylessNewMacro(Self)
         itkCloneMacro(Self)
 
@@ -22,7 +22,9 @@ namespace mitk {
         // setter / getter macros
         itkSetMacro(UseMedian,bool);
         itkGetConstMacro(UseMedian,bool);
-        void SetMedianKernelSize(int x, int y, int z){
+        itkSetMacro(UseThresholding,bool);
+        itkGetConstMacro(UseThresholding,bool);
+        void SetMedianKernelSize(int x, int y, int z) {
             m_MedianKernelSizeX = x;
             m_MedianKernelSizeY = y;
             m_MedianKernelSizeZ = z;
@@ -45,7 +47,7 @@ namespace mitk {
         GraphcutSegmentationToSurfaceFilter();
         virtual ~GraphcutSegmentationToSurfaceFilter(){};
 
-        bool m_UseMedian;
+        bool m_UseMedian, m_UseThresholding;
         int m_MedianKernelSizeX, m_MedianKernelSizeY, m_MedianKernelSizeZ;
 
         bool m_UseGaussianSmoothing;
