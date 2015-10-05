@@ -1,3 +1,5 @@
+#include <itkBinaryThresholdImageFilter.h>
+
 #include "GraphcutWorker.h"
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
 
@@ -13,8 +15,8 @@ void GraphcutWorker::preparePipeline() {
 
     m_graphCut = GraphCutFilterType::New();
     m_graphCut->SetInputImage(m_input);
-    m_graphCut->SetForegroundImage(m_foreground);
-    m_graphCut->SetBackgroundImage(m_background);
+    m_graphCut->SetForegroundImage(rescaleMask(m_foreground, m_ForegroundPixelValue));
+    m_graphCut->SetBackgroundImage(rescaleMask(m_background, m_ForegroundPixelValue));
     m_graphCut->SetForegroundPixelValue(m_ForegroundPixelValue);
 
     m_graphCut->SetSigma(m_Sigma);
@@ -57,4 +59,17 @@ void GraphcutWorker::process() {
 
 void GraphcutWorker::itkProgressCommandCallback(float progress){
     emit Worker::progress(progress, id);
+}
+
+GraphcutWorker::MaskImageType::Pointer GraphcutWorker::rescaleMask(MaskImageType::Pointer _mask, MaskImageType::ValueType _insideValue) {
+    auto min = itk::NumericTraits<MaskImageType::ValueType>::min();
+    auto max = itk::NumericTraits<MaskImageType::ValueType>::max();
+
+    auto thresholdFilter = itk::BinaryThresholdImageFilter<MaskImageType, MaskImageType>::New();
+    thresholdFilter->SetInput(_mask);
+    thresholdFilter->SetLowerThreshold(min + 1);
+    thresholdFilter->SetUpperThreshold(max);
+    thresholdFilter->SetInsideValue(_insideValue);
+    thresholdFilter->Update();
+    return thresholdFilter->GetOutput();
 }

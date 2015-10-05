@@ -190,13 +190,13 @@ void GraphcutView::imageSelectionChanged() {
         numberOfEdges *= 2; // because kolmogorov adds 2 directed edges instead of 1 bidirectional
 
         // the input image will be cast to short
-        long itkImageSizeInMemory = numberOfVertices * sizeof(short);
+        auto itkImageSizeInMemory = numberOfVertices * sizeof(short);
 
         // both mask are cast to unsigned chars
         itkImageSizeInMemory += (2 * numberOfVertices * sizeof(unsigned char));
 
         // node struct is 48byte, arc is 28byte as defined by Kolmogorov max flow v3.0.03
-        long memoryRequiredInBytes=numberOfVertices * 48 + numberOfEdges * 28 + itkImageSizeInMemory;
+        auto memoryRequiredInBytes=numberOfVertices * 48 + numberOfEdges * 28 + itkImageSizeInMemory;
 
         MITK_INFO("ch.zhaw.graphcut") << "Image has " << numberOfVertices << " vertices and " <<  numberOfEdges << " edges";
 

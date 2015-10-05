@@ -109,6 +109,7 @@ public:
 private:
 
     void preparePipeline();
+    MaskImageType::Pointer rescaleMask(MaskImageType::Pointer, MaskImageType::ValueType);
 
     // member variables
     InputImageType::Pointer m_input;
