@@ -42,7 +42,7 @@ void mitk::GraphcutSegmentationToSurfaceFilter::GenerateData() {
             auto threshold = vtkImageThreshold::New();
             threshold->SetInputData(vtkimage);
             threshold->SetOutputScalarTypeToUnsignedChar();
-            threshold->ThresholdByLower(1);
+            threshold->ThresholdByLower(0.99); // range is inclusive but always in double. Precision issue.
             threshold->SetOutValue(255);
             threshold->ReleaseDataFlagOn();
             threshold->UpdateInformation();
