@@ -38,6 +38,7 @@ set(enabled_plugins
   "org.mitk.core.services"
   "org.mitk.gui.common"
   "org.mitk.gui.qt.application"
+  "org.mitk.gui.qt.basicimageprocessing"
   "org.mitk.gui.qt.common"
   "org.mitk.gui.qt.common.legacy"
   "org.mitk.gui.qt.dicom"
