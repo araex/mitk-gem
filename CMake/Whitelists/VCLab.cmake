@@ -8,6 +8,7 @@ set(enabled_modules
   DICOMReader
   DicomUI
   GraphAlgorithms
+  ImageDenoising
   ImageExtraction
   ImageStatistics
   LegacyAdaptors
