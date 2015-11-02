@@ -122,7 +122,7 @@ if(NOT MITK_DIR)
   set(MITK_SOURCE_DIR "" CACHE PATH "MITK source code location. If empty, MITK will be cloned from MITK_GIT_REPOSITORY")
   set(MITK_GIT_REPOSITORY "http://git.mitk.org/MITK.git" CACHE STRING "The git repository for cloning MITK")
   set(MITK_GIT_TAG "v2015.05.2" CACHE STRING "The git tag/hash to be used when cloning from MITK_GIT_REPOSITORY")
-  set(MITK_WHITELIST "VCLab")
+  # set(MITK_WHITELIST "VCLab")
   mark_as_advanced(MITK_SOURCE_DIR MITK_GIT_REPOSITORY MITK_GIT_TAG)
 
   #-----------------------------------------------------------------------------
@@ -137,17 +137,11 @@ if(NOT MITK_DIR)
   #-----------------------------------------------------------------------------
   # pass the whitelist to MITK build
   #-----------------------------------------------------------------------------
-  list(APPEND additional_mitk_cmakevars "-DMITK_WHITELIST:STRING=${MITK_WHITELIST}")
-  list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_EXTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_EXTERNAL_PATH}")
-  get_filename_component(MITK_WHITELISTS_INTERNAL_PATH_ABS ${MITK_WHITELISTS_INTERNAL_PATH} ABSOLUTE)
-  list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_INTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_INTERNAL_PATH_ABS}")
-  list(APPEND additional_mitk_cmakevars "-DMITK_BUILD_ALL_PLUGINS:BOOL=${MITK_BUILD_ALL_PLUGINS}")
-
-  MESSAGE( STATUS "WHITELIST VARIABLES ON MITK LEVEL" )
-  MESSAGE( STATUS "WHITELIST:                          " ${MITK_WHITELIST} )
-  MESSAGE( STATUS "MITK_WHITELISTS_EXTERNAL_PATH:      " ${MITK_WHITELISTS_EXTERNAL_PATH} )
-  MESSAGE( STATUS "MITK_WHITELISTS_INTERNAL_PATH:      " ${MITK_WHITELISTS_INTERNAL_PATH} )
-  MESSAGE( STATUS "MITK_WHITELISTS_INTERNAL_PATH_ABS:  " ${MITK_WHITELISTS_INTERNAL_PATH_ABS} )
+  #list(APPEND additional_mitk_cmakevars "-DMITK_WHITELIST:STRING=${MITK_WHITELIST}")
+  #list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_EXTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_EXTERNAL_PATH}")
+  #get_filename_component(MITK_WHITELISTS_INTERNAL_PATH_ABS ${MITK_WHITELISTS_INTERNAL_PATH} ABSOLUTE)
+  #list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_INTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_INTERNAL_PATH_ABS}")
+  #list(APPEND additional_mitk_cmakevars "-DMITK_BUILD_ALL_PLUGINS:BOOL=${MITK_BUILD_ALL_PLUGINS}")
 
   #-----------------------------------------------------------------------------
   # Additional MITK CMake variables
