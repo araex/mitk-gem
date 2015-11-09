@@ -353,7 +353,7 @@ ctkMacroSetupPlugins(${PROJECT_PLUGINS}
 # Add subdirectories
 #-----------------------------------------------------------------------------
 
-add_subdirectory(Apps)
+add_subdirectory(Apps/VCLabWorkbench)
 
 #-----------------------------------------------------------------------------
 # Installation
