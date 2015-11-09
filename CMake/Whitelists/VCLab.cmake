@@ -11,8 +11,10 @@ set(enabled_modules
   ImageDenoising
   ImageExtraction
   ImageStatistics
+  IOExt
   LegacyAdaptors
   LegacyGL
+  LegacyIO
   MapperExt
   Multilabel
   Overlays

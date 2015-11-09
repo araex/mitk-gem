@@ -1,16 +1,8 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 # Change project and application name to your own
 set(MY_PROJECT_NAME VCLabMITK)
 set(MY_APP_NAME VCLabWorkbench)
-
-#-----------------------------------------------------------------------------
-# Set the language standard (MITK requires C++11)
-#-----------------------------------------------------------------------------
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED 1)
-set(CMAKE_CXX_EXTENSIONS 0)
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
@@ -58,8 +50,6 @@ set(project_policies
   CMP0012 # NEW: if() recognizes numbers and boolean constants.
   CMP0013 # NEW: Duplicate binary directories are not allowed.
   CMP0014 # NEW: Input directories must have CMakeLists.txt
-  CMP0020 # NEW: Automatically link Qt executables to qtmain target on Windows.
-  CMP0028 # NEW: Double colon in target name means ALIAS or IMPORTED target.
   )
 foreach(policy ${project_policies})
   if(POLICY ${policy})
@@ -93,6 +83,12 @@ foreach(type LIBRARY RUNTIME ARCHIVE)
 endforeach()
 
 #-----------------------------------------------------------------------------
+# Additional Settings (also shown during superbuild)
+#-----------------------------------------------------------------------------
+
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" CACHE PATH "")
+
+#-----------------------------------------------------------------------------
 # Additional Options (also shown during superbuild)
 #-----------------------------------------------------------------------------
 
@@ -100,25 +96,18 @@ option(BUILD_SHARED_LIBS "Build ${MY_PROJECT_NAME} with shared libraries" ON)
 option(WITH_COVERAGE "Enable/Disable coverage" OFF)
 option(BUILD_TESTING "Test the project" ON)
 
-option(${MY_PROJECT_NAME}_BUILD_ALL_PLUGINS "Build all ${MY_PROJECT_NAME} plugins" ON)
+option(${MY_PROJECT_NAME}_BUILD_ALL_PLUGINS "Build all ${MY_PROJECT_NAME} plugins" OFF)
+option(${MY_PROJECT_NAME}_BUILD_ALL_APPS "Build all ${MY_PROJECT_NAME} applications" OFF)
 
 mark_as_advanced(${MY_PROJECT_NAME}_INSTALL_RPATH_RELATIVE
                  ${MY_PROJECT_NAME}_BUILD_ALL_PLUGINS
+                 ${MY_PROJECT_NAME}_BUILD_ALL_APPS
                  )
 
 include(mitkFunctionWhitelists)
 mitkFunctionCreateWhitelistPaths(MITK)
 mitkFunctionFindWhitelists(MITK)
-
-#-----------------------------------------------------------------------------
-# QT stuff
-#-----------------------------------------------------------------------------
-if(APPLE)
-  find_package(Qt4 4.7 REQUIRED)
-else()
-  find_package(Qt5Widgets REQUIRED)
-endif()
-
+set(MITK_WHITELIST "VCLab" CACHE STRING "" FORCE)
 
 #-----------------------------------------------------------------------------
 # Superbuild script
@@ -137,10 +126,7 @@ endif()
 # Prerequesites
 #-----------------------------------------------------------------------------
 
-set(${PROJECT_NAME}_MODULES_PACKAGE_DEPENDS_DIR "${PROJECT_SOURCE_DIR}/CMake/PackageDepends")
-set(MODULES_PACKAGE_DEPENDS_DIRS ${${PROJECT_NAME}_MODULES_PACKAGE_DEPENDS_DIR})
-
-find_package(MITK 2015.5.0 REQUIRED)
+find_package(MITK 2015.05.2 REQUIRED)
 
 if(COMMAND mitkFunctionCheckMitkCompatibility)
   mitkFunctionCheckMitkCompatibility(VERSIONS MITK_VERSION_PLUGIN_SYSTEM 1 REQUIRED)
@@ -179,6 +165,9 @@ mark_as_advanced(${PROJECT_NAME}_SHOW_CONSOLE_WINDOW)
 if(NOT UNIX AND NOT MINGW)
   set(MITK_WIN32_FORCE_STATIC "STATIC")
 endif()
+
+set(${PROJECT_NAME}_MODULES_PACKAGE_DEPENDS_DIR "${PROJECT_SOURCE_DIR}/CMake/PackageDepends")
+list(APPEND MODULES_PACKAGE_DEPENDS_DIRS ${${PROJECT_NAME}_MODULES_PACKAGE_DEPENDS_DIR})
 
 #-----------------------------------------------------------------------------
 # Get project version info
@@ -235,6 +224,14 @@ set(${PROJECT_NAME}_CXX_FLAGS_RELEASE ${MITK_CXX_FLAGS_RELEASE})
 set(${PROJECT_NAME}_EXE_LINKER_FLAGS ${MITK_EXE_LINKER_FLAGS})
 set(${PROJECT_NAME}_SHARED_LINKER_FLAGS ${MITK_SHARED_LINKER_FLAGS})
 set(${PROJECT_NAME}_MODULE_LINKER_FLAGS ${MITK_MODULE_LINKER_FLAGS})
+
+# Add custom project flags here (e.g. for C++11 support)
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+  # Get the gcc version. Some MITK CMake macros rely on the CMake
+  # variable GCC_VERSION being set.
+  mitkFunctionGetGccVersion(${CMAKE_CXX_COMPILER} GCC_VERSION)
+endif()
 
 #-----------------------------------------------------------------------------
 # Set C/CXX Flags
@@ -301,15 +298,30 @@ endif()
 # Qt support
 #-----------------------------------------------------------------------------
 
-if(MITK_USE_Qt4)
+if(MITK_USE_QT)
   set(QT_QMAKE_EXECUTABLE ${MITK_QMAKE_EXECUTABLE})
+  add_definitions(-DQWT_DLL)
 endif()
 
 #-----------------------------------------------------------------------------
 # MITK modules
 #-----------------------------------------------------------------------------
 
-#add_subdirectory(Modules)
+# This project's directory holding module config files
+set(${PROJECT_NAME}_MODULES_CONF_DIR "${PROJECT_BINARY_DIR}/${MODULES_CONF_DIRNAME}")
+
+# Append this projects's module config directory to the global list
+# (This is used to get include directories for the <module_name>Exports.h files right)
+list(APPEND MODULES_CONF_DIRS ${${PROJECT_NAME}_MODULES_CONF_DIR})
+
+# Clean the modulesConf directory. This ensures that modules are sorted
+# according to their dependencies in the Modules/CMakeLists.txt file
+file(GLOB _modules_conf_files ${${PROJECT_NAME}_MODULES_CONF_DIR}/*.cmake)
+if(_modules_conf_files)
+  file(REMOVE ${_modules_conf_files})
+endif()
+
+add_subdirectory(Modules)
 
 #-----------------------------------------------------------------------------
 # CTK plugins
@@ -324,16 +336,24 @@ macro(GetMyTargetLibraries all_target_libraries varname)
   ctkMacroListFilter(_tmp_list re_ctkplugin OUTPUT_VARIABLE ${varname})
 endmacro()
 
+# Get infos about application directories and build options
+include("${CMAKE_CURRENT_SOURCE_DIR}/Apps/Apps.cmake")
+set(_apps_fullpath )
+foreach(_app ${PROJECT_APPS})
+  list(APPEND _apps_fullpath "${CMAKE_CURRENT_SOURCE_DIR}/${_app}")
+endforeach()
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/Plugins/Plugins.cmake)
 ctkMacroSetupPlugins(${PROJECT_PLUGINS}
-                     BUILD_OPTION_PREFIX ${MY_PROJECT_NAME}_
-                     BUILD_ALL ${${MY_PROJECT_NAME}_BUILD_ALL_PLUGINS})
+                     APPS ${_apps_fullpath}
+                     BUILD_OPTION_PREFIX ${PROJECT_NAME}_
+                     BUILD_ALL ${${PROJECT_NAME}_BUILD_ALL_PLUGINS})
 
 #-----------------------------------------------------------------------------
 # Add subdirectories
 #-----------------------------------------------------------------------------
 
-add_subdirectory(Apps/VCLabWorkbench)
+add_subdirectory(Apps)
 
 #-----------------------------------------------------------------------------
 # Installation

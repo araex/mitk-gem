@@ -1,4 +1,3 @@
-
 #-----------------------------------------------------------------------------
 # ExternalProjects
 #-----------------------------------------------------------------------------
@@ -82,6 +81,12 @@ set(ep_common_cache_default_args
   "-DCMAKE_LIBRARY_PATH:PATH=${CMAKE_LIBRARY_PATH}"
 )
 
+if(Qt5_DIR)
+  list(APPEND ep_common_cache_default_args
+    "-DQt5_DIR:PATH=${Qt5_DIR}"
+  )
+endif()
+
 # Include external projects
 foreach(p ${external_projects})
   include(CMakeExternals/${p}.cmake)
@@ -95,6 +100,7 @@ set(my_cmake_boolean_args
   WITH_COVERAGE
   BUILD_TESTING
   ${MY_PROJECT_NAME}_BUILD_ALL_PLUGINS
+  ${MY_PROJECT_NAME}_BUILD_ALL_APPS
   )
 
 #-----------------------------------------------------------------------------
@@ -147,13 +153,11 @@ mark_as_advanced(${MY_PROJECT_NAME}_ADDITIONAL_EXE_LINKER_FLAGS ${MY_PROJECT_NAM
 
 set(proj ${MY_PROJECT_NAME}-Configure)
 
-get_filename_component(MITK_WHITELISTS_INTERNAL_PATH_ABS ${MITK_WHITELISTS_INTERNAL_PATH} ABSOLUTE)
+set(cmake_cache_args)
 
-MESSAGE( STATUS "WHITELIST VARIABLES ON SUPERBUILD LEVEL" )
-MESSAGE( STATUS "WHITELIST:                          " ${MITK_WHITELIST} )
-MESSAGE( STATUS "MITK_WHITELISTS_EXTERNAL_PATH:      " ${MITK_WHITELISTS_EXTERNAL_PATH} )
-MESSAGE( STATUS "MITK_WHITELISTS_INTERNAL_PATH:      " ${MITK_WHITELISTS_INTERNAL_PATH} )
-MESSAGE( STATUS "MITK_WHITELISTS_INTERNAL_PATH_ABS:  " ${MITK_WHITELISTS_INTERNAL_PATH_ABS} )
+if(Qt5_DIR)
+  set(cmake_cache_args "-DQt5_DIR:PATH=${Qt5_DIR}")
+endif()
 
 ExternalProject_Add(${proj}
   DOWNLOAD_COMMAND ""
@@ -165,8 +169,9 @@ ExternalProject_Add(${proj}
     -DBUILD_SHARED_LIBS:BOOL=${ep_build_shared_libs}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     "-DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}"
-    "-DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INCLUDE_PATH}"
     "-DCMAKE_LIBRARY_PATH:PATH=${CMAKE_LIBRARY_PATH}"
+    "-DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INCLUDE_PATH}"
+    ${cmake_cache_args}
     # --------------- Compile options ----------------
     -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
     -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
@@ -198,7 +203,7 @@ ExternalProject_Add(${proj}
     -DVTK_DIR:PATH=${VTK_DIR}
     -DMITK_WHITELIST:STRING=${MITK_WHITELIST}
     -DMITK_WHITELISTS_EXTERNAL_PATH:STRING=${MITK_WHITELISTS_EXTERNAL_PATH}
-    -MITK_WHITELISTS_INTERNAL_PATH:STRING=${MITK_WHITELISTS_INTERNAL_PATH_ABS}
+    -MITK_WHITELISTS_INTERNAL_PATH:STRING=${MITK_WHITELISTS_INTERNAL_PATH}
 
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
   BINARY_DIR ${CMAKE_BINARY_DIR}/${MY_PROJECT_NAME}-build
@@ -240,4 +245,3 @@ add_custom_target(${MY_PROJECT_NAME}
   COMMAND ${_build_cmd}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${MY_PROJECT_NAME}-build
 )
-
