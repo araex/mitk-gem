@@ -336,13 +336,6 @@ macro(GetMyTargetLibraries all_target_libraries varname)
   ctkMacroListFilter(_tmp_list re_ctkplugin OUTPUT_VARIABLE ${varname})
 endmacro()
 
-# Get infos about application directories and build options
-include("${CMAKE_CURRENT_SOURCE_DIR}/Apps/Apps.cmake")
-set(_apps_fullpath )
-foreach(_app ${PROJECT_APPS})
-  list(APPEND _apps_fullpath "${CMAKE_CURRENT_SOURCE_DIR}/${_app}")
-endforeach()
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/Plugins/Plugins.cmake)
 ctkMacroSetupPlugins(${PROJECT_PLUGINS}
                      APPS ${_apps_fullpath}
