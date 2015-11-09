@@ -321,7 +321,7 @@ if(_modules_conf_files)
   file(REMOVE ${_modules_conf_files})
 endif()
 
-add_subdirectory(Modules)
+# add_subdirectory(Modules)
 
 #-----------------------------------------------------------------------------
 # CTK plugins
