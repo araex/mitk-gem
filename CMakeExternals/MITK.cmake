@@ -149,6 +149,12 @@ if(NOT MITK_DIR)
   #-----------------------------------------------------------------------------
   # pass the whitelist to MITK build
   #-----------------------------------------------------------------------------
+  MESSAGE( STATUS "WHITELIST VARIABLES ON EXTERNAL MITK LEVEL" )
+  MESSAGE( STATUS "WHITELIST:                          " ${MITK_WHITELIST} )
+  MESSAGE( STATUS "MITK_WHITELISTS_EXTERNAL_PATH:      " ${MITK_WHITELISTS_EXTERNAL_PATH} )
+  MESSAGE( STATUS "MITK_WHITELISTS_INTERNAL_PATH:      " ${MITK_WHITELISTS_INTERNAL_PATH} )
+
+  get_filename_component(MITK_WHITELISTS_INTERNAL_PATH ${MITK_WHITELISTS_INTERNAL_PATH} ABSOLUTE)
   list(APPEND additional_mitk_cmakevars "-DMITK_WHITELIST:STRING=${MITK_WHITELIST}")
   list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_EXTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_EXTERNAL_PATH}")
   list(APPEND additional_mitk_cmakevars "-DMITK_WHITELISTS_INTERNAL_PATH:FILEPATH=${MITK_WHITELISTS_INTERNAL_PATH}")
