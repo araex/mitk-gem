@@ -28,7 +28,7 @@
 ###############################################################################
 
 function(mitkFunctionCreateWhitelistPaths)
-  set(${ARGV0}_WHITELISTS_INTERNAL_PATH "CMake/Whitelists" CACHE PATH "")
+  set(${ARGV0}_WHITELISTS_INTERNAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Whitelists" CACHE PATH "")
   set(${ARGV0}_WHITELISTS_EXTERNAL_PATH ".mitk/Whitelists")
 
   if(WIN32)
