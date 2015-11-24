@@ -24,80 +24,68 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 // Qt
 #include <QMessageBox>
+#include <QShortcut>
 
 //mitk image
 #include <mitkImage.h>
 
-const std::string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
+using namespace std;
 
-void MaterialMappingView::SetFocus()
-{
-  m_Controls.buttonPerformImageProcessing->setFocus();
+const string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
+
+MaterialMappingView::MaterialMappingView() {
 }
 
-void MaterialMappingView::CreateQtPartControl( QWidget *parent )
-{
-  // create GUI widgets from the Qt Designer's .ui file
-  m_Controls.setupUi( parent );
-  connect( m_Controls.buttonPerformImageProcessing, SIGNAL(clicked()), this, SLOT(DoImageProcessing()) );
+void MaterialMappingView::SetFocus() {
 }
 
-void MaterialMappingView::OnSelectionChanged( berry::IWorkbenchPart::Pointer /*source*/,
-                                             const QList<mitk::DataNode::Pointer>& nodes )
-{
-  // iterate all selected objects, adjust warning visibility
-  foreach( mitk::DataNode::Pointer node, nodes )
-  {
-    if( node.IsNotNull() && dynamic_cast<mitk::Image*>(node->GetData()) )
-    {
-      m_Controls.labelWarning->setVisible( false );
-      m_Controls.buttonPerformImageProcessing->setEnabled( true );
-      return;
+void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
+    m_Controls.setupUi(parent);
+    // table
+    auto table = m_Controls.calibrationTableView;
+    table->setModel(m_CalibrationDataModel.getQItemModel());
+    auto setResizeMode = [=](int _column, QHeaderView::ResizeMode _mode){
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) // renamed in 5.0
+        table->horizontalHeader()->setResizeMode(_column, _mode);
+#else
+        table->horizontalHeader()->setSectionResizeMode(_column, _mode);
+#endif
+    };
+    setResizeMode(0, QHeaderView::Stretch);
+    setResizeMode(1, QHeaderView::Stretch);
+
+    // delete key on table
+    QShortcut* shortcut = new QShortcut(QKeySequence(QKeySequence::Delete), table);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(deleteSelectedRows()));
+
+    // signals
+    connect( m_Controls.loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()) );
+    connect( m_Controls.saveButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()) );
+}
+
+void MaterialMappingView::deleteSelectedRows(){
+    auto selection = m_Controls.calibrationTableView->selectionModel();
+    auto selectedItems = selection->selectedRows();
+    std::set<int> rowsToDelete;
+
+    foreach(auto item, selectedItems){
+        rowsToDelete.insert(item.row());
     }
-  }
 
-  m_Controls.labelWarning->setVisible( true );
-  m_Controls.buttonPerformImageProcessing->setEnabled( false );
+    for(std::set<int>::reverse_iterator rit = rowsToDelete.rbegin(); rit != rowsToDelete.rend(); ++rit){
+        m_CalibrationDataModel.removeRow(*rit);
+    }
 }
 
+void MaterialMappingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/,
+                                             const QList <mitk::DataNode::Pointer> &nodes) {
 
-void MaterialMappingView::DoImageProcessing()
-{
-  QList<mitk::DataNode::Pointer> nodes = this->GetDataManagerSelection();
-  if (nodes.empty()) return;
+}
 
-  mitk::DataNode* node = nodes.front();
+void MaterialMappingView::loadButtonClicked() {
+    m_CalibrationDataModel.openLoadFileDialog();
+}
 
-  if (!node)
-  {
-    // Nothing selected. Inform the user and return
-    QMessageBox::information( NULL, "Template", "Please load and select an image before starting image processing.");
-    return;
-  }
-
-  // here we have a valid mitk::DataNode
-
-  // a node itself is not very useful, we need its data item (the image)
-  mitk::BaseData* data = node->GetData();
-  if (data)
-  {
-    // test if this data item is an image or not (could also be a surface or something totally different)
-    mitk::Image* image = dynamic_cast<mitk::Image*>( data );
-    if (image)
-    {
-      std::stringstream message;
-      std::string name;
-      message << "Performing image processing for image ";
-      if (node->GetName(name))
-      {
-        // a property called "name" was found for this DataNode
-        message << "'" << name << "'";
-      }
-      message << ".";
-      MITK_INFO << message.str();
-
-      // actually do something here...
-
-    }
-  }
+void MaterialMappingView::saveButtonClicked() {
+    m_CalibrationDataModel.openSaveFileDialog();
 }

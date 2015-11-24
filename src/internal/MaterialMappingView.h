@@ -14,52 +14,32 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 ===================================================================*/
 
-
-#ifndef MaterialMappingView_h
-#define MaterialMappingView_h
+#pragma once
 
 #include <berryISelectionListener.h>
 
 #include <QmitkAbstractView.h>
 
 #include "ui_MaterialMappingViewControls.h"
+#include "CalibrationDataModel.h"
 
+class MaterialMappingView : public QmitkAbstractView {
+    Q_OBJECT
 
-/**
-  \brief MaterialMappingView
-
-  \warning  This class is not yet documented. Use "git blame" and ask the author to provide basic documentation.
-
-  \sa QmitkAbstractView
-  \ingroup ${plugin_target}_internal
-*/
-class MaterialMappingView : public QmitkAbstractView
-{
-  // this is needed for all Qt objects that should have a Qt meta-object
-  // (everything that derives from QObject and wants to have signal/slots)
-  Q_OBJECT
-
-  public:
-
+public:
     static const std::string VIEW_ID;
+    MaterialMappingView();
 
-  protected slots:
+protected slots:
+    void deleteSelectedRows();
+    void loadButtonClicked();
+    void saveButtonClicked();
 
-    /// \brief Called when the user clicks the GUI button
-    void DoImageProcessing();
-
-  protected:
-
+protected:
     virtual void CreateQtPartControl(QWidget *parent) override;
-
     virtual void SetFocus() override;
-
-    /// \brief called by QmitkFunctionality when DataManager's selection has changed
-    virtual void OnSelectionChanged( berry::IWorkbenchPart::Pointer source,
-                                     const QList<mitk::DataNode::Pointer>& nodes ) override;
+    virtual void OnSelectionChanged(berry::IWorkbenchPart::Pointer source, const QList <mitk::DataNode::Pointer> &nodes) override;
 
     Ui::MaterialMappingViewControls m_Controls;
-
+    CalibrationDataModel m_CalibrationDataModel;
 };
-
-#endif // MaterialMappingView_h

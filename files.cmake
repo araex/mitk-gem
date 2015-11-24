@@ -4,6 +4,7 @@ set(SRC_CPP_FILES
 
 set(INTERNAL_CPP_FILES
   ch_zhaw_materialmapping_Activator.cpp
+  CalibrationDataModel.cpp
   MaterialMappingView.cpp
 )
 
@@ -13,6 +14,7 @@ set(UI_FILES
 
 set(MOC_H_FILES
   src/internal/ch_zhaw_materialmapping_Activator.h
+  src/internal/CalibrationDataModel.h
   src/internal/MaterialMappingView.h
 )
 
@@ -21,14 +23,14 @@ set(MOC_H_FILES
 # for example the icon used in the menu and tabs for the
 # plug-in views in the workbench
 set(CACHED_RESOURCE_FILES
-  resources/icon.xpm
+  resources/icon.png
   plugin.xml
 )
 
 # list of Qt .qrc files which contain additional resources
 # specific to this plugin
 set(QRC_FILES
-
+  resources/resources.qrc
 )
 
 set(CPP_FILES )

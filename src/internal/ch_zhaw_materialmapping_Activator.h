@@ -22,21 +22,21 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 namespace mitk {
 
-class ch_zhaw_materialmapping_Activator :
-  public QObject, public ctkPluginActivator
-{
-  Q_OBJECT
+    class ch_zhaw_materialmapping_Activator :
+            public QObject, public ctkPluginActivator {
+        Q_OBJECT
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  Q_PLUGIN_METADATA(IID "ch_zhaw_materialmapping")
+        Q_PLUGIN_METADATA(IID "ch_zhaw_materialmapping")
 #endif
-  Q_INTERFACES(ctkPluginActivator)
+                Q_INTERFACES(ctkPluginActivator)
 
-public:
+    public:
 
-  void start(ctkPluginContext* context);
-  void stop(ctkPluginContext* context);
+        void start(ctkPluginContext *context);
 
-}; // ch_zhaw_materialmapping_Activator
+        void stop(ctkPluginContext *context);
+
+    }; // ch_zhaw_materialmapping_Activator
 
 }
 

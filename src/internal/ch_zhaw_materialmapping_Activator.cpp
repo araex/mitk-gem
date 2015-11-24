@@ -23,18 +23,16 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 namespace mitk {
 
-void ch_zhaw_materialmapping_Activator::start(ctkPluginContext* context)
-{
-  BERRY_REGISTER_EXTENSION_CLASS(MaterialMappingView, context)
-}
+    void ch_zhaw_materialmapping_Activator::start(ctkPluginContext *context) {
+        BERRY_REGISTER_EXTENSION_CLASS(MaterialMappingView, context)
+    }
 
-void ch_zhaw_materialmapping_Activator::stop(ctkPluginContext* context)
-{
-  Q_UNUSED(context)
-}
+    void ch_zhaw_materialmapping_Activator::stop(ctkPluginContext *context) {
+        Q_UNUSED(context)
+    }
 
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  Q_EXPORT_PLUGIN2(ch_zhaw_materialmapping, mitk::ch_zhaw_materialmapping_Activator)
+Q_EXPORT_PLUGIN2(ch_zhaw_materialmapping, mitk::ch_zhaw_materialmapping_Activator)
 #endif
