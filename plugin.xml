@@ -5,7 +5,7 @@
     <view id="org.mitk.views.materialmapping"
           name="Material Mapping"
           class="MaterialMappingView"
-          icon="resources/icon.png" />
+          icon="resources/icon2.png" />
   </extension>
 
 </plugin>
