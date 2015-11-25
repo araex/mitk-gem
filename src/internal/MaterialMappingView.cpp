@@ -77,8 +77,7 @@ void MaterialMappingView::deleteSelectedRows(){
     }
 }
 
-void MaterialMappingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/,
-                                             const QList <mitk::DataNode::Pointer> &nodes) {
+void MaterialMappingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &nodes) {
 
 }
 
