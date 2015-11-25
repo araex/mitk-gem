@@ -29,6 +29,8 @@ See LICENSE.txt or http://www.mitk.org for details.
 //mitk image
 #include <mitkImage.h>
 
+#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+
 using namespace std;
 
 const string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
@@ -53,6 +55,15 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     };
     setResizeMode(0, QHeaderView::Stretch);
     setResizeMode(1, QHeaderView::Stretch);
+
+    // data selectors
+    m_Controls.unstructuredGridComboBox->SetDataStorage(this->GetDataStorage());
+    m_Controls.unstructuredGridComboBox->SetAutoSelectNewItems(false);
+    m_Controls.unstructuredGridComboBox->SetPredicate(WorkbenchUtils::createIsUnstructuredGridTypePredicate());
+
+    m_Controls.greyscaleImageComboBox->SetDataStorage(this->GetDataStorage());
+    m_Controls.greyscaleImageComboBox->SetAutoSelectNewItems(false);
+    m_Controls.greyscaleImageComboBox->SetPredicate(WorkbenchUtils::createIsImageTypePredicate());
 
     // delete key on table
     QShortcut* shortcut = new QShortcut(QKeySequence(QKeySequence::Delete), table);
