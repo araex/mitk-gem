@@ -5,7 +5,8 @@
 #include <vtkCellData.h>
 #include <vtkImageInterpolator.h>
 #include <vtkUnstructuredGrid.h>
-
+#include <vtkUnstructuredGridGeometryFilter.h>
+#include <vtkExtractVOI.h>
 
 #include "MaterialMappingFilter.h"
 
@@ -22,13 +23,55 @@ void MaterialMappingFilter::GenerateData() {
     mitk::UnstructuredGrid::Pointer inputGrid = const_cast<mitk::UnstructuredGrid*>(this->GetInput());
     if(inputGrid.IsNull() || m_IntensityImage == nullptr || m_IntensityImage.IsNull()) return;
 
-    auto vtkIntensityImage = const_cast<vtkImageData*>(m_IntensityImage->GetVtkImageData());
+    auto importedVtkImage = const_cast<vtkImageData*>(m_IntensityImage->GetVtkImageData());
+    vtkSmartPointer<vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
+
+    // Bug in mitk::Image::GetVtkImageData(), Origin is wrong
+    // http://bugs.mitk.org/show_bug.cgi?id=5050
+    // since the memory is shared between vtk and mitk, manually correcting it will break rendering. For now,
+    // we'll create a copy and work with that.
+    // TODO: keep an eye on this
+    auto mitkOrigin = m_IntensityImage->GetGeometry()->GetOrigin();
+    auto vtkImage = vtkSmartPointer<vtkImageData>::New();
+    vtkImage->ShallowCopy(importedVtkImage);
+    vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
+
+    // get surface
+    auto surfaceFilter = vtkSmartPointer<vtkUnstructuredGridGeometryFilter>::New();
+    surfaceFilter->SetInputData(vtkInputGrid);
+    surfaceFilter->PassThroughCellIdsOn();
+    surfaceFilter->PassThroughPointIdsOn();
+    surfaceFilter->Update();
+
+    // TODO: levelMidpoints
+
+    // extract VOI based on given border
+    // TODO: do we need 'border' as a GUI parameter?
+    auto voi = vtkSmartPointer<vtkExtractVOI>::New();
+    auto spacing = vtkImage->GetSpacing();
+    auto origin = vtkImage->GetOrigin();
+    auto bounds = surfaceFilter->GetOutput()->GetBounds();
+    auto border = 4;
+    int ext[6];
+    for(auto i = 0; i < 2; ++i){
+        for(auto j = 0; j < 3; ++j){
+            ext[i+2*j] = (bounds[i+2*j]-origin[j])/spacing[j] + (2*i-1)*border;
+        }
+    }
+    voi->SetVOI(ext);
+    voi->SetInputData(vtkImage);
+
+    // TODO: create stencil
+
+    // TODO: erode stencil
+
+    // TODO: extend image (=> weighted average in neighborhood). 3 times for some reason
+
+    // setup interpolator
     auto interpolator = vtkSmartPointer<vtkImageInterpolator>::New();
-    interpolator->Initialize(vtkIntensityImage);
+    interpolator->Initialize(voi->GetOutput());
     interpolator->SetInterpolationModeToLinear();
     interpolator->Update();
-
-    vtkSmartPointer<vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
 
     auto dataCT = createDataArray("CT");
     auto dataCTash = createDataArray("CTash");
@@ -37,7 +80,6 @@ void MaterialMappingFilter::GenerateData() {
 
     // evaluate image and functors for each point
     for(auto i = 0; i < vtkInputGrid->GetNumberOfPoints(); ++i){
-        auto isRotated = m_IntensityImage->IsRotated();
         auto p = vtkInputGrid->GetPoint(i);
         auto valCT = interpolator->Interpolate(p[0], p[1], p[2], 0);
         auto valCTash = m_LinearFunctor(valCT);
