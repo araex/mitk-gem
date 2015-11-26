@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <cmath>
+
 #include <berryISelectionService.h>
 #include <berryIWorkbenchWindow.h>
 #include <QMessageBox>
@@ -7,6 +10,7 @@
 #include "MaterialMappingView.h"
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
 #include "GuiHelpers.h"
+#include "MaterialMappingFilter.h"
 
 const std::string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
 
@@ -74,6 +78,29 @@ void MaterialMappingView::startButtonClicked() {
 
         mitk::Image::Pointer image = dynamic_cast<mitk::Image *>(imageNode->GetData());
         mitk::UnstructuredGrid::Pointer ugrid = dynamic_cast<mitk::UnstructuredGrid *>(ugridNode->GetData());
+
+        auto filter = MaterialMappingFilter::New();
+        filter->SetInput(ugrid);
+        filter->SetIntensityImage(image);
+        filter->SetLinearFunctor([](double _ct){
+            return (_ct/1000.0+0.09) / 1.14; // TODO: get from GUI
+        });
+        filter->SetPowerLawFunctor([](double _ctash){
+            return 6850*pow((std::max(_ctash, 0.0)/0.6), 1.49); // TODO: get from GUI
+        });
+
+        auto result = filter->GetOutput();
+        filter->Update();
+
+        mitk::DataNode::Pointer newNode = mitk::DataNode::New();
+        newNode->SetData(result);
+
+        // set some node properties
+        newNode->SetProperty("name", mitk::StringProperty::New("material mapped mesh"));
+        newNode->SetProperty("layer", mitk::IntProperty::New(1));
+
+        // add result to the storage
+        this->GetDataStorage()->Add( newNode );
     }
 }
 

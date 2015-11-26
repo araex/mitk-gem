@@ -20,13 +20,15 @@ void MaterialMappingFilter::GenerateOutputInformation() {
 
 void MaterialMappingFilter::GenerateData() {
     mitk::UnstructuredGrid::Pointer inputGrid = const_cast<mitk::UnstructuredGrid*>(this->GetInput());
-    if(inputGrid.IsNull() || m_IntensityImage == nullptr) return;
+    if(inputGrid.IsNull() || m_IntensityImage == nullptr || m_IntensityImage.IsNull()) return;
 
-    auto vtkIntensityImage = m_IntensityImage->GetVtkImageData();
-    vtkSmartPointer<vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
+    auto vtkIntensityImage = const_cast<vtkImageData*>(m_IntensityImage->GetVtkImageData());
     auto interpolator = vtkSmartPointer<vtkImageInterpolator>::New();
     interpolator->Initialize(vtkIntensityImage);
     interpolator->SetInterpolationModeToLinear();
+    interpolator->Update();
+
+    vtkSmartPointer<vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
 
     auto dataCT = createDataArray("CT");
     auto dataCTash = createDataArray("CTash");
@@ -35,6 +37,7 @@ void MaterialMappingFilter::GenerateData() {
 
     // evaluate image and functors for each point
     for(auto i = 0; i < vtkInputGrid->GetNumberOfPoints(); ++i){
+        auto isRotated = m_IntensityImage->IsRotated();
         auto p = vtkInputGrid->GetPoint(i);
         auto valCT = interpolator->Interpolate(p[0], p[1], p[2], 0);
         auto valCTash = m_LinearFunctor(valCT);
@@ -74,8 +77,9 @@ void MaterialMappingFilter::GenerateData() {
     // create ouput
     auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
     out->DeepCopy(vtkInputGrid);
-    out->GetCellData()->AddArray(dataCT);
-    out->GetCellData()->AddArray(dataCTash);
+    out->GetPointData()->AddArray(dataCT);
+    out->GetPointData()->AddArray(dataCTash);
+    out->GetPointData()->AddArray(dataEMorgan);
     out->GetCellData()->AddArray(dataWeightedEMorgan);
     m_VolumeMesh->SetVtkUnstructuredGrid(out);
 }
