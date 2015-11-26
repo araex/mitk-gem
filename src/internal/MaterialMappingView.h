@@ -6,12 +6,14 @@
 
 #include "ui_MaterialMappingViewControls.h"
 #include "CalibrationDataModel.h"
+#include "test/Runner.h"
 
 class MaterialMappingView : public QmitkAbstractView {
     Q_OBJECT
 
 public:
     static const std::string VIEW_ID;
+    static const bool TESTING = true;
 
 protected slots:
     void deleteSelectedRows();
@@ -26,4 +28,6 @@ protected:
 
     Ui::MaterialMappingViewControls m_Controls;
     CalibrationDataModel m_CalibrationDataModel;
+
+    std::unique_ptr<Testing::Runner> m_TestRunner;
 };

@@ -7,6 +7,7 @@ set(INTERNAL_CPP_FILES
   CalibrationDataModel.cpp
   MaterialMappingFilter.cpp
   MaterialMappingView.cpp
+  test/Runner.cpp
 )
 
 set(UI_FILES

@@ -38,6 +38,19 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     m_Controls.greyscaleImageComboBox->SetAutoSelectNewItems(false);
     m_Controls.greyscaleImageComboBox->SetPredicate(WorkbenchUtils::createIsImageTypePredicate());
 
+    // testing
+    if(TESTING){
+        m_Controls.testingGroup->show();
+        m_Controls.expectedResultComboBox->SetDataStorage(this->GetDataStorage());
+        m_Controls.expectedResultComboBox->SetAutoSelectNewItems(false);
+        m_Controls.expectedResultComboBox->SetPredicate(WorkbenchUtils::createIsUnstructuredGridTypePredicate());
+
+        m_TestRunner = std::unique_ptr<Testing::Runner>();
+//        connect( m_Controls.selectLogFileButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(openLogFileDialog()) );
+    } else {
+        m_Controls.testingGroup->hide();
+    }
+
     // delete key on table
     QShortcut* shortcut = new QShortcut(QKeySequence(QKeySequence::Delete), table);
     connect(shortcut, SIGNAL(activated()), this, SLOT(deleteSelectedRows()));
@@ -71,8 +84,8 @@ void MaterialMappingView::saveButtonClicked() {
 }
 
 void MaterialMappingView::startButtonClicked() {
+    MITK_INFO("ch.zhaw.materialmapping") << "processing input";
     if(isValidSelection()){
-        MITK_INFO("ch.zhaw.materialmapping") << "processing input";
         mitk::DataNode *imageNode = m_Controls.greyscaleImageComboBox->GetSelectedNode();
         mitk::DataNode *ugridNode = m_Controls.unstructuredGridComboBox->GetSelectedNode();
 
@@ -101,6 +114,14 @@ void MaterialMappingView::startButtonClicked() {
 
         // add result to the storage
         this->GetDataStorage()->Add( newNode );
+
+        if(TESTING){
+            if(m_Controls.testingDoComparisonCheckBox->isChecked()){
+                mitk::DataNode *expectedResultNode = m_Controls.expectedResultComboBox->GetSelectedNode();
+                mitk::UnstructuredGrid::Pointer expectedResult = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode->GetData());
+                m_TestRunner->compareGrids(result, expectedResult);
+            }
+        }
     }
 }
 
@@ -124,5 +145,6 @@ bool MaterialMappingView::isValidSelection() {
             QMessageBox::warning ( NULL, "Error", msg);
         }
     }
+    MITK_INFO("ch.zhaw.materialmapping") << "invalid data selection";
     return false;
 }
