@@ -46,20 +46,27 @@ void MaterialMappingFilter::GenerateData() {
     // TODO: levelMidpoints
 
     // extract VOI based on given border
-    // TODO: do we need 'border' as a GUI parameter?
     auto voi = vtkSmartPointer<vtkExtractVOI>::New();
     auto spacing = vtkImage->GetSpacing();
     auto origin = vtkImage->GetOrigin();
+    auto extent = vtkImage->GetExtent();
     auto bounds = surfaceFilter->GetOutput()->GetBounds();
+
+    auto clamp = [](double x, int a, int b){
+        return x < a ? a : (x > b ? b : x);
+    };
+
     auto border = 4;
-    int ext[6];
+    int voiExt[6];
     for(auto i = 0; i < 2; ++i){
         for(auto j = 0; j < 3; ++j){
-            ext[i+2*j] = (bounds[i+2*j]-origin[j])/spacing[j] + (2*i-1)*border;
+            auto val = (bounds[i+2*j]-origin[j])/spacing[j] + (2*i-1)*border; // coordinate -> index
+            voiExt[i+2*j] = clamp(val, extent[2*j], extent[2*j+1]); // prevent wrap around
         }
     }
-    voi->SetVOI(ext);
+    voi->SetVOI(voiExt);
     voi->SetInputData(vtkImage);
+    voi->Update();
 
     // TODO: create stencil
 
