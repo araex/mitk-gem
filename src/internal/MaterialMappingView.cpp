@@ -1,45 +1,14 @@
-/*===================================================================
-
-The Medical Imaging Interaction Toolkit (MITK)
-
-Copyright (c) German Cancer Research Center,
-Division of Medical and Biological Informatics.
-All rights reserved.
-
-This software is distributed WITHOUT ANY WARRANTY; without
-even the implied warranty of MERCHANTABILITY or FITNESS FOR
-A PARTICULAR PURPOSE.
-
-See LICENSE.txt or http://www.mitk.org for details.
-
-===================================================================*/
-
-
-// Blueberry
 #include <berryISelectionService.h>
 #include <berryIWorkbenchWindow.h>
-
-// Qmitk
-#include "MaterialMappingView.h"
-
-// Qt
 #include <QMessageBox>
 #include <QShortcut>
-
-//mitk image
 #include <mitkImage.h>
 
+#include "MaterialMappingView.h"
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
+#include "GuiHelpers.h"
 
-using namespace std;
-
-const string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
-
-MaterialMappingView::MaterialMappingView() {
-}
-
-void MaterialMappingView::SetFocus() {
-}
+const std::string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
 
 void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     m_Controls.setupUi(parent);
@@ -72,6 +41,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     // signals
     connect( m_Controls.loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()) );
     connect( m_Controls.saveButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()) );
+    connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
 }
 
 void MaterialMappingView::deleteSelectedRows(){
@@ -88,14 +58,44 @@ void MaterialMappingView::deleteSelectedRows(){
     }
 }
 
-void MaterialMappingView::OnSelectionChanged(berry::IWorkbenchPart::Pointer /*source*/, const QList <mitk::DataNode::Pointer> &nodes) {
-
-}
-
 void MaterialMappingView::loadButtonClicked() {
     m_CalibrationDataModel.openLoadFileDialog();
 }
 
 void MaterialMappingView::saveButtonClicked() {
     m_CalibrationDataModel.openSaveFileDialog();
+}
+
+void MaterialMappingView::startButtonClicked() {
+    if(isValidSelection()){
+        MITK_INFO("ch.zhaw.materialmapping") << "processing input";
+        mitk::DataNode *imageNode = m_Controls.greyscaleImageComboBox->GetSelectedNode();
+        mitk::DataNode *ugridNode = m_Controls.unstructuredGridComboBox->GetSelectedNode();
+
+        mitk::Image::Pointer image = dynamic_cast<mitk::Image *>(imageNode->GetData());
+        mitk::UnstructuredGrid::Pointer ugrid = dynamic_cast<mitk::UnstructuredGrid *>(ugridNode->GetData());
+    }
+}
+
+bool MaterialMappingView::isValidSelection() {
+    // get the nodes selected
+    mitk::DataNode *imageNode = m_Controls.greyscaleImageComboBox->GetSelectedNode();
+    mitk::DataNode *ugridNode = m_Controls.unstructuredGridComboBox->GetSelectedNode();
+
+    // set the mandatory field based on whether or not the nodes are NULL
+    gui::setMandatoryField(m_Controls.greyscaleSelector, (imageNode == nullptr));
+    gui::setMandatoryField(m_Controls.meshSelector, (ugridNode == nullptr));
+
+    if(imageNode && ugridNode){
+        mitk::Image::Pointer image = dynamic_cast<mitk::Image *>(imageNode->GetData());
+        mitk::UnstructuredGrid::Pointer ugrid = dynamic_cast<mitk::UnstructuredGrid *>(ugridNode->GetData());
+
+        if(image && ugrid){
+            return true;
+        } else{
+            QString msg("Invalid data. Select an image and a unstructured grid.");
+            QMessageBox::warning ( NULL, "Error", msg);
+        }
+    }
+    return false;
 }
