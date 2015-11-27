@@ -3,7 +3,7 @@
 #include <QStandardItemModel>
 #include <QString>
 
-class CalibrationDataModel : QObject {
+class CalibrationDataModel : public QObject {
     Q_OBJECT
 
     using TData = QList<std::pair<double, double>>;
@@ -21,6 +21,15 @@ public:
     void openSaveFileDialog();
 
     QAbstractItemModel *getQItemModel() const;
+
+    struct Line {
+        double slope, offset;
+    };
+
+    Line getFittedLine();
+
+signals:
+    void dataChanged();
 
 protected slots:
     void itemChanged(QStandardItem*);

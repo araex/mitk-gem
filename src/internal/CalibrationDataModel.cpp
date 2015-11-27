@@ -4,6 +4,10 @@
 
 #include <mitkLogMacros.h>
 
+#include <vnl/algo/vnl_lsqr.h>
+#include <vnl/vnl_sparse_matrix_linear_system.h>
+#include <vnl/vnl_least_squares_function.h>
+
 #include "CalibrationDataModel.h"
 
 using namespace std;
@@ -52,6 +56,8 @@ void CalibrationDataModel::itemChanged(QStandardItem *_item){
             return;
         }
     }
+
+    emit dataChanged();
 }
 
 int CalibrationDataModel::appendRow(double _a, double _b) {
@@ -100,6 +106,23 @@ void CalibrationDataModel::clear() {
     m_ItemModel->removeRows(0, m_ItemModel->rowCount());
     m_Data.clear();
     m_ItemModel->appendRow(new QStandardItem("")); // add empty row
+}
+
+CalibrationDataModel::Line CalibrationDataModel::getFittedLine() {
+    vnl_sparse_matrix<double> A(m_Data.size(), 2);
+    vnl_vector<double> b(m_Data.size());
+
+    for(auto i=0; i < m_Data.size(); ++i){
+        A(i, 0) = m_Data[i].first;
+        A(i, 1) = 1;
+        b[i] = m_Data[i].second;
+    }
+    vnl_sparse_matrix_linear_system<double> ls(A,b);
+    vnl_vector<double> x(2);
+    x[0] = x[1] = 0.0;
+    vnl_lsqr lsqr(ls);
+    lsqr.minimize(x);
+    return Line{x[0], x[1]};
 }
 
 void CalibrationDataModel::readFromFile(QString _path) {

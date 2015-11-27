@@ -59,6 +59,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     connect( m_Controls.loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()) );
     connect( m_Controls.saveButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()) );
     connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
+    connect( &m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()) );
 }
 
 void MaterialMappingView::deleteSelectedRows(){
@@ -123,6 +124,12 @@ void MaterialMappingView::startButtonClicked() {
             }
         }
     }
+}
+
+void MaterialMappingView::tableDataChanged() {
+    auto linearEqParams = m_CalibrationDataModel.getFittedLine();
+    m_Controls.linEQSlopeSpinBox->setValue(linearEqParams.slope);
+    m_Controls.linEQOffsetSpinBox->setValue(linearEqParams.offset);
 }
 
 bool MaterialMappingView::isValidSelection() {
