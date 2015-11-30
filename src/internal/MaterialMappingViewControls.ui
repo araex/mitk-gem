@@ -431,38 +431,10 @@ QDoubleSpinBox {
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0">
              <property name="rightMargin">
               <number>0</number>
              </property>
-             <item>
-              <widget class="QCheckBox" name="checkBox_2">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>30</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>120</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
              <item>
               <widget class="QWidget" name="" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_15">
@@ -472,6 +444,34 @@ QDoubleSpinBox {
                 <property name="margin">
                  <number>0</number>
                 </property>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>30</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>120</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <widget class="QLabel" name="label_10">
                   <property name="sizePolicy">
@@ -562,38 +562,10 @@ QDoubleSpinBox {
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0">
              <property name="rightMargin">
               <number>0</number>
              </property>
-             <item>
-              <widget class="QCheckBox" name="checkBox_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>30</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>120</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
              <item>
               <widget class="QWidget" name="horizontalWidget_3" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -603,6 +575,34 @@ QDoubleSpinBox {
                 <property name="margin">
                  <number>0</number>
                 </property>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_3">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>30</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>120</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <widget class="QLabel" name="label_12">
                   <property name="sizePolicy">
@@ -855,8 +855,40 @@ QDoubleSpinBox {
      <y>106</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>368</y>
+     <x>18</x>
+     <y>395</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>horizontalWidget_3</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>28</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>49</x>
+     <y>469</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>checkBox_3</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>28</x>
+     <y>444</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>26</x>
+     <y>480</y>
     </hint>
    </hints>
   </connection>
