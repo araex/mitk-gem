@@ -4,12 +4,14 @@
 #include <QLayout>
 
 #include "PowerLawWidget.h"
+#include "PowerLawFunctor.h"
 
 class PowerLawWidgetManager {
 public:
     PowerLawWidgetManager(QWidget *_parent);
 
     void addPowerLaw();
+    PowerLawFunctor createFunctor();
 
 private:
     void updateConnections();

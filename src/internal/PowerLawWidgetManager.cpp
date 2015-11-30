@@ -37,3 +37,16 @@ void PowerLawWidgetManager::updateConnections() {
         previousLast->connect(last);
     }
 }
+
+PowerLawFunctor PowerLawWidgetManager::createFunctor() {
+    PowerLawFunctor ret;
+    for(const auto& widget : m_Widgets){
+        auto upperBound = widget->getMax();
+
+        // "max" is implemented as SpinBox::setSpecialValueTex, so we need to convert it back
+        auto fixedUpperBound = upperBound == PowerLawWidget::MinValue ? PowerLawWidget::MaxValue : upperBound;
+        ret.AddPowerLaw(widget->getPowerLawParameters(), fixedUpperBound);
+    }
+
+    return ret;
+}

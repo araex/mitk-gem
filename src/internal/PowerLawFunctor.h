@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <map>
+#include <ostream>
 
 #include "PowerLawParameters.h"
 
@@ -16,6 +17,7 @@ public:
 
     void AddPowerLaw(PowerLawParameters _p, double _upperBound);
 
-private:
     std::map<double, PowerLawParameters> m_ParamMap;
 };
+
+std::ostream& operator<<(std::ostream& _out, const PowerLawFunctor& _f);

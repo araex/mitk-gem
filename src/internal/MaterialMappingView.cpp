@@ -177,4 +177,5 @@ BoneDensityFunctor MaterialMappingView::createDensityFunctorFromGui() {
 
 void MaterialMappingView::addPowerLawButtonClicked() {
     m_PowerLawWidgetManager->addPowerLaw();
+    MITK_INFO("ch.zhaw.materialmapping") << m_PowerLawWidgetManager->createFunctor();
 }
