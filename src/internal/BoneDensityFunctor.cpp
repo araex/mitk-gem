@@ -14,7 +14,6 @@ bool BoneDensityFunctor::operator==(const BoneDensityFunctor &_other) const {
         return true;
     }
     return false;
-
 }
 
 std::ostream& operator<<(std::ostream& _out, const BoneDensityFunctor& _f) {

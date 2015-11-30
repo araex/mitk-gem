@@ -9,6 +9,8 @@ set(INTERNAL_CPP_FILES
   CalibrationDataModel.cpp
   MaterialMappingFilter.cpp
   MaterialMappingView.cpp
+  PowerLawFunctor.cpp
+  PowerLawParameters.cpp
   PowerLawWidget.cpp
   test/Runner.cpp
 )
