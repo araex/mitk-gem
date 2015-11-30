@@ -1,42 +1,69 @@
 #include <QLabel>
-#include <QDoubleSpinBox>
 #include <QHBoxLayout>
+#include <QLineEdit>
+
+#include <limits>
 
 #include "PowerLawWidget.h"
 
 PowerLawWidget::PowerLawWidget() {
-    auto factorSpinBox = new QDoubleSpinBox;
-    factorSpinBox->setRange(-99.0, 99.0);
-    factorSpinBox->setSingleStep(0.01);
-    factorSpinBox->setDecimals(3);
-    factorSpinBox->setValue(1.0);
+    m_MinVal = -9999;
+    m_MaxVal = 9999;
+    m_Factor = new QDoubleSpinBox;
+    m_Factor->setRange(-99.0, 99.0);
+    m_Factor->setSingleStep(0.01);
+    m_Factor->setDecimals(3);
+    m_Factor->setValue(1.0);
+    m_Factor->setButtonSymbols( QAbstractSpinBox::NoButtons );
 
-    auto exponentSpinBox = new QDoubleSpinBox;
-    exponentSpinBox->setRange(-99.0, 99.0);
-    exponentSpinBox->setSingleStep(0.01);
-    exponentSpinBox->setDecimals(3);
-    exponentSpinBox->setValue(1.0);
+    m_Exponent = new QDoubleSpinBox;
+    m_Exponent->setRange(-99.0, 99.0);
+    m_Exponent->setSingleStep(0.01);
+    m_Exponent->setDecimals(3);
+    m_Exponent->setValue(1.0);
+    m_Exponent->setButtonSymbols( QAbstractSpinBox::NoButtons );
 
-    auto offsetSpinBox = new QDoubleSpinBox;
-    offsetSpinBox->setRange(-9999.0, 9999.0);
-    offsetSpinBox->setSingleStep(1.0);
-    offsetSpinBox->setDecimals(3);
-    offsetSpinBox->setValue(0.0);
+    m_Offset = new QDoubleSpinBox;
+    m_Offset->setRange(-9999.0, 9999.0);
+    m_Offset->setSingleStep(1.0);
+    m_Offset->setDecimals(3);
+    m_Offset->setValue(0.0);
+    m_Offset->setButtonSymbols( QAbstractSpinBox::NoButtons );
+
+    m_Min = new QDoubleSpinBox;
+    m_Min->setRange(m_MinVal, m_MaxVal);
+    m_Min->setSingleStep(1.0);
+    m_Min->setDecimals(2);
+    m_Min->setValue(std::numeric_limits<float>::lowest());
+    m_Min->setButtonSymbols( QAbstractSpinBox::NoButtons );
+    m_Min->setSpecialValueText(tr("min"));
+    m_Min->setEnabled(false);
+    m_Min->setReadOnly(true);
+
+    m_Max = new QDoubleSpinBox;
+    m_Max->setRange(m_MinVal, m_MaxVal);
+    m_Max->setSingleStep(1.0);
+    m_Max->setDecimals(2);
+    m_Max->setValue(m_MinVal); // we're using the setSpecialValue functionality to show text, but that requires the value to be equal to minimum()
+    m_Max->setButtonSymbols( QAbstractSpinBox::NoButtons );
+    m_Max->setSpecialValueText(tr("max"));
+    m_Max->setEnabled(false);
+    m_Max->setReadOnly(true);
 
     auto formulaLayout = new QHBoxLayout;
     formulaLayout->setContentsMargins(0,0,0,0);
     formulaLayout->setMargin(0);
     formulaLayout->setSpacing(0);
     formulaLayout->addWidget(new QLabel(tr("E = ")));
-    formulaLayout->addWidget(factorSpinBox);
+    formulaLayout->addWidget(m_Factor);
     formulaLayout->addWidget(new QLabel(tr("* ρ ^")));
-    formulaLayout->addWidget(exponentSpinBox);
+    formulaLayout->addWidget(m_Exponent);
     formulaLayout->addWidget(new QLabel(tr("+")));
-    formulaLayout->addWidget(offsetSpinBox);
+    formulaLayout->addWidget(m_Offset);
     formulaLayout->addStretch();
-    formulaLayout->addWidget(new QLabel(tr("min")));
+    formulaLayout->addWidget(m_Min);
     formulaLayout->addWidget(new QLabel(tr(" ≤ ρ ≤ ")));
-    formulaLayout->addWidget(new QLabel(tr("max")));
+    formulaLayout->addWidget(m_Max);
 
     auto formulaWidget = new QWidget;
     formulaWidget->setLayout(formulaLayout);
@@ -47,4 +74,8 @@ PowerLawWidget::PowerLawWidget() {
     mainLayout->setSpacing(0);
     mainLayout->addWidget(formulaWidget);
     setLayout(mainLayout);
+}
+
+PowerLawParameters PowerLawWidget::getPowerLawParameters() {
+    return PowerLawParameters(m_Factor->value(), m_Exponent->value(), m_Offset->value());
 }

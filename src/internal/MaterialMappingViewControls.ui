@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>648</width>
-    <height>867</height>
+    <width>585</width>
+    <height>854</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -368,6 +368,12 @@ QDoubleSpinBox {
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="linEQSlopeSpinBox">
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <property name="buttonSymbols">
+                   <enum>QAbstractSpinBox::NoButtons</enum>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -398,6 +404,9 @@ QDoubleSpinBox {
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="linEQOffsetSpinBox">
+                  <property name="buttonSymbols">
+                   <enum>QAbstractSpinBox::NoButtons</enum>
+                  </property>
                   <property name="decimals">
                    <number>0</number>
                   </property>
@@ -500,6 +509,9 @@ QDoubleSpinBox {
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="rhoAshOffsetSpinBox">
+                  <property name="buttonSymbols">
+                   <enum>QAbstractSpinBox::NoButtons</enum>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -526,6 +538,12 @@ QDoubleSpinBox {
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="rhoAshDivisorSpinBox">
+                  <property name="readOnly">
+                   <bool>false</bool>
+                  </property>
+                  <property name="buttonSymbols">
+                   <enum>QAbstractSpinBox::NoButtons</enum>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -637,6 +655,9 @@ QDoubleSpinBox {
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="rhoAppDivisorSpinBox">
+                  <property name="buttonSymbols">
+                   <enum>QAbstractSpinBox::NoButtons</enum>
+                  </property>
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -864,6 +885,11 @@ QDoubleSpinBox {
 
 QDoubleSpinBox {
 	font: small &quot;Courier New&quot;;
+}
+
+QWidget {
+	margin: 0px;
+	padding: 0px;
 }</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
