@@ -96,15 +96,7 @@ void MaterialMappingView::startButtonClicked() {
         auto filter = MaterialMappingFilter::New();
         filter->SetInput(ugrid);
         filter->SetIntensityImage(image);
-        // TODO:
-        auto densityFunctor = createDensityFunctorFromGui();
-
-        filter->SetLinearFunctor([](double _ct){
-            return (_ct/1000.0+0.09) / 1.14; // TODO: get from GUI
-        });
-        filter->SetPowerLawFunctor([](double _ctash){
-            return 6850*pow((std::max(_ctash, 0.0)/0.6), 1.49); // TODO: get from GUI
-        });
+        filter->SetDensityFunctor(createDensityFunctorFromGui());
 
         auto result = filter->GetOutput();
         filter->Update();
@@ -175,6 +167,5 @@ BoneDensityFunctor MaterialMappingView::createDensityFunctorFromGui() {
             ret.SetRhoApp(rhoApp);
         }
     }
-    MITK_INFO("ch.zhaw.materialmapping") << ret;
     return ret;
 }
