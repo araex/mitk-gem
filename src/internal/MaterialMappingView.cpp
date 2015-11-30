@@ -79,6 +79,7 @@ void MaterialMappingView::deleteSelectedRows(){
     for(std::set<int>::reverse_iterator rit = rowsToDelete.rbegin(); rit != rowsToDelete.rend(); ++rit){
         m_CalibrationDataModel.removeRow(*rit);
     }
+    tableDataChanged();
 }
 
 void MaterialMappingView::loadButtonClicked() {
