@@ -9,6 +9,7 @@ set(INTERNAL_CPP_FILES
   CalibrationDataModel.cpp
   MaterialMappingFilter.cpp
   MaterialMappingView.cpp
+  PowerLawWidget.cpp
   test/Runner.cpp
 )
 
@@ -20,6 +21,7 @@ set(MOC_H_FILES
   src/internal/ch_zhaw_materialmapping_Activator.h
   src/internal/CalibrationDataModel.h
   src/internal/MaterialMappingView.h
+  src/internal/PowerLawWidget.h
 )
 
 # list of resource files which can be used by the plug-in

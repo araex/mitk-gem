@@ -679,7 +679,7 @@ QDoubleSpinBox {
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="advancedGroup_2">
+      <widget class="QGroupBox" name="powerLawGroup">
        <property name="title">
         <string>Power laws</string>
        </property>
@@ -700,7 +700,7 @@ QDoubleSpinBox {
          <number>5</number>
         </property>
         <item>
-         <widget class="QWidget" name="powerLawWidget" native="true">
+         <widget class="QWidget" name="powerLawWidget_0" native="true">
           <property name="styleSheet">
            <string notr="true">QLabel {
 	font: small &quot;Courier New&quot;;
@@ -851,6 +851,34 @@ QDoubleSpinBox {
               </widget>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="powerLawWidgets" native="true">
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+	font: small &quot;Courier New&quot;;
+}
+
+QDoubleSpinBox {
+	font: small &quot;Courier New&quot;;
+}</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

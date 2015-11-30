@@ -22,6 +22,7 @@ protected slots:
     void saveButtonClicked();
     void startButtonClicked();
     void tableDataChanged();
+    void addPowerLawButtonClicked();
 
 protected:
     virtual void CreateQtPartControl(QWidget *parent) override;

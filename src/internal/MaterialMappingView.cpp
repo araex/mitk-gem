@@ -11,6 +11,7 @@
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
 #include "GuiHelpers.h"
 #include "MaterialMappingFilter.h"
+#include "PowerLawWidget.h"
 
 const std::string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
 
@@ -60,6 +61,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     connect( m_Controls.saveButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()) );
     connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
     connect( &m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()) );
+    connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), this, SLOT(addPowerLawButtonClicked()) );
 }
 
 void MaterialMappingView::deleteSelectedRows(){
@@ -168,4 +170,9 @@ BoneDensityFunctor MaterialMappingView::createDensityFunctorFromGui() {
         }
     }
     return ret;
+}
+
+void MaterialMappingView::addPowerLawButtonClicked() {
+    MITK_INFO << "bla";
+    m_Controls.powerLawWidgets->layout()->addWidget(new PowerLawWidget());
 }
