@@ -7,6 +7,7 @@
 #include "ui_MaterialMappingViewControls.h"
 #include "CalibrationDataModel.h"
 #include "test/Runner.h"
+#include "BoneDensityFunctor.h"
 
 class MaterialMappingView : public QmitkAbstractView {
     Q_OBJECT
@@ -26,6 +27,7 @@ protected:
     virtual void CreateQtPartControl(QWidget *parent) override;
     virtual void SetFocus() override {}; // required by blueberry
     bool isValidSelection();
+    BoneDensityFunctor createDensityFunctorFromGui();
 
     Ui::MaterialMappingViewControls m_Controls;
     CalibrationDataModel m_CalibrationDataModel;

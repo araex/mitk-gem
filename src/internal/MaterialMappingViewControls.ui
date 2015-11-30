@@ -445,7 +445,7 @@ QDoubleSpinBox {
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QCheckBox" name="checkBox_2">
+                 <widget class="QCheckBox" name="rhoAshCheckBox">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -576,7 +576,7 @@ QDoubleSpinBox {
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QCheckBox" name="checkBox_3">
+                 <widget class="QCheckBox" name="rhoAppCheckBox">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -636,7 +636,7 @@ QDoubleSpinBox {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="linEQSlopeSpinBox_2">
+                 <widget class="QDoubleSpinBox" name="rhoAppDivisorSpinBox">
                   <property name="decimals">
                    <number>3</number>
                   </property>
@@ -861,7 +861,7 @@ QDoubleSpinBox {
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_2</sender>
+   <sender>rhoAshCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>horizontalWidget_3</receiver>
    <slot>setEnabled(bool)</slot>
@@ -877,9 +877,9 @@ QDoubleSpinBox {
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_2</sender>
+   <sender>rhoAshCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>checkBox_3</receiver>
+   <receiver>rhoAppCheckBox</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">

@@ -96,6 +96,9 @@ void MaterialMappingView::startButtonClicked() {
         auto filter = MaterialMappingFilter::New();
         filter->SetInput(ugrid);
         filter->SetIntensityImage(image);
+        // TODO:
+        auto densityFunctor = createDensityFunctorFromGui();
+
         filter->SetLinearFunctor([](double _ct){
             return (_ct/1000.0+0.09) / 1.14; // TODO: get from GUI
         });
@@ -154,4 +157,24 @@ bool MaterialMappingView::isValidSelection() {
     }
     MITK_INFO("ch.zhaw.materialmapping") << "invalid data selection";
     return false;
+}
+
+BoneDensityFunctor MaterialMappingView::createDensityFunctorFromGui() {
+    BoneDensityFunctor ret;
+    ret.SetRhoCt(m_CalibrationDataModel.getFittedLine());
+
+    if(m_Controls.rhoAshCheckBox->isChecked()){
+        auto rhoAsh_offset = m_Controls.rhoAshOffsetSpinBox->value();
+        auto rhoAsh_divisor = m_Controls.rhoAshDivisorSpinBox->value();
+        BoneDensityParameters::RhoAsh rhoAsh(rhoAsh_offset, rhoAsh_divisor);
+        ret.SetRhoAsh(rhoAsh);
+
+        if(m_Controls.rhoAppCheckBox->isChecked()){
+            auto rhoApp_divisor = m_Controls.rhoAppDivisorSpinBox->value();
+            BoneDensityParameters::RhoApp rhoApp(rhoApp_divisor);
+            ret.SetRhoApp(rhoApp);
+        }
+    }
+    MITK_INFO("ch.zhaw.materialmapping") << ret;
+    return ret;
 }
