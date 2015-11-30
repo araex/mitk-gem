@@ -3,6 +3,8 @@
 #include <QStandardItemModel>
 #include <QString>
 
+#include "BoneDensityParameters.h"
+
 class CalibrationDataModel : public QObject {
     Q_OBJECT
 
@@ -22,11 +24,7 @@ public:
 
     QAbstractItemModel *getQItemModel() const;
 
-    struct Line {
-        double slope, offset;
-    };
-
-    Line getFittedLine();
+    BoneDensityParameters::RhoCt getFittedLine();
 
 signals:
     void dataChanged();

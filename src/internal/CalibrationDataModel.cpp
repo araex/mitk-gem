@@ -108,7 +108,7 @@ void CalibrationDataModel::clear() {
     m_ItemModel->appendRow(new QStandardItem("")); // add empty row
 }
 
-CalibrationDataModel::Line CalibrationDataModel::getFittedLine() {
+BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() {
     vnl_sparse_matrix<double> A(m_Data.size(), 2);
     vnl_vector<double> b(m_Data.size());
 
@@ -122,7 +122,8 @@ CalibrationDataModel::Line CalibrationDataModel::getFittedLine() {
     x[0] = x[1] = 0.0;
     vnl_lsqr lsqr(ls);
     lsqr.minimize(x);
-    return Line{x[0], x[1]};
+
+    return BoneDensityParameters::RhoCt(x[0], x[1]);
 }
 
 void CalibrationDataModel::readFromFile(QString _path) {

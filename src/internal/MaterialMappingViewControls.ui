@@ -494,17 +494,17 @@ QDoubleSpinBox {
                 <item>
                  <widget class="QLabel" name="label_13">
                   <property name="text">
-                   <string>(ρ_ct *</string>
+                   <string>(ρ_ct +</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="linEQSlopeSpinBox_4">
+                 <widget class="QDoubleSpinBox" name="rhoAshOffsetSpinBox">
                   <property name="decimals">
                    <number>3</number>
                   </property>
                   <property name="minimum">
-                   <double>0.000000000000000</double>
+                   <double>-9.000000000000000</double>
                   </property>
                   <property name="maximum">
                    <double>9.000000000000000</double>
@@ -513,7 +513,7 @@ QDoubleSpinBox {
                    <double>0.010000000000000</double>
                   </property>
                   <property name="value">
-                   <double>0.090000000000000</double>
+                   <double>-0.090000000000000</double>
                   </property>
                  </widget>
                 </item>
@@ -525,7 +525,7 @@ QDoubleSpinBox {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="linEQSlopeSpinBox_5">
+                 <widget class="QDoubleSpinBox" name="rhoAshDivisorSpinBox">
                   <property name="decimals">
                    <number>3</number>
                   </property>

@@ -4,6 +4,8 @@ set(SRC_CPP_FILES
 
 set(INTERNAL_CPP_FILES
   ch_zhaw_materialmapping_Activator.cpp
+  BoneDensityParameters.cpp
+  BoneDensityFunctor.cpp
   CalibrationDataModel.cpp
   MaterialMappingFilter.cpp
   MaterialMappingView.cpp
