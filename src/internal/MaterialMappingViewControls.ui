@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>468</width>
-    <height>798</height>
+    <width>783</width>
+    <height>748</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -306,7 +306,7 @@ QDoubleSpinBox {
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0">
              <property name="spacing">
               <number>-1</number>
              </property>
@@ -320,40 +320,6 @@ QDoubleSpinBox {
               <number>0</number>
              </property>
              <item>
-              <widget class="QCheckBox" name="checkBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>80</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>120</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>ρ_ct</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QWidget" name="verticalWidget_2" native="true">
                <property name="enabled">
                 <bool>false</bool>
@@ -365,6 +331,22 @@ QDoubleSpinBox {
                 <property name="margin">
                  <number>0</number>
                 </property>
+                <item>
+                 <spacer name="horizontalSpacer_4">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Minimum</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>26</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                 <item>
                  <widget class="QLabel" name="label_2">
                   <property name="sizePolicy">
@@ -380,7 +362,7 @@ QDoubleSpinBox {
                    </size>
                   </property>
                   <property name="text">
-                   <string>ρ =</string>
+                   <string>ρ_ct  =</string>
                   </property>
                  </widget>
                 </item>
@@ -463,7 +445,7 @@ QDoubleSpinBox {
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>80</width>
+                 <width>30</width>
                  <height>0</height>
                 </size>
                </property>
@@ -474,7 +456,7 @@ QDoubleSpinBox {
                 </size>
                </property>
                <property name="text">
-                <string>ρ_ash</string>
+                <string/>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -594,7 +576,7 @@ QDoubleSpinBox {
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>80</width>
+                 <width>30</width>
                  <height>0</height>
                 </size>
                </property>
@@ -605,7 +587,7 @@ QDoubleSpinBox {
                 </size>
                </property>
                <property name="text">
-                <string>ρ_app</string>
+                <string/>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -716,7 +698,7 @@ QDoubleSpinBox {
        </property>
        <property name="styleSheet">
         <string notr="true">QGroupBox {
-	background-color: #ffb366;
+	background-color: #b3ff66;
 }</string>
        </property>
        <property name="title">
