@@ -46,7 +46,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
         m_Controls.expectedResultComboBox->SetAutoSelectNewItems(false);
         m_Controls.expectedResultComboBox->SetPredicate(WorkbenchUtils::createIsUnstructuredGridTypePredicate());
 
-        m_TestRunner = std::unique_ptr<Testing::Runner>();
+        m_TestRunner = std::unique_ptr<Testing::Runner>(new Testing::Runner());
 //        connect( m_Controls.selectLogFileButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(openLogFileDialog()) );
     } else {
         m_Controls.testingGroup->hide();
@@ -55,6 +55,9 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     // delete key on table
     QShortcut* shortcut = new QShortcut(QKeySequence(QKeySequence::Delete), table);
     connect(shortcut, SIGNAL(activated()), this, SLOT(deleteSelectedRows()));
+
+    // power law widgets
+    m_PowerLawWidgetManager = std::unique_ptr<PowerLawWidgetManager>(new PowerLawWidgetManager(m_Controls.powerLawWidgets));
 
     // signals
     connect( m_Controls.loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()) );
@@ -173,6 +176,5 @@ BoneDensityFunctor MaterialMappingView::createDensityFunctorFromGui() {
 }
 
 void MaterialMappingView::addPowerLawButtonClicked() {
-    MITK_INFO << "bla";
-    m_Controls.powerLawWidgets->layout()->addWidget(new PowerLawWidget());
+    m_PowerLawWidgetManager->addPowerLaw();
 }

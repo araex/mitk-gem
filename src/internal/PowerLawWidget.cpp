@@ -6,9 +6,7 @@
 
 #include "PowerLawWidget.h"
 
-PowerLawWidget::PowerLawWidget() {
-    m_MinVal = -9999;
-    m_MaxVal = 9999;
+PowerLawWidget::PowerLawWidget(){
     m_Factor = new QDoubleSpinBox;
     m_Factor->setRange(-99.0, 99.0);
     m_Factor->setSingleStep(0.01);
@@ -31,24 +29,21 @@ PowerLawWidget::PowerLawWidget() {
     m_Offset->setButtonSymbols( QAbstractSpinBox::NoButtons );
 
     m_Min = new QDoubleSpinBox;
-    m_Min->setRange(m_MinVal, m_MaxVal);
+    m_Min->setRange(MinValue, MaxValue);
     m_Min->setSingleStep(1.0);
     m_Min->setDecimals(2);
-    m_Min->setValue(std::numeric_limits<float>::lowest());
     m_Min->setButtonSymbols( QAbstractSpinBox::NoButtons );
     m_Min->setSpecialValueText(tr("min"));
-    m_Min->setEnabled(false);
-    m_Min->setReadOnly(true);
+    lockMin(true);
 
     m_Max = new QDoubleSpinBox;
-    m_Max->setRange(m_MinVal, m_MaxVal);
+    m_Max->setRange(MinValue, MaxValue);
     m_Max->setSingleStep(1.0);
     m_Max->setDecimals(2);
-    m_Max->setValue(m_MinVal); // we're using the setSpecialValue functionality to show text, but that requires the value to be equal to minimum()
+    m_Max->setValue(MinValue); // we're using the setSpecialValue functionality to show text, but that requires the value to be equal to minimum()
     m_Max->setButtonSymbols( QAbstractSpinBox::NoButtons );
     m_Max->setSpecialValueText(tr("max"));
-    m_Max->setEnabled(false);
-    m_Max->setReadOnly(true);
+    lockMax(true);
 
     auto formulaLayout = new QHBoxLayout;
     formulaLayout->setContentsMargins(0,0,0,0);
@@ -62,7 +57,7 @@ PowerLawWidget::PowerLawWidget() {
     formulaLayout->addWidget(m_Offset);
     formulaLayout->addStretch();
     formulaLayout->addWidget(m_Min);
-    formulaLayout->addWidget(new QLabel(tr(" ≤ ρ ≤ ")));
+    formulaLayout->addWidget(new QLabel(tr(" ≤ ρ < ")));
     formulaLayout->addWidget(m_Max);
 
     auto formulaWidget = new QWidget;
@@ -76,6 +71,41 @@ PowerLawWidget::PowerLawWidget() {
     setLayout(mainLayout);
 }
 
+void PowerLawWidget::lockMin(bool _b) {
+    m_Min->setEnabled(!_b);
+    m_Min->setReadOnly(_b);
+    m_Min->setValue(MinValue);
+}
+
+void PowerLawWidget::lockMax(bool _b) {
+    m_Max->setEnabled(!_b);
+    m_Max->setReadOnly(_b);
+    m_Max->setValue(MinValue); // we're using the setSpecialValue functionality to show text, but that requires the value to be equal to minimum()
+}
+
+void PowerLawWidget::setMin(double _d) {
+    lockMin(false);
+    m_Min->setValue(_d);
+}
+
+void PowerLawWidget::setMax(double _d) {
+    lockMax(false);
+    m_Max->setValue(_d);
+}
+
+double PowerLawWidget::getMin() {
+    return m_Min->value();
+}
+
+double PowerLawWidget::getMax() {
+    return m_Max->value();
+}
+
 PowerLawParameters PowerLawWidget::getPowerLawParameters() {
     return PowerLawParameters(m_Factor->value(), m_Exponent->value(), m_Offset->value());
+}
+
+void PowerLawWidget::connect(PowerLawWidget *_other) {
+    QWidget::connect(m_Max, SIGNAL(valueChanged(double)), _other->m_Min, SLOT(setValue(double)));
+    QWidget::connect(_other->m_Min, SIGNAL(valueChanged(double)), m_Max, SLOT(setValue(double)));
 }

@@ -12,6 +12,7 @@ set(INTERNAL_CPP_FILES
   PowerLawFunctor.cpp
   PowerLawParameters.cpp
   PowerLawWidget.cpp
+  PowerLawWidgetManager.cpp
   test/Runner.cpp
 )
 

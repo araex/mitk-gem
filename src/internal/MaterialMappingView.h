@@ -8,6 +8,7 @@
 #include "CalibrationDataModel.h"
 #include "test/Runner.h"
 #include "BoneDensityFunctor.h"
+#include "PowerLawWidgetManager.h"
 
 class MaterialMappingView : public QmitkAbstractView {
     Q_OBJECT
@@ -34,4 +35,5 @@ protected:
     CalibrationDataModel m_CalibrationDataModel;
 
     std::unique_ptr<Testing::Runner> m_TestRunner;
+    std::unique_ptr<PowerLawWidgetManager> m_PowerLawWidgetManager;
 };
