@@ -15,6 +15,7 @@ set(INTERNAL_CPP_FILES
   PowerLawWidget.cpp
   PowerLawWidgetManager.cpp
   test/BoneDensityTest.cpp
+  test/PowerLawFunctorTest.cpp
   test/Runner.cpp
 )
 

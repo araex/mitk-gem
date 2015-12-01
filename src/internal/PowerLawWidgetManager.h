@@ -10,7 +10,7 @@ class PowerLawWidgetManager {
 public:
     PowerLawWidgetManager(QWidget *_parent);
 
-    void addPowerLaw();
+    PowerLawWidget* addPowerLaw();
     PowerLawFunctor createFunctor();
 
 private:

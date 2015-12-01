@@ -102,8 +102,7 @@ TEST_CASE("BoneDensityGui"){
 
     SECTION("data model line fitting"){
         auto createdRhoCt = dataModel.getFittedLine();
-        REQUIRE(createdRhoCt.slope == Approx(rhoCt.slope));
-        REQUIRE(createdRhoCt.offset == Approx(rhoCt.offset));
+        REQUIRE(createdRhoCt == rhoCt);
     }
 
     SECTION("functor creation"){

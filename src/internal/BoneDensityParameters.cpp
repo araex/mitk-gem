@@ -14,7 +14,7 @@ namespace BoneDensityParameters {
     RhoApp::RhoApp(double _d) : divisor(_d){}
 
     bool almostEqual(double a, double b) {
-        return std::abs(a - b) < 0.00001;
+        return std::abs(a - b) < 0.0000001;
     }
 
     bool operator==(const RhoCt& lhs, const RhoCt& rhs) {

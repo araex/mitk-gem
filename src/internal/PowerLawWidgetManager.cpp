@@ -4,11 +4,12 @@ PowerLawWidgetManager::PowerLawWidgetManager(QWidget *_parent) : m_Parent(_paren
 
 }
 
-void PowerLawWidgetManager::addPowerLaw() {
+PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
     auto widget = new PowerLawWidget;
     m_Parent->layout()->addWidget(widget);
     m_Widgets.push_back(widget);
     updateConnections();
+    return widget;
 }
 
 void PowerLawWidgetManager::updateConnections() {
