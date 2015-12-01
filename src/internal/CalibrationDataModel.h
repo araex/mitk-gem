@@ -18,18 +18,15 @@ public:
     int appendRow(QString, QString);
     void removeRow(int);
 
-    // IO
-    void openLoadFileDialog();
-    void openSaveFileDialog();
-
     QAbstractItemModel *getQItemModel() const;
-
     BoneDensityParameters::RhoCt getFittedLine();
 
 signals:
     void dataChanged();
 
-protected slots:
+public slots:
+    void openLoadFileDialog();
+    void openSaveFileDialog();
     void itemChanged(QStandardItem*);
 
 private:

@@ -7,6 +7,7 @@ set(INTERNAL_CPP_FILES
   BoneDensityParameters.cpp
   BoneDensityFunctor.cpp
   CalibrationDataModel.cpp
+  GuiHelpers.cpp
   MaterialMappingFilter.cpp
   MaterialMappingView.cpp
   PowerLawFunctor.cpp

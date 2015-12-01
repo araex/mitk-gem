@@ -61,8 +61,8 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     m_PowerLawWidgetManager = std::unique_ptr<PowerLawWidgetManager>(new PowerLawWidgetManager(m_Controls.powerLawWidgets));
 
     // signals
-    connect( m_Controls.loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()) );
-    connect( m_Controls.saveButton, SIGNAL(clicked()), this, SLOT(saveButtonClicked()) );
+    connect( m_Controls.loadButton, SIGNAL(clicked()), &m_CalibrationDataModel, SLOT(openLoadFileDialog()) );
+    connect( m_Controls.saveButton, SIGNAL(clicked()), &m_CalibrationDataModel, SLOT(openSaveFileDialog()) );
     connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
     connect( &m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()) );
     connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), this, SLOT(addPowerLawButtonClicked()) );
@@ -83,14 +83,6 @@ void MaterialMappingView::deleteSelectedRows(){
     tableDataChanged();
 }
 
-void MaterialMappingView::loadButtonClicked() {
-    m_CalibrationDataModel.openLoadFileDialog();
-}
-
-void MaterialMappingView::saveButtonClicked() {
-    m_CalibrationDataModel.openSaveFileDialog();
-}
-
 void MaterialMappingView::startButtonClicked() {
     MITK_INFO("ch.zhaw.materialmapping") << "processing input";
     if(isValidSelection()){
@@ -103,7 +95,7 @@ void MaterialMappingView::startButtonClicked() {
         auto filter = MaterialMappingFilter::New();
         filter->SetInput(ugrid);
         filter->SetIntensityImage(image);
-        filter->SetDensityFunctor(createDensityFunctorFromGui());
+        filter->SetDensityFunctor(gui::createDensityFunctorFromGui(m_Controls, m_CalibrationDataModel));
 
         auto result = filter->GetOutput();
         filter->Update();
@@ -156,25 +148,6 @@ bool MaterialMappingView::isValidSelection() {
     }
     MITK_INFO("ch.zhaw.materialmapping") << "invalid data selection";
     return false;
-}
-
-BoneDensityFunctor MaterialMappingView::createDensityFunctorFromGui() {
-    BoneDensityFunctor ret;
-    ret.SetRhoCt(m_CalibrationDataModel.getFittedLine());
-
-    if(m_Controls.rhoAshCheckBox->isChecked()){
-        auto rhoAsh_offset = m_Controls.rhoAshOffsetSpinBox->value();
-        auto rhoAsh_divisor = m_Controls.rhoAshDivisorSpinBox->value();
-        BoneDensityParameters::RhoAsh rhoAsh(rhoAsh_offset, rhoAsh_divisor);
-        ret.SetRhoAsh(rhoAsh);
-
-        if(m_Controls.rhoAppCheckBox->isChecked()){
-            auto rhoApp_divisor = m_Controls.rhoAppDivisorSpinBox->value();
-            BoneDensityParameters::RhoApp rhoApp(rhoApp_divisor);
-            ret.SetRhoApp(rhoApp);
-        }
-    }
-    return ret;
 }
 
 void MaterialMappingView::addPowerLawButtonClicked() {

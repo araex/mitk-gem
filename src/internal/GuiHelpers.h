@@ -2,23 +2,16 @@
 
 #include <QWidget>
 
+#include "ui_MaterialMappingViewControls.h"
+
+#include "BoneDensityFunctor.h"
+#include "CalibrationDataModel.h"
+
 namespace gui {
-    void setQStyleSheetField(QWidget *widget, const char *fieldName, bool bEnabled){
-        widget->setProperty(fieldName, bEnabled);
-        widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
-        widget->style()->polish(widget);
-        widget->update();
-    }
+    BoneDensityFunctor createDensityFunctorFromGui(Ui::MaterialMappingViewControls &_controls, CalibrationDataModel &_dataModel);
 
-    void setMandatoryField(QWidget *widget, bool bEnabled){
-        setQStyleSheetField(widget, "mandatoryField", bEnabled);
-    }
-
-    void setWarningField(QWidget *widget, bool bEnabled){
-        setQStyleSheetField(widget, "warningField", bEnabled);
-    }
-
-    void setErrorField(QWidget *widget, bool bEnabled){
-        setQStyleSheetField(widget, "errorField", bEnabled);
-    }
+    void setQStyleSheetField(QWidget *widget, const char *fieldName, bool bEnabled);
+    void setMandatoryField(QWidget *widget, bool bEnabled);
+    void setWarningField(QWidget *widget, bool bEnabled);
+    void setErrorField(QWidget *widget, bool bEnabled);
 }

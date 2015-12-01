@@ -19,8 +19,6 @@ public:
 
 protected slots:
     void deleteSelectedRows();
-    void loadButtonClicked();
-    void saveButtonClicked();
     void startButtonClicked();
     void tableDataChanged();
     void addPowerLawButtonClicked();
@@ -29,7 +27,6 @@ protected:
     virtual void CreateQtPartControl(QWidget *parent) override;
     virtual void SetFocus() override {}; // required by blueberry
     bool isValidSelection();
-    BoneDensityFunctor createDensityFunctorFromGui();
 
     Ui::MaterialMappingViewControls m_Controls;
     CalibrationDataModel m_CalibrationDataModel;
