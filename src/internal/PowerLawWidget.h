@@ -27,6 +27,5 @@ public:
 
     void connect(PowerLawWidget *_other);
 
-protected:
     QDoubleSpinBox *m_Factor, *m_Exponent, *m_Offset, *m_Min, *m_Max;
 };
