@@ -14,6 +14,7 @@
 #include "PowerLawWidget.h"
 
 const std::string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
+Ui::MaterialMappingViewControls *MaterialMappingView::controls = nullptr;
 
 void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     m_Controls.setupUi(parent);
@@ -41,6 +42,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
 
     // testing
     if(TESTING){
+        controls = &m_Controls;
         m_Controls.testingGroup->show();
         m_Controls.expectedResultComboBox->SetDataStorage(this->GetDataStorage());
         m_Controls.expectedResultComboBox->SetAutoSelectNewItems(false);

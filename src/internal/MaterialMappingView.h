@@ -16,6 +16,7 @@ class MaterialMappingView : public QmitkAbstractView {
 public:
     static const std::string VIEW_ID;
     static const bool TESTING = true;
+    static Ui::MaterialMappingViewControls *controls;
 
 protected slots:
     void deleteSelectedRows();

@@ -1,6 +1,9 @@
 #include "catch.hpp"
 
 #include "../BoneDensityFunctor.h"
+#include "../GuiHelpers.h"
+#include "../CalibrationDataModel.h"
+#include "../MaterialMappingView.h"
 
 TEST_CASE("BoneDensityFunctor"){
     BoneDensityParameters::RhoCt rhoCt(2, 10); // f(x) = 2x + 10
@@ -73,5 +76,38 @@ TEST_CASE("BoneDensityParameters"){
         REQUIRE(rhoApp0 == rhoApp1);
         REQUIRE(rhoApp1 != rhoApp2);
         REQUIRE(!(rhoApp0 == rhoApp2));
+    }
+}
+
+TEST_CASE("BoneDensityGui"){
+    BoneDensityParameters::RhoCt rhoCt(2, 10);
+    BoneDensityParameters::RhoAsh rhoAsh(5, 2);
+    BoneDensityParameters::RhoApp rhoApp(4);
+    BoneDensityFunctor functor;
+    functor.SetRhoCt(rhoCt);
+    functor.SetRhoAsh(rhoAsh);
+    functor.SetRhoApp(rhoApp);
+
+    Ui::MaterialMappingViewControls *gui = MaterialMappingView::controls;
+    REQUIRE(gui != nullptr);
+    CalibrationDataModel dataModel;
+
+    dataModel.appendRow(0, 10);
+    dataModel.appendRow(-5, 0);
+    gui->rhoAshCheckBox->setChecked(true);
+    gui->rhoAshOffsetSpinBox->setValue(5);
+    gui->rhoAshDivisorSpinBox->setValue(2);
+    gui->rhoAppCheckBox->setChecked(true);
+    gui->rhoAppDivisorSpinBox->setValue(4);
+
+    SECTION("data model line fitting"){
+        auto createdRhoCt = dataModel.getFittedLine();
+        REQUIRE(createdRhoCt.slope == Approx(rhoCt.slope));
+        REQUIRE(createdRhoCt.offset == Approx(rhoCt.offset));
+    }
+
+    SECTION("functor creation"){
+        auto createdFunctor = gui::createDensityFunctorFromGui(*gui, dataModel);
+        REQUIRE(createdFunctor == functor);
     }
 }

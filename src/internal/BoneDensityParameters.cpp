@@ -1,3 +1,6 @@
+#include <limits>
+#include <cmath>
+
 #include "BoneDensityParameters.h"
 
 namespace BoneDensityParameters {
@@ -10,16 +13,20 @@ namespace BoneDensityParameters {
     RhoApp::RhoApp() : RhoApp(1){}
     RhoApp::RhoApp(double _d) : divisor(_d){}
 
+    bool almostEqual(double a, double b) {
+        return std::abs(a - b) < 0.00001;
+    }
+
     bool operator==(const RhoCt& lhs, const RhoCt& rhs) {
-        return (lhs.slope == rhs.slope) && (lhs.offset == rhs.offset);
+        return almostEqual(lhs.slope, rhs.slope) && almostEqual(lhs.offset, rhs.offset);
     }
 
     bool operator==(const RhoAsh& lhs, const RhoAsh& rhs) {
-        return (lhs.offset == rhs.offset) && (lhs.divisor == rhs.divisor);
+        return almostEqual(lhs.offset, rhs.offset) && almostEqual(lhs.divisor, rhs.divisor);
     }
 
     bool operator==(const RhoApp& lhs, const RhoApp& rhs) {
-        return (lhs.divisor == rhs.divisor);
+        return almostEqual(lhs.divisor, rhs.divisor);
     }
 
     bool operator!=(const RhoCt& lhs, const RhoCt& rhs) {
