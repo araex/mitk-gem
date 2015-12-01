@@ -26,6 +26,7 @@ void MaterialMappingFilter::GenerateData() {
 
     MITK_INFO("ch.zhaw.materialmapping") << "material mapping filter parameters";
     MITK_INFO("ch.zhaw.materialmapping") << m_BoneDensityFunctor;
+    MITK_INFO("ch.zhaw.materialmapping") << m_PowerLawFunctor;
 
     // Bug in mitk::Image::GetVtkImageData(), Origin is wrong
     // http://bugs.mitk.org/show_bug.cgi?id=5050
@@ -83,46 +84,46 @@ void MaterialMappingFilter::GenerateData() {
 
     auto dataCT = createDataArray("CT");
     auto dataDensity = createDataArray("Density");
-//    auto dataEMorgan = createDataArray("EMorgan");
-//    auto dataWeightedEMorgan = createDataArray("EMorgan");
+    auto dataEMorgan = createDataArray("EMorgan");
+    auto dataWeightedEMorgan = createDataArray("EMorgan");
 
     // evaluate image and functors for each point
     for(auto i = 0; i < vtkInputGrid->GetNumberOfPoints(); ++i){
         auto p = vtkInputGrid->GetPoint(i);
         auto valCT = interpolator->Interpolate(p[0], p[1], p[2], 0);
         auto valDensity = m_BoneDensityFunctor(valCT);
-//        auto valEMorgan = m_PowerLawFunctor(valDensity);
+        auto valEMorgan = m_PowerLawFunctor(valDensity);
 
         dataCT->InsertTuple1(i, valCT);
         dataDensity->InsertTuple1(i, valDensity);
-//        dataEMorgan->InsertTuple1(i, valEMorgan);
+        dataEMorgan->InsertTuple1(i, valEMorgan);
     }
 
     // build weighted average based on inverse distance
-//    for(auto i = 0; i < vtkInputGrid->GetNumberOfCells(); ++i){
-//        auto cellpoints = vtkInputGrid->GetCell(i)->GetPoints();
-//        double centroid[3] = {0, 0, 0};
-//        double value = 0, denom = 0;
-//
-//        for(auto j = 0; j < 4; ++j){ // 4 vertices of a tetrahedra
-//            auto cellpoint = cellpoints->GetPoint(j);
-//            for(auto k = 0; k < 3; ++k){
-//                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
-//            }
-//        }
-//
-//        for(auto j = 0; j < 10; ++j){ // Ten nodes of a quadratic tetrahedra
-//            auto cellpoint = cellpoints->GetPoint(j);
-//            double weight = 0;
-//            for(auto k = 0; k < 3; ++k){
-//                weight += pow(cellpoint[k] - centroid[k], 2);
-//            }
-//            weight = 1.0 / sqrt(weight);
-//            denom += weight;
-//            value += weight * dataEMorgan->GetTuple1(vtkInputGrid->GetCell(i)->GetPointId(j));
-//        }
-//        dataWeightedEMorgan->InsertTuple1(i, value / denom);
-//    }
+    for(auto i = 0; i < vtkInputGrid->GetNumberOfCells(); ++i){
+        auto cellpoints = vtkInputGrid->GetCell(i)->GetPoints();
+        double centroid[3] = {0, 0, 0};
+        double value = 0, denom = 0;
+
+        for(auto j = 0; j < 4; ++j){ // 4 vertices of a tetrahedra
+            auto cellpoint = cellpoints->GetPoint(j);
+            for(auto k = 0; k < 3; ++k){
+                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
+            }
+        }
+
+        for(auto j = 0; j < 10; ++j){ // Ten nodes of a quadratic tetrahedra
+            auto cellpoint = cellpoints->GetPoint(j);
+            double weight = 0;
+            for(auto k = 0; k < 3; ++k){
+                weight += pow(cellpoint[k] - centroid[k], 2);
+            }
+            weight = 1.0 / sqrt(weight);
+            denom += weight;
+            value += weight * dataEMorgan->GetTuple1(vtkInputGrid->GetCell(i)->GetPointId(j));
+        }
+        dataWeightedEMorgan->InsertTuple1(i, value / denom);
+    }
 
     // create ouput
     auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
@@ -130,7 +131,7 @@ void MaterialMappingFilter::GenerateData() {
     out->GetPointData()->AddArray(dataCT);
     out->GetPointData()->AddArray(dataDensity);
 //    out->GetPointData()->AddArray(dataEMorgan);
-//    out->GetCellData()->AddArray(dataWeightedEMorgan);
+    out->GetCellData()->AddArray(dataWeightedEMorgan);
     m_VolumeMesh->SetVtkUnstructuredGrid(out);
 }
 
