@@ -12,6 +12,16 @@ PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
     return widget;
 }
 
+bool PowerLawWidgetManager::removePowerLaw() {
+    if(!m_Widgets.empty()){
+        m_Parent->layout()->removeWidget(m_Widgets.back());
+        m_Widgets.pop_back();
+        updateConnections();
+        return true;
+    }
+    return false;
+}
+
 void PowerLawWidgetManager::updateConnections() {
     if(m_Widgets.size() == 0){
         return;
@@ -35,6 +45,7 @@ void PowerLawWidgetManager::updateConnections() {
         auto min = previousLast->getMin();
         previousLast->setMax(min+1);
         last->setMin(min+1);
+        last->lockMax(true);
         previousLast->connect(last);
     }
 }

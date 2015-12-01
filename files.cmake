@@ -29,6 +29,7 @@ set(MOC_H_FILES
   src/internal/CalibrationDataModel.h
   src/internal/MaterialMappingView.h
   src/internal/PowerLawWidget.h
+  src/internal/PowerLawWidgetManager.h
   src/internal/test/Runner.h
 )
 

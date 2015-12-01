@@ -6,12 +6,16 @@
 #include "PowerLawWidget.h"
 #include "PowerLawFunctor.h"
 
-class PowerLawWidgetManager {
+class PowerLawWidgetManager : public QObject {
+    Q_OBJECT
+
 public:
     PowerLawWidgetManager(QWidget *_parent);
-
-    PowerLawWidget* addPowerLaw();
     PowerLawFunctor createFunctor();
+
+public slots:
+    PowerLawWidget* addPowerLaw();
+    bool removePowerLaw();
 
 private:
     void updateConnections();

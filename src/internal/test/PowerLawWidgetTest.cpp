@@ -48,7 +48,7 @@ TEST_CASE("PowerLawWidgetManager"){
         REQUIRE(w0->getMax() == w1->getMin());
     }
 
-    SECTION("range adaption on add"){
+    SECTION("range adaption on add / remove"){
         // TODO: these should be a field in the widgets
         auto minValue = -9999;
         auto maxValue = 9999;
@@ -62,5 +62,31 @@ TEST_CASE("PowerLawWidgetManager"){
         REQUIRE(w0->getMax() == w1->getMin());
         REQUIRE(w0->getMax() != minValue);
         REQUIRE(w1->getMax() == minValue);
+
+        auto w2 = manager.addPowerLaw();
+        REQUIRE(w0->getMin() == minValue);
+        REQUIRE(w0->getMax() != minValue);
+        REQUIRE(w0->getMax() == w1->getMin());
+        REQUIRE(w1->getMax() == w2->getMin());
+        REQUIRE(w2->getMax() == minValue);
+
+        auto w3 = manager.addPowerLaw();
+        REQUIRE(w2->getMax() == w3->getMin());
+        REQUIRE(w3->getMax() == minValue);
+
+        REQUIRE(manager.removePowerLaw());
+        REQUIRE(w1->getMax() == w2->getMin());
+        REQUIRE(w2->getMax() == minValue);
+
+        REQUIRE(manager.removePowerLaw());
+        REQUIRE(w0->getMax() == w1->getMin());
+        REQUIRE(w1->getMax() == minValue);
+
+        REQUIRE(manager.removePowerLaw());
+        REQUIRE(w0->getMax() == minValue);
+        REQUIRE(w0->getMax() == minValue);
+
+        REQUIRE(manager.removePowerLaw());
+        REQUIRE(manager.removePowerLaw() == false); // should be empty now
     }
 }

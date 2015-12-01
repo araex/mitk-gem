@@ -67,7 +67,8 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     connect( m_Controls.saveButton, SIGNAL(clicked()), &m_CalibrationDataModel, SLOT(openSaveFileDialog()) );
     connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
     connect( &m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()) );
-    connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), this, SLOT(addPowerLawButtonClicked()) );
+    connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(addPowerLaw()) );
+    connect( m_Controls.removePowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(removePowerLaw()) );
 }
 
 void MaterialMappingView::deleteSelectedRows(){
@@ -150,9 +151,4 @@ bool MaterialMappingView::isValidSelection() {
     }
     MITK_INFO("ch.zhaw.materialmapping") << "invalid data selection";
     return false;
-}
-
-void MaterialMappingView::addPowerLawButtonClicked() {
-    m_PowerLawWidgetManager->addPowerLaw();
-    MITK_INFO("ch.zhaw.materialmapping") << m_PowerLawWidgetManager->createFunctor();
 }
