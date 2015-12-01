@@ -13,6 +13,7 @@ set(INTERNAL_CPP_FILES
   PowerLawParameters.cpp
   PowerLawWidget.cpp
   PowerLawWidgetManager.cpp
+  test/BoneDensityTest.cpp
   test/Runner.cpp
 )
 
@@ -25,6 +26,7 @@ set(MOC_H_FILES
   src/internal/CalibrationDataModel.h
   src/internal/MaterialMappingView.h
   src/internal/PowerLawWidget.h
+  src/internal/test/Runner.h
 )
 
 # list of resource files which can be used by the plug-in

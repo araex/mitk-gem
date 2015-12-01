@@ -21,4 +21,16 @@ namespace BoneDensityParameters {
     bool operator==(const RhoApp& lhs, const RhoApp& rhs) {
         return (lhs.divisor == rhs.divisor);
     }
+
+    bool operator!=(const RhoCt& lhs, const RhoCt& rhs) {
+        return !(lhs == rhs);
+    }
+
+    bool operator!=(const RhoAsh& lhs, const RhoAsh& rhs) {
+        return !(lhs == rhs);
+    }
+
+    bool operator!=(const RhoApp& lhs, const RhoApp& rhs) {
+        return !(lhs == rhs);
+    }
 }

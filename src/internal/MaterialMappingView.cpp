@@ -47,6 +47,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
         m_Controls.expectedResultComboBox->SetPredicate(WorkbenchUtils::createIsUnstructuredGridTypePredicate());
 
         m_TestRunner = std::unique_ptr<Testing::Runner>(new Testing::Runner());
+        connect( m_Controls.runUnitTestsButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(runUnitTests()) );
 //        connect( m_Controls.selectLogFileButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(openLogFileDialog()) );
     } else {
         m_Controls.testingGroup->hide();

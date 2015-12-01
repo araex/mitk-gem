@@ -20,4 +20,8 @@ namespace BoneDensityParameters {
     bool operator==(const RhoCt& lhs, const RhoCt& rhs);
     bool operator==(const RhoAsh& lhs, const RhoAsh& rhs);
     bool operator==(const RhoApp& lhs, const RhoApp& rhs);
+
+    bool operator!=(const RhoCt& lhs, const RhoCt& rhs);
+    bool operator!=(const RhoAsh& lhs, const RhoAsh& rhs);
+    bool operator!=(const RhoApp& lhs, const RhoApp& rhs);
 };
