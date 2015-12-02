@@ -35,6 +35,7 @@ protected:
     using VtkImage = vtkSmartPointer<vtkImageData>;
     using VtkStencil = vtkSmartPointer<vtkImageStencil>;
     using VtkUGrid = vtkSmartPointer<vtkUnstructuredGridBase>;
+    using VtkDoubleArray = vtkSmartPointer<vtkDoubleArray>;
 
     MaterialMappingFilter();
     virtual ~MaterialMappingFilter(){};
@@ -44,8 +45,13 @@ protected:
     VtkImage extractVOI(const VtkImage, const VtkUGrid);
     VtkImage createStencil(const VtkUGrid, const VtkImage);
     VtkImage createPeeledMask(const VtkImage _img, const VtkImage _mask);
+
+    // "extendImage" weighted average in neighborhood, performed in place
     void inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxVal);
-    vtkSmartPointer<vtkDoubleArray> createDataArray(std::string);
+
+    // "interpolateToNodes". evaluates both functors for each vertex of the mesh
+    VtkDoubleArray evaluateFunctorsForNodes(const VtkUGrid, const VtkImage, std::string _name, double _minElem);
+    VtkDoubleArray nodesToElements(const VtkUGrid, VtkDoubleArray _nodeData, std::string _name);
 
     mitk::UnstructuredGrid::Pointer m_VolumeMesh;
     mitk::Image::Pointer m_IntensityImage;

@@ -45,69 +45,23 @@ void MaterialMappingFilter::GenerateData() {
     vtkImage->ShallowCopy(importedVtkImage);
     vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
 
-    auto surface = extractSurface(vtkInputGrid);
-    // TODO: levelMidpoints
+    auto surface = extractSurface(vtkInputGrid); // TODO: we don't really need this?
+    // TODO old: levelMidpoints
     auto voi = extractVOI(vtkImage, surface);
     auto stencil = createStencil(surface, voi);
     auto peeledMask = createPeeledMask(voi, stencil);
-    // TODO: extend image (=> weighted average in neighborhood). 3 times for some reason
-
-    // setup interpolator
-    auto interpolator = vtkSmartPointer<vtkImageInterpolator>::New();
-    interpolator->Initialize(voi);
-    interpolator->SetInterpolationModeToLinear();
-    interpolator->Update();
-
-    auto dataCT = createDataArray("CT");
-    auto dataDensity = createDataArray("Density");
-    auto dataEMorgan = createDataArray("E");
-    auto dataWeightedEMorgan = createDataArray("E");
-
-    // evaluate image and functors for each point
-    for(auto i = 0; i < vtkInputGrid->GetNumberOfPoints(); ++i){
-        auto p = vtkInputGrid->GetPoint(i);
-        auto valCT = interpolator->Interpolate(p[0], p[1], p[2], 0);
-        auto valDensity = m_BoneDensityFunctor(valCT);
-        auto valEMorgan = m_PowerLawFunctor(valDensity);
-
-        dataCT->InsertTuple1(i, valCT);
-        dataDensity->InsertTuple1(i, valDensity);
-        dataEMorgan->InsertTuple1(i, valEMorgan);
+    for(int i = 0; i < 3; i++) {
+        inplaceExtendImage(voi, peeledMask, true);
     }
 
-    // build weighted average based on inverse distance
-    for(auto i = 0; i < vtkInputGrid->GetNumberOfCells(); ++i){
-        auto cellpoints = vtkInputGrid->GetCell(i)->GetPoints();
-        double centroid[3] = {0, 0, 0};
-        double value = 0, denom = 0;
-
-        for(auto j = 0; j < 4; ++j){ // 4 vertices of a tetrahedra
-            auto cellpoint = cellpoints->GetPoint(j);
-            for(auto k = 0; k < 3; ++k){
-                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
-            }
-        }
-
-        for(auto j = 0; j < 10; ++j){ // Ten nodes of a quadratic tetrahedra
-            auto cellpoint = cellpoints->GetPoint(j);
-            double weight = 0;
-            for(auto k = 0; k < 3; ++k){
-                weight += pow(cellpoint[k] - centroid[k], 2);
-            }
-            weight = 1.0 / sqrt(weight);
-            denom += weight;
-            value += weight * dataEMorgan->GetTuple1(vtkInputGrid->GetCell(i)->GetPointId(j));
-        }
-        dataWeightedEMorgan->InsertTuple1(i, value / denom);
-    }
+    auto nodeDataE = evaluateFunctorsForNodes(vtkInputGrid, voi, "E", 0.0); // TODO: get min elem from gui
+    auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
 
     // create ouput
     auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
     out->DeepCopy(vtkInputGrid);
-    out->GetPointData()->AddArray(dataCT);
-    out->GetPointData()->AddArray(dataDensity);
-//    out->GetPointData()->AddArray(dataEMorgan);
-    out->GetCellData()->AddArray(dataWeightedEMorgan);
+    out->GetPointData()->AddArray(nodeDataE);
+    out->GetCellData()->AddArray(elementDataE);
     m_VolumeMesh->SetVtkUnstructuredGrid(out);
 }
 
@@ -265,9 +219,56 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
 
 }
 
-vtkSmartPointer<vtkDoubleArray> MaterialMappingFilter::createDataArray(std::string _name) {
-    auto ret = vtkSmartPointer<vtkDoubleArray>::New();
-    ret->SetNumberOfComponents(1);
-    ret->SetName(_name.c_str());
-    return ret;
+MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::evaluateFunctorsForNodes(const VtkUGrid _mesh, const VtkImage _img, std::string _name, double _minElem) {
+    auto data = vtkSmartPointer<vtkDoubleArray>::New();
+    data->SetNumberOfComponents(1);
+    data->SetName(_name.c_str());
+
+    auto interpolator = vtkSmartPointer<vtkImageInterpolator>::New();
+    interpolator->Initialize(_img);
+    interpolator->SetInterpolationModeToLinear();
+    interpolator->Update();
+
+    for(auto i = 0; i < _mesh->GetNumberOfPoints(); ++i){
+        auto p = _mesh->GetPoint(i);
+        auto valCT = interpolator->Interpolate(p[0], p[1], p[2], 0);
+        auto valDensity = m_BoneDensityFunctor(valCT);
+        auto valEMorgan = m_PowerLawFunctor(valDensity);
+        data->InsertTuple1(i, valEMorgan > _minElem? valEMorgan : _minElem);
+    }
+
+    return data;
+}
+
+MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(const VtkUGrid _mesh, VtkDoubleArray _nodeData, std::string _name) {
+    auto data = vtkSmartPointer<vtkDoubleArray>::New();
+    data->SetNumberOfComponents(1);
+    data->SetName(_name.c_str());
+
+    for(auto i = 0; i < _mesh->GetNumberOfCells(); ++i){
+        auto cellpoints = _mesh->GetCell(i)->GetPoints();
+        double centroid[3] = {0, 0, 0};
+
+        for(auto j = 0; j < cellpoints->GetNumberOfPoints(); ++j){ // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
+            auto cellpoint = cellpoints->GetPoint(j);
+            for(auto k = 0; k < 3; ++k){
+                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
+            }
+        }
+
+        double value = 0, denom = 0;
+        for(auto j = 0; j < cellpoints->GetNumberOfPoints(); ++j){ // TODO: original comment "Ten nodes of a quadratic tetrahedra"
+            auto cellpoint = cellpoints->GetPoint(j);
+            double weight = 0;
+            for(auto k = 0; k < 3; ++k){
+                weight += pow(cellpoint[k] - centroid[k], 2);
+            }
+            weight = 1.0 / sqrt(weight);
+            denom += weight;
+            value += weight * _nodeData->GetTuple1(_mesh->GetCell(i)->GetPointId(j));
+        }
+        data->InsertTuple1(i, value / denom);
+    }
+
+    return data;
 }
