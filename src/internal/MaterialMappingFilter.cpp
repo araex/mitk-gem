@@ -20,11 +20,8 @@
 MaterialMappingFilter::MaterialMappingFilter() {
 }
 
-void MaterialMappingFilter::GenerateOutputInformation() {
-    m_VolumeMesh = this->GetOutput();
-}
-
 void MaterialMappingFilter::GenerateData() {
+    // TODO: flag "-o" old method, do we need this?
     mitk::UnstructuredGrid::Pointer inputGrid = const_cast<mitk::UnstructuredGrid*>(this->GetInput());
     if(inputGrid.IsNull() || m_IntensityImage == nullptr || m_IntensityImage.IsNull()) return;
 
@@ -46,11 +43,13 @@ void MaterialMappingFilter::GenerateData() {
     vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
 
     auto surface = extractSurface(vtkInputGrid); // TODO: we don't really need this?
-    // TODO old: levelMidpoints
+    // TODO old: levelMidpoints, still needed?
     auto voi = extractVOI(vtkImage, surface);
     auto stencil = createStencil(surface, voi);
+    // TODO flag for peeling
     auto peeledMask = createPeeledMask(voi, stencil);
-    for(int i = 0; i < 3; i++) {
+    auto imageDimension = m_IntensityImage->GetDimension(); // TODO: was "numberOfExtents", CLI argument.
+    for(int i = 0; i < imageDimension; ++i) { // TODO: is upper bound correct? why?
         inplaceExtendImage(voi, peeledMask, true);
     }
 
@@ -58,11 +57,12 @@ void MaterialMappingFilter::GenerateData() {
     auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
 
     // create ouput
+    // TODO: CLI had argument to write surface mesh. do we need this?
     auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
     out->DeepCopy(vtkInputGrid);
     out->GetPointData()->AddArray(nodeDataE);
     out->GetCellData()->AddArray(elementDataE);
-    m_VolumeMesh->SetVtkUnstructuredGrid(out);
+    this->GetOutput()->SetVtkUnstructuredGrid(out);
 }
 
 MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkUGrid _volMesh) {
@@ -187,8 +187,7 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     boolmask->CopyStructure(_mask);
     boolmask->AllocateScalars(VTK_FLOAT,1);
     for(int i = 0; i < boolmask->GetNumberOfPoints(); i++)
-        boolmask->GetPointData()->GetScalars()
-                ->SetTuple1(i,_mask->GetPointData()->GetScalars()->GetTuple1(i));
+        boolmask->GetPointData()->GetScalars()->SetTuple1(i,_mask->GetPointData()->GetScalars()->GetTuple1(i));
     math->SetOperationToMultiply();
     math->SetInput1Data(_img);
     math->SetInput2Data(boolmask);

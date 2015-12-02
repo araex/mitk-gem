@@ -29,8 +29,8 @@ public:
         m_PowerLawFunctor = _f;
     }
 
-    virtual void GenerateOutputInformation() override;
     virtual void GenerateData() override;
+
 protected:
     using VtkImage = vtkSmartPointer<vtkImageData>;
     using VtkStencil = vtkSmartPointer<vtkImageStencil>;
@@ -41,19 +41,13 @@ protected:
     virtual ~MaterialMappingFilter(){};
 
     VtkUGrid extractSurface(const VtkUGrid);
-    // convert surface to inverted binary mask (=> 0 inside, 1 outside)
     VtkImage extractVOI(const VtkImage, const VtkUGrid);
-    VtkImage createStencil(const VtkUGrid, const VtkImage);
+    VtkImage createStencil(const VtkUGrid, const VtkImage); // convert surface to inverted binary mask (=> 0 inside, 1 outside)
     VtkImage createPeeledMask(const VtkImage _img, const VtkImage _mask);
-
-    // "extendImage" weighted average in neighborhood, performed in place
-    void inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxVal);
-
-    // "interpolateToNodes". evaluates both functors for each vertex of the mesh
-    VtkDoubleArray evaluateFunctorsForNodes(const VtkUGrid, const VtkImage, std::string _name, double _minElem);
+    void inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxVal); // weighted average in neighborhood, performed in place
+    VtkDoubleArray evaluateFunctorsForNodes(const VtkUGrid, const VtkImage, std::string _name, double _minElem); // "interpolateToNodes". evaluates both functors for each vertex of the mesh
     VtkDoubleArray nodesToElements(const VtkUGrid, VtkDoubleArray _nodeData, std::string _name);
 
-    mitk::UnstructuredGrid::Pointer m_VolumeMesh;
     mitk::Image::Pointer m_IntensityImage;
     BoneDensityFunctor m_BoneDensityFunctor;
     PowerLawFunctor m_PowerLawFunctor;
