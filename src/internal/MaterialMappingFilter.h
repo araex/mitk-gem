@@ -5,6 +5,8 @@
 
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkImageStencil.h>
 
 #include "BoneDensityFunctor.h"
 #include "PowerLawFunctor.h"
@@ -31,12 +33,18 @@ public:
     virtual void GenerateData() override;
 protected:
     using VtkImage = vtkSmartPointer<vtkImageData>;
+    using VtkStencil = vtkSmartPointer<vtkImageStencil>;
+    using VtkUGrid = vtkSmartPointer<vtkUnstructuredGridBase>;
 
     MaterialMappingFilter();
     virtual ~MaterialMappingFilter(){};
 
-    VtkImage peelMask(const VtkImage _img, const VtkImage _mask);
-    void extendImage(VtkImage _img, VtkImage _mask, bool _maxVal);
+    VtkUGrid extractSurface(const VtkUGrid);
+    // convert surface to inverted binary mask (=> 0 inside, 1 outside)
+    VtkImage extractVOI(const VtkImage, const VtkUGrid);
+    VtkImage createStencil(const VtkUGrid, const VtkImage);
+    VtkImage createPeeledMask(const VtkImage _img, const VtkImage _mask);
+    void inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxVal);
     vtkSmartPointer<vtkDoubleArray> createDataArray(std::string);
 
     mitk::UnstructuredGrid::Pointer m_VolumeMesh;

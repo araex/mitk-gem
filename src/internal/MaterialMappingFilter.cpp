@@ -3,12 +3,12 @@
 #include <vtkPointData.h>
 #include <vtkCellData.h>
 #include <vtkImageInterpolator.h>
-#include <vtkUnstructuredGrid.h>
+
 #include <vtkUnstructuredGridGeometryFilter.h>
 #include <vtkExtractVOI.h>
 #include <vtkDataSetSurfaceFilter.h>
 #include <vtkPolyDataToImageStencil.h>
-#include <vtkImageStencil.h>
+
 #include <vtkImageContinuousErode3D.h>
 #include <vtkImageLogic.h>
 #include <vtkImageMathematics.h>
@@ -45,74 +45,16 @@ void MaterialMappingFilter::GenerateData() {
     vtkImage->ShallowCopy(importedVtkImage);
     vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
 
-    // get surface
-    // extractUnstructuredSurfaceMesh
-    auto surfaceFilter = vtkSmartPointer<vtkUnstructuredGridGeometryFilter>::New();
-    surfaceFilter->SetInputData(vtkInputGrid);
-    surfaceFilter->PassThroughCellIdsOn();
-    surfaceFilter->PassThroughPointIdsOn();
-    surfaceFilter->Update();
-
+    auto surface = extractSurface(vtkInputGrid);
     // TODO: levelMidpoints
-
-    // extract VOI based on given border
-    // readMetaImageVOI
-    auto voi = vtkSmartPointer<vtkExtractVOI>::New();
-    auto spacing = vtkImage->GetSpacing();
-    auto origin = vtkImage->GetOrigin();
-    auto extent = vtkImage->GetExtent();
-    auto bounds = surfaceFilter->GetOutput()->GetBounds();
-
-    auto clamp = [](double x, int a, int b){
-        return x < a ? a : (x > b ? b : x);
-    };
-
-    auto border = 4;
-    int voiExt[6];
-    for(auto i = 0; i < 2; ++i){
-        for(auto j = 0; j < 3; ++j){
-            auto val = (bounds[i+2*j]-origin[j])/spacing[j] + (2*i-1)*border; // coordinate -> index
-            voiExt[i+2*j] = clamp(val, extent[2*j], extent[2*j+1]); // prevent wrap around
-        }
-    }
-    voi->SetVOI(voiExt);
-    voi->SetInputData(vtkImage);
-    voi->Update();
-
-    // convert surface to inverted binary mask (=> 0 inside, 1 outside)
-    // insideSurfacePixelMask
-    auto gridToPolyDataFilter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New();
-    auto polyDataToStencilFilter = vtkSmartPointer<vtkPolyDataToImageStencil>::New();
-    auto blankImage = vtkSmartPointer<vtkImageData>::New();
-    auto stencil = vtkSmartPointer<vtkImageStencil>::New();
-
-    gridToPolyDataFilter->SetInputConnection(surfaceFilter->GetOutputPort());
-
-    polyDataToStencilFilter->SetInputConnection(gridToPolyDataFilter->GetOutputPort());
-    polyDataToStencilFilter->SetOutputSpacing(voi->GetOutput()->GetSpacing());
-    polyDataToStencilFilter->SetOutputOrigin(voi->GetOutput()->GetOrigin());
-
-    blankImage->CopyStructure(voi->GetOutput());
-    blankImage->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
-    unsigned char *p = (unsigned char *) (blankImage->GetScalarPointer());
-    for(int i = 0; i < blankImage->GetNumberOfPoints(); i++){
-        p[i] = 0;
-    }
-    stencil->SetInputData(blankImage);
-    stencil->SetStencilConnection(polyDataToStencilFilter->GetOutputPort());
-    stencil->ReverseStencilOn();
-    stencil->SetBackgroundValue(1);
-    stencil->Update();
-
-    // peelMask
-    auto peeledMask = peelMask(voi->GetOutput(), stencil->GetOutput());
-
+    auto voi = extractVOI(vtkImage, surface);
+    auto stencil = createStencil(surface, voi);
+    auto peeledMask = createPeeledMask(voi, stencil);
     // TODO: extend image (=> weighted average in neighborhood). 3 times for some reason
-    // extendImage
 
     // setup interpolator
     auto interpolator = vtkSmartPointer<vtkImageInterpolator>::New();
-    interpolator->Initialize(voi->GetOutput());
+    interpolator->Initialize(voi);
     interpolator->SetInterpolationModeToLinear();
     interpolator->Update();
 
@@ -169,7 +111,70 @@ void MaterialMappingFilter::GenerateData() {
     m_VolumeMesh->SetVtkUnstructuredGrid(out);
 }
 
-MaterialMappingFilter::VtkImage MaterialMappingFilter::peelMask(const VtkImage _img, const VtkImage _mask) {
+MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkUGrid _volMesh) {
+    auto surfaceFilter = vtkSmartPointer<vtkUnstructuredGridGeometryFilter>::New();
+    surfaceFilter->SetInputData(_volMesh);
+    surfaceFilter->PassThroughCellIdsOn();
+    surfaceFilter->PassThroughPointIdsOn();
+    surfaceFilter->Update();
+    return surfaceFilter->GetOutput();
+}
+
+MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage _img, const VtkUGrid _surMesh) {
+    auto voi = vtkSmartPointer<vtkExtractVOI>::New();
+    auto spacing = _img->GetSpacing();
+    auto origin = _img->GetOrigin();
+    auto extent = _img->GetExtent();
+    auto bounds = _surMesh->GetBounds();
+
+    auto clamp = [](double x, int a, int b){
+        return x < a ? a : (x > b ? b : x);
+    };
+
+    auto border = 4;
+    int voiExt[6];
+    for(auto i = 0; i < 2; ++i){
+        for(auto j = 0; j < 3; ++j){
+            auto val = (bounds[i+2*j]-origin[j])/spacing[j] + (2*i-1)*border; // coordinate -> index
+            voiExt[i+2*j] = clamp(val, extent[2*j], extent[2*j+1]); // prevent wrap around
+        }
+    }
+    voi->SetVOI(voiExt);
+    voi->SetInputData(_img);
+    voi->Update();
+    return voi->GetOutput();
+}
+
+MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUGrid _surMesh, const VtkImage _img) {
+    // configure
+    auto gridToPolyDataFilter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New();
+
+    auto polyDataToStencilFilter = vtkSmartPointer<vtkPolyDataToImageStencil>::New();
+    polyDataToStencilFilter->SetOutputSpacing(_img->GetSpacing());
+    polyDataToStencilFilter->SetOutputOrigin(_img->GetOrigin());
+
+    auto blankImage = vtkSmartPointer<vtkImageData>::New();
+    blankImage->CopyStructure(_img);
+    blankImage->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
+    unsigned char *p = (unsigned char *) (blankImage->GetScalarPointer());
+    for(int i = 0; i < blankImage->GetNumberOfPoints(); i++){
+        p[i] = 0;
+    }
+
+    auto stencil = vtkSmartPointer<vtkImageStencil>::New();
+    stencil->ReverseStencilOn();
+    stencil->SetBackgroundValue(1);
+
+    // pipeline
+    gridToPolyDataFilter->SetInputData(_surMesh);
+    polyDataToStencilFilter->SetInputConnection(gridToPolyDataFilter->GetOutputPort());
+    stencil->SetInputData(blankImage);
+    stencil->SetStencilConnection(polyDataToStencilFilter->GetOutputPort());
+    stencil->Update();
+    return stencil->GetOutput();
+}
+
+MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const VtkImage _img, const VtkImage _mask) {
     // configure
     auto erodeFilter = vtkSmartPointer<vtkImageContinuousErode3D>::New();
     erodeFilter->SetKernelSize(3,3,3);
@@ -189,7 +194,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::peelMask(const VtkImage _
     imgCopy->DeepCopy(_img);
     auto erodedMaskCopy = vtkSmartPointer<vtkImageData>::New();
     erodedMaskCopy->DeepCopy(erodeFilter->GetOutput());
-    extendImage(imgCopy, erodedMaskCopy, true);
+    inplaceExtendImage(imgCopy, erodedMaskCopy, true);
 
     unsigned char *pl = (unsigned char *) xorLogic->GetOutput()->GetScalarPointer();
     unsigned char *sl = (unsigned char *) erodeFilter->GetOutput()->GetScalarPointer();
@@ -204,7 +209,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::peelMask(const VtkImage _
 }
 
 // as in assignElasticModulus.cc 26.11.15 (v3)
-void MaterialMappingFilter::extendImage(VtkImage _img, VtkImage _mask, bool _maxval) {
+void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxval) {
     static const double kernel[27] = {
         1/sqrt(3),1/sqrt(2),1/sqrt(3),
         1/sqrt(2),1,1/sqrt(2),
