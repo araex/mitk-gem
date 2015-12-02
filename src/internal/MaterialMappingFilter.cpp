@@ -7,6 +7,9 @@
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridGeometryFilter.h>
 #include <vtkExtractVOI.h>
+#include <vtkDataSetSurfaceFilter.h>
+#include <vtkPolyDataToImageStencil.h>
+#include <vtkImageStencil.h>
 
 #include "MaterialMappingFilter.h"
 
@@ -39,6 +42,7 @@ void MaterialMappingFilter::GenerateData() {
     vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
 
     // get surface
+    // extractUnstructuredSurfaceMesh
     auto surfaceFilter = vtkSmartPointer<vtkUnstructuredGridGeometryFilter>::New();
     surfaceFilter->SetInputData(vtkInputGrid);
     surfaceFilter->PassThroughCellIdsOn();
@@ -48,6 +52,7 @@ void MaterialMappingFilter::GenerateData() {
     // TODO: levelMidpoints
 
     // extract VOI based on given border
+    // readMetaImageVOI
     auto voi = vtkSmartPointer<vtkExtractVOI>::New();
     auto spacing = vtkImage->GetSpacing();
     auto origin = vtkImage->GetOrigin();
@@ -70,11 +75,33 @@ void MaterialMappingFilter::GenerateData() {
     voi->SetInputData(vtkImage);
     voi->Update();
 
-    // TODO: create stencil
+    // convert surface to inverted binary mask (=> 0 inside, 1 outside)
+    // insideSurfacePixelMask
+    auto gridToPolyDataFilter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New();
+    gridToPolyDataFilter->SetInputConnection(surfaceFilter->GetOutputPort());
+    auto polyDataToStencilFilter = vtkSmartPointer<vtkPolyDataToImageStencil>::New();
+    polyDataToStencilFilter->SetInputConnection(gridToPolyDataFilter->GetOutputPort());
+    polyDataToStencilFilter->SetOutputSpacing(voi->GetOutput()->GetSpacing());
+    polyDataToStencilFilter->SetOutputOrigin(voi->GetOutput()->GetOrigin());
+    auto blankImage = vtkSmartPointer<vtkImageData>::New();
+    blankImage->CopyStructure(voi->GetOutput());
+    blankImage->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
+    unsigned char *p = (unsigned char *) (blankImage->GetScalarPointer());
+    for(int i = 0; i < blankImage->GetNumberOfPoints(); i++){
+        p[i] = 0;
+    }
+    auto stencil = vtkSmartPointer<vtkImageStencil>::New();
+    stencil->SetInputData(blankImage);
+    stencil->SetStencilConnection(polyDataToStencilFilter->GetOutputPort());
+    stencil->ReverseStencilOn();
+    stencil->SetBackgroundValue(1);
+    stencil->Update();
 
     // TODO: erode stencil
+    // peelMask
 
     // TODO: extend image (=> weighted average in neighborhood). 3 times for some reason
+    // extendImage
 
     // setup interpolator
     auto interpolator = vtkSmartPointer<vtkImageInterpolator>::New();
@@ -84,8 +111,8 @@ void MaterialMappingFilter::GenerateData() {
 
     auto dataCT = createDataArray("CT");
     auto dataDensity = createDataArray("Density");
-    auto dataEMorgan = createDataArray("EMorgan");
-    auto dataWeightedEMorgan = createDataArray("EMorgan");
+    auto dataEMorgan = createDataArray("E");
+    auto dataWeightedEMorgan = createDataArray("E");
 
     // evaluate image and functors for each point
     for(auto i = 0; i < vtkInputGrid->GetNumberOfPoints(); ++i){
