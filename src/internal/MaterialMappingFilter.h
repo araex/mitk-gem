@@ -3,6 +3,9 @@
 #include <mitkImage.h>
 #include <mitkUnstructuredGridToUnstructuredGridFilter.h>
 
+#include <vtkSmartPointer.h>
+#include <vtkImageData.h>
+
 #include "BoneDensityFunctor.h"
 #include "PowerLawFunctor.h"
 
@@ -27,10 +30,15 @@ public:
     virtual void GenerateOutputInformation() override;
     virtual void GenerateData() override;
 protected:
+    using VtkImage = vtkSmartPointer<vtkImageData>;
+
     MaterialMappingFilter();
     virtual ~MaterialMappingFilter(){};
 
+    VtkImage peelMask(const VtkImage _img, const VtkImage _mask);
+    void extendImage(VtkImage _img, VtkImage _mask, bool _maxVal);
     vtkSmartPointer<vtkDoubleArray> createDataArray(std::string);
+
     mitk::UnstructuredGrid::Pointer m_VolumeMesh;
     mitk::Image::Pointer m_IntensityImage;
     BoneDensityFunctor m_BoneDensityFunctor;

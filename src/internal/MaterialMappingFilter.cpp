@@ -1,4 +1,3 @@
-#include <vtkSmartPointer.h>
 #include <vtkDoubleArray.h>
 #include <vtkCellArray.h>
 #include <vtkPointData.h>
@@ -10,6 +9,11 @@
 #include <vtkDataSetSurfaceFilter.h>
 #include <vtkPolyDataToImageStencil.h>
 #include <vtkImageStencil.h>
+#include <vtkImageContinuousErode3D.h>
+#include <vtkImageLogic.h>
+#include <vtkImageMathematics.h>
+#include <vtkImageConvolve.h>
+
 
 #include "MaterialMappingFilter.h"
 
@@ -78,27 +82,30 @@ void MaterialMappingFilter::GenerateData() {
     // convert surface to inverted binary mask (=> 0 inside, 1 outside)
     // insideSurfacePixelMask
     auto gridToPolyDataFilter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New();
-    gridToPolyDataFilter->SetInputConnection(surfaceFilter->GetOutputPort());
     auto polyDataToStencilFilter = vtkSmartPointer<vtkPolyDataToImageStencil>::New();
+    auto blankImage = vtkSmartPointer<vtkImageData>::New();
+    auto stencil = vtkSmartPointer<vtkImageStencil>::New();
+
+    gridToPolyDataFilter->SetInputConnection(surfaceFilter->GetOutputPort());
+
     polyDataToStencilFilter->SetInputConnection(gridToPolyDataFilter->GetOutputPort());
     polyDataToStencilFilter->SetOutputSpacing(voi->GetOutput()->GetSpacing());
     polyDataToStencilFilter->SetOutputOrigin(voi->GetOutput()->GetOrigin());
-    auto blankImage = vtkSmartPointer<vtkImageData>::New();
+
     blankImage->CopyStructure(voi->GetOutput());
     blankImage->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
     unsigned char *p = (unsigned char *) (blankImage->GetScalarPointer());
     for(int i = 0; i < blankImage->GetNumberOfPoints(); i++){
         p[i] = 0;
     }
-    auto stencil = vtkSmartPointer<vtkImageStencil>::New();
     stencil->SetInputData(blankImage);
     stencil->SetStencilConnection(polyDataToStencilFilter->GetOutputPort());
     stencil->ReverseStencilOn();
     stencil->SetBackgroundValue(1);
     stencil->Update();
 
-    // TODO: erode stencil
     // peelMask
+    auto peeledMask = peelMask(voi->GetOutput(), stencil->GetOutput());
 
     // TODO: extend image (=> weighted average in neighborhood). 3 times for some reason
     // extendImage
@@ -160,6 +167,97 @@ void MaterialMappingFilter::GenerateData() {
 //    out->GetPointData()->AddArray(dataEMorgan);
     out->GetCellData()->AddArray(dataWeightedEMorgan);
     m_VolumeMesh->SetVtkUnstructuredGrid(out);
+}
+
+MaterialMappingFilter::VtkImage MaterialMappingFilter::peelMask(const VtkImage _img, const VtkImage _mask) {
+    // configure
+    auto erodeFilter = vtkSmartPointer<vtkImageContinuousErode3D>::New();
+    erodeFilter->SetKernelSize(3,3,3);
+    auto xorLogic = vtkSmartPointer<vtkImageLogic>::New();
+    xorLogic->SetOperationToXor();
+    xorLogic->SetOutputTrueValue(1);
+
+    // pipeline
+    erodeFilter->SetInputData(_mask);
+    erodeFilter->Update();
+    xorLogic->SetInput1Data(_mask);
+    xorLogic->SetInput2Data(erodeFilter->GetOutput());
+    xorLogic->Update();
+
+    // extend
+    auto imgCopy = vtkSmartPointer<vtkImageData>::New();
+    imgCopy->DeepCopy(_img);
+    auto erodedMaskCopy = vtkSmartPointer<vtkImageData>::New();
+    erodedMaskCopy->DeepCopy(erodeFilter->GetOutput());
+    extendImage(imgCopy, erodedMaskCopy, true);
+
+    unsigned char *pl = (unsigned char *) xorLogic->GetOutput()->GetScalarPointer();
+    unsigned char *sl = (unsigned char *) erodeFilter->GetOutput()->GetScalarPointer();
+    float *im = (float *) _img->GetScalarPointer();
+    float *tim = (float *) imgCopy->GetScalarPointer();
+    for(int i = 0; i < _img->GetNumberOfPoints(); i++) {
+        if(pl[i] && im[i] > tim[i])
+            sl[i] = 1;
+    }
+
+    return erodeFilter->GetOutput();
+}
+
+// as in assignElasticModulus.cc 26.11.15 (v3)
+void MaterialMappingFilter::extendImage(VtkImage _img, VtkImage _mask, bool _maxval) {
+    static const double kernel[27] = {
+        1/sqrt(3),1/sqrt(2),1/sqrt(3),
+        1/sqrt(2),1,1/sqrt(2),
+        1/sqrt(3),1/sqrt(2),1/sqrt(3),
+        1/sqrt(2),1,1/sqrt(2),
+        1,0,1,
+        1/sqrt(2),1,1/sqrt(2),
+        1/sqrt(3),1/sqrt(2),1/sqrt(3),
+        1/sqrt(2),1,1/sqrt(2),
+        1/sqrt(3),1/sqrt(2),1/sqrt(3)
+    };
+
+    auto boolmask = vtkSmartPointer<vtkImageData>::New();
+    auto math = vtkSmartPointer<vtkImageMathematics>::New();
+    auto imageconv = vtkSmartPointer<vtkImageConvolve>::New();
+    auto maskconv = vtkSmartPointer<vtkImageConvolve>::New();
+
+    unsigned char *mp;
+    float *cp, *vp, *ip;
+
+    boolmask->CopyStructure(_mask);
+    boolmask->AllocateScalars(VTK_FLOAT,1);
+    for(int i = 0; i < boolmask->GetNumberOfPoints(); i++)
+        boolmask->GetPointData()->GetScalars()
+                ->SetTuple1(i,_mask->GetPointData()->GetScalars()->GetTuple1(i));
+    math->SetOperationToMultiply();
+    math->SetInput1Data(_img);
+    math->SetInput2Data(boolmask);
+    imageconv->SetKernel3x3x3(kernel);
+    imageconv->SetInputConnection(math->GetOutputPort());
+    imageconv->Update();
+    maskconv->SetKernel3x3x3(kernel);
+    maskconv->SetInputData(boolmask);
+    maskconv->Update();
+    mp = (unsigned char *) (_mask->GetScalarPointer());
+    cp = (float *) (maskconv->GetOutput()->GetScalarPointer());
+    vp = (float *) (imageconv->GetOutput()->GetScalarPointer());
+    ip = (float *) (_img->GetScalarPointer());
+    for(int i = 0; i < _img->GetNumberOfPoints(); i++) {
+        if(cp[i] && !mp[i]) {
+            if(_maxval) {
+                if(ip[i] < vp[i]/cp[i]) {
+                    ip[i] = vp[i] / cp[i];
+                }
+            }
+            else {
+                ip[i] = vp[i] / cp[i];
+            }
+            mp[i] = 1;
+        }
+    }
+
+
 }
 
 vtkSmartPointer<vtkDoubleArray> MaterialMappingFilter::createDataArray(std::string _name) {
