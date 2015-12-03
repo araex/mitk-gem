@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>909</width>
-    <height>942</height>
+    <width>561</width>
+    <height>836</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -292,7 +292,7 @@ QDoubleSpinBox {
 	font: small &quot;Courier New&quot;;
 }</string>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1">
            <property name="spacing">
             <number>0</number>
            </property>
@@ -597,6 +597,12 @@ QDoubleSpinBox {
                    </property>
                    <item>
                     <widget class="QDoubleSpinBox" name="linEQSlopeSpinBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="frame">
                       <bool>true</bool>
                      </property>
@@ -607,10 +613,10 @@ QDoubleSpinBox {
                       <number>3</number>
                      </property>
                      <property name="minimum">
-                      <double>-9999.000000000000000</double>
+                      <double>-999999999.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>9999.000000000000000</double>
+                      <double>999999999.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.010000000000000</double>
@@ -633,6 +639,18 @@ QDoubleSpinBox {
                    </item>
                    <item>
                     <widget class="QDoubleSpinBox" name="linEQOffsetSpinBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="buttonSymbols">
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
@@ -640,10 +658,10 @@ QDoubleSpinBox {
                       <number>0</number>
                      </property>
                      <property name="minimum">
-                      <double>-9000.000000000000000</double>
+                      <double>-999999999.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>9000.000000000000000</double>
+                      <double>999999999.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>1.000000000000000</double>
@@ -691,6 +709,12 @@ QDoubleSpinBox {
                    </item>
                    <item>
                     <widget class="QDoubleSpinBox" name="rhoAshOffsetSpinBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="buttonSymbols">
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
@@ -698,10 +722,10 @@ QDoubleSpinBox {
                       <number>3</number>
                      </property>
                      <property name="minimum">
-                      <double>-9.000000000000000</double>
+                      <double>-999999999.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>9.000000000000000</double>
+                      <double>999999999.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.010000000000000</double>
@@ -720,6 +744,18 @@ QDoubleSpinBox {
                    </item>
                    <item>
                     <widget class="QDoubleSpinBox" name="rhoAshDivisorSpinBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="readOnly">
                       <bool>false</bool>
                      </property>
@@ -730,10 +766,10 @@ QDoubleSpinBox {
                       <number>3</number>
                      </property>
                      <property name="minimum">
-                      <double>0.000000000000000</double>
+                      <double>-999999999.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>9.000000000000000</double>
+                      <double>999999999.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.010000000000000</double>
@@ -784,6 +820,12 @@ QDoubleSpinBox {
                    </item>
                    <item>
                     <widget class="QDoubleSpinBox" name="rhoAppDivisorSpinBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="buttonSymbols">
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
@@ -791,10 +833,10 @@ QDoubleSpinBox {
                       <number>3</number>
                      </property>
                      <property name="minimum">
-                      <double>-9.000000000000000</double>
+                      <double>-999999999.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>9.000000000000000</double>
+                      <double>999999999.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.010000000000000</double>
@@ -824,19 +866,6 @@ QDoubleSpinBox {
               </item>
              </layout>
             </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </widget>
