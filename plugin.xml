@@ -5,7 +5,7 @@
     <view id="org.mitk.views.volumemesher"
           name="Volume Mesher"
           class="VolumeMeshView"
-          icon="resources/icon.xpm" />
+          icon="resources/icon.png" />
   </extension>
 
 </plugin>
