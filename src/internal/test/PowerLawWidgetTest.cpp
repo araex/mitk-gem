@@ -53,7 +53,7 @@ TEST_CASE("PowerLawWidgetManager"){
         auto minValue = -9999;
         auto maxValue = 9999;
 
-        auto w0 = manager.addPowerLaw();
+        auto w0 = manager.getWidget(0);
         REQUIRE(w0->getMin() == minValue);
         REQUIRE(w0->getMax() == minValue);
 
@@ -86,7 +86,6 @@ TEST_CASE("PowerLawWidgetManager"){
         REQUIRE(w0->getMax() == minValue);
         REQUIRE(w0->getMax() == minValue);
 
-        REQUIRE(manager.removePowerLaw());
-        REQUIRE(manager.removePowerLaw() == false); // should be empty now
+        REQUIRE(manager.removePowerLaw() == false); // can' remove the last one
     }
 }

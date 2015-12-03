@@ -12,6 +12,7 @@ class PowerLawWidgetManager : public QObject {
 public:
     PowerLawWidgetManager(QWidget *_parent);
     PowerLawFunctor createFunctor();
+    PowerLawWidget * getWidget(size_t);
 
 public slots:
     PowerLawWidget* addPowerLaw();

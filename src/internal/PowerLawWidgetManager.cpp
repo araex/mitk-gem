@@ -1,7 +1,7 @@
 #include "PowerLawWidgetManager.h"
 
 PowerLawWidgetManager::PowerLawWidgetManager(QWidget *_parent) : m_Parent(_parent) {
-
+    addPowerLaw(); // always need at least 1
 }
 
 PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
@@ -13,7 +13,7 @@ PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
 }
 
 bool PowerLawWidgetManager::removePowerLaw() {
-    if(!m_Widgets.empty()){
+    if(m_Widgets.size() > 1){
         m_Parent->layout()->removeWidget(m_Widgets.back());
         m_Widgets.pop_back();
         updateConnections();
@@ -61,4 +61,11 @@ PowerLawFunctor PowerLawWidgetManager::createFunctor() {
     }
 
     return ret;
+}
+
+PowerLawWidget* PowerLawWidgetManager::getWidget(size_t _idx) {
+    if(m_Widgets.size() <= _idx){
+        return nullptr;
+    }
+    return m_Widgets[_idx];
 }
