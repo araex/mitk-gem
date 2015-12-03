@@ -5,15 +5,18 @@
 
 #include "ui_VolumeMeshViewControls.h"
 
-class VolumeMeshView : public QmitkAbstractView{
-  Q_OBJECT
+class VolumeMeshView : public QmitkAbstractView {
+    Q_OBJECT
 
-  public:
+public:
     static const std::string VIEW_ID;
 
-  protected slots:
-  protected:
+protected slots:
+    void generateButtonClicked();
+
+protected:
     virtual void CreateQtPartControl(QWidget *parent) override;
     virtual void SetFocus() override;
+
     Ui::VolumeMeshViewControls m_Controls;
 };

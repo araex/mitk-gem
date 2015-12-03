@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>222</width>
-    <height>161</height>
+    <width>379</width>
+    <height>479</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,24 +19,118 @@
   <property name="windowTitle">
    <string>QmitkTemplate</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	margin:  0px;
+	padding: 10px;
+}
+
+QGroupBox {
+	border-width: 1px; 
+	border-style: solid; 
+	border-color: grey;
+	border-radius: 5px;
+	margin-top: 1.7ex;
+}
+
+
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top center;
+	padding: 5px 10px;
+}
+
+QScrollArea{
+	border: 0;
+	margin:0;
+	padding:0;
+}
+
+[mandatoryField=true]{
+	background-color: rgb(255, 150, 150);
+}
+
+[warningField=true]{
+	background-color: rgb(255, 204, 0);
+}
+
+[errorField=true]{
+	background-color: rgb(255, 150, 150);
+}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="labelWarning">
-     <property name="styleSheet">
-      <string notr="true">QLabel { color: rgb(255, 0, 0) }</string>
+    <widget class="QWidget" name="meshSelector" native="true">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to be segmented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
-     <property name="text">
-      <string>Please select an image!</string>
-     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="0,0">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_7">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Surface</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QmitkDataStorageComboBox" name="surfaceComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="buttonPerformImageProcessing">
-     <property name="toolTip">
-      <string>Do image processing</string>
+    <widget class="QGroupBox" name="settingsGroup">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>tetgen settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="generateButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="text">
-      <string>Do Something</string>
+      <string>Generate tetrahedral mesh</string>
      </property>
     </widget>
    </item>
@@ -59,6 +153,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QmitkDataStorageComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">QmitkDataStorageComboBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
