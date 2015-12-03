@@ -8,25 +8,28 @@
 
 PowerLawWidget::PowerLawWidget(){
     m_Factor = new QDoubleSpinBox;
-    m_Factor->setRange(-99.0, 99.0);
+    m_Factor->setRange(MinValue, MaxValue);
     m_Factor->setSingleStep(0.01);
     m_Factor->setDecimals(3);
     m_Factor->setValue(1.0);
     m_Factor->setButtonSymbols( QAbstractSpinBox::NoButtons );
+    m_Factor->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
 
     m_Exponent = new QDoubleSpinBox;
-    m_Exponent->setRange(-99.0, 99.0);
+    m_Exponent->setRange(MinValue, MaxValue);
     m_Exponent->setSingleStep(0.01);
     m_Exponent->setDecimals(3);
     m_Exponent->setValue(1.0);
     m_Exponent->setButtonSymbols( QAbstractSpinBox::NoButtons );
+    m_Exponent->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
 
     m_Offset = new QDoubleSpinBox;
-    m_Offset->setRange(-9999.0, 9999.0);
+    m_Offset->setRange(MinValue, MaxValue);
     m_Offset->setSingleStep(1.0);
     m_Offset->setDecimals(3);
     m_Offset->setValue(0.0);
     m_Offset->setButtonSymbols( QAbstractSpinBox::NoButtons );
+    m_Offset->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
 
     m_Min = new QDoubleSpinBox;
     m_Min->setRange(MinValue, MaxValue);
@@ -34,6 +37,7 @@ PowerLawWidget::PowerLawWidget(){
     m_Min->setDecimals(2);
     m_Min->setButtonSymbols( QAbstractSpinBox::NoButtons );
     m_Min->setSpecialValueText(tr("min"));
+    m_Min->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     lockMin(true);
 
     m_Max = new QDoubleSpinBox;
@@ -43,6 +47,7 @@ PowerLawWidget::PowerLawWidget(){
     m_Max->setValue(MinValue); // we're using the setSpecialValue functionality to show text, but that requires the value to be equal to minimum()
     m_Max->setButtonSymbols( QAbstractSpinBox::NoButtons );
     m_Max->setSpecialValueText(tr("max"));
+    m_Max->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     lockMax(true);
 
     auto formulaLayout = new QHBoxLayout;
@@ -55,7 +60,7 @@ PowerLawWidget::PowerLawWidget(){
     formulaLayout->addWidget(m_Exponent);
     formulaLayout->addWidget(new QLabel(tr("+")));
     formulaLayout->addWidget(m_Offset);
-    formulaLayout->addStretch();
+    formulaLayout->addSpacerItem(new QSpacerItem(15,1));
     formulaLayout->addWidget(m_Min);
     formulaLayout->addWidget(new QLabel(tr(" ≤ ρ < ")));
     formulaLayout->addWidget(m_Max);

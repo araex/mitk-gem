@@ -36,9 +36,8 @@ void PowerLawWidgetManager::updateConnections() {
     } else if (m_Widgets.size() == 2) {
         first->lockMin(true);
         last->lockMax(true);
-        auto mid = PowerLawWidget::Range() / 2 + PowerLawWidget::MinValue;
-        first->setMax(mid);
-        last->setMin(mid);
+        first->setMax(0);
+        last->setMin(0);
         first->connect(last);
     } else {
         auto previousLast = *(m_Widgets.cend() - 2);

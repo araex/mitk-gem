@@ -50,8 +50,8 @@ TEST_CASE("PowerLawWidgetManager"){
 
     SECTION("range adaption on add / remove"){
         // TODO: these should be a field in the widgets
-        auto minValue = -9999;
-        auto maxValue = 9999;
+        auto minValue = PowerLawWidget::MinValue;
+        auto maxValue = PowerLawWidget::MaxValue;
 
         auto w0 = manager.getWidget(0);
         REQUIRE(w0->getMin() == minValue);

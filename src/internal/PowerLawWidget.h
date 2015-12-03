@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-
+#include <limits>
 #include <QWidget>
 #include <QDoubleSpinBox>
 
@@ -11,10 +11,8 @@ class PowerLawWidget : public QWidget {
     Q_OBJECT
 
 public:
-    static constexpr double MinValue = -9999, MaxValue = 9999;
-    static double Range() {
-        return std::abs(MinValue) + std::abs(MaxValue);
-    }
+    static constexpr double MinValue = std::numeric_limits<float>::lowest(), MaxValue = std::numeric_limits<float>::max();
+
     PowerLawWidget();
     PowerLawParameters getPowerLawParameters();
 
