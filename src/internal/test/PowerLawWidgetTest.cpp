@@ -48,6 +48,36 @@ TEST_CASE("PowerLawWidgetManager"){
         REQUIRE(w0->getMax() == w1->getMin());
     }
 
+    SECTION("add / remove"){
+        REQUIRE(manager.getNumberOfWidgets() == 1);
+        REQUIRE(manager.removePowerLaw() == false); // cant remove the first widget
+        REQUIRE(manager.getNumberOfWidgets() == 1);
+
+        REQUIRE(manager.addPowerLaw());
+        REQUIRE(manager.getNumberOfWidgets() == 2);
+
+        REQUIRE(manager.addPowerLaw());
+        REQUIRE(manager.getNumberOfWidgets() == 3);
+
+        REQUIRE(manager.addPowerLaw());
+        REQUIRE(manager.getNumberOfWidgets() == 4);
+
+        REQUIRE(manager.removePowerLaw());
+        REQUIRE(manager.getNumberOfWidgets() == 3);
+
+        REQUIRE(manager.removePowerLaw());
+        REQUIRE(manager.getNumberOfWidgets() == 2);
+
+        REQUIRE(manager.removePowerLaw());
+        REQUIRE(manager.getNumberOfWidgets() == 1);
+
+        REQUIRE(manager.removePowerLaw() == false); // cant remove the last widget
+        REQUIRE(manager.getNumberOfWidgets() == 1);
+
+        REQUIRE(manager.addPowerLaw());
+        REQUIRE(manager.getNumberOfWidgets() == 2);
+    }
+
     SECTION("range adaption on add / remove"){
         // TODO: these should be a field in the widgets
         auto minValue = PowerLawWidget::MinValue;
