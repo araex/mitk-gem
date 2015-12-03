@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>585</width>
-    <height>854</height>
+    <width>909</width>
+    <height>942</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -282,13 +282,7 @@ QScrollArea{
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="mathWidget" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="QWidget" name="widget" native="true">
           <property name="styleSheet">
            <string notr="true">QLabel {
 	font: small &quot;Courier New&quot;;
@@ -298,7 +292,7 @@ QDoubleSpinBox {
 	font: small &quot;Courier New&quot;;
 }</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
            <property name="spacing">
             <number>0</number>
            </property>
@@ -306,392 +300,543 @@ QDoubleSpinBox {
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0">
-             <property name="spacing">
-              <number>-1</number>
+            <widget class="QWidget" name="checkboxWidget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="sizeConstraint">
-              <enum>QLayout::SetDefaultConstraint</enum>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QWidget" name="verticalWidget_2" native="true">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_6">
-                <property name="spacing">
-                 <number>0</number>
+             <layout class="QVBoxLayout" name="verticalLayout_11">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="widget_3" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
                 </property>
-                <property name="margin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <spacer name="horizontalSpacer_4">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Minimum</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>26</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>70</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ρ_ct  =</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="linEQSlopeSpinBox">
-                  <property name="frame">
-                   <bool>true</bool>
-                  </property>
-                  <property name="buttonSymbols">
-                   <enum>QAbstractSpinBox::NoButtons</enum>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-9999.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9999.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.010000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_4">
-                  <property name="text">
-                   <string>* HU</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="text">
-                   <string>+</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="linEQOffsetSpinBox">
-                  <property name="buttonSymbols">
-                   <enum>QAbstractSpinBox::NoButtons</enum>
-                  </property>
-                  <property name="decimals">
-                   <number>0</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-9000.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9000.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>1.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
+                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>30</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_2">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>70</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>ρ_ct  =</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::MinimumExpanding</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_5" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="rhoAshCheckBox">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>30</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>120</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_10">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>70</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>ρ_ash =</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::MinimumExpanding</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_7" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_17">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="rhoAppCheckBox">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>30</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>120</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_12">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>70</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>ρ_app =</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::MinimumExpanding</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0">
-             <property name="rightMargin">
-              <number>0</number>
+            <widget class="QWidget" name="mathWidget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <item>
-              <widget class="QWidget" name="" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_15">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0">
                 <property name="spacing">
+                 <number>-1</number>
+                </property>
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetDefaultConstraint</enum>
+                </property>
+                <property name="leftMargin">
                  <number>0</number>
                 </property>
-                <property name="margin">
+                <property name="topMargin">
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QCheckBox" name="rhoAshCheckBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>30</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>120</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_10">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>70</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ρ_ash =</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_13">
-                  <property name="text">
-                   <string>(ρ_ct +</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="rhoAshOffsetSpinBox">
-                  <property name="buttonSymbols">
-                   <enum>QAbstractSpinBox::NoButtons</enum>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-9.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.010000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>-0.090000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_14">
-                  <property name="text">
-                   <string>) /</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="rhoAshDivisorSpinBox">
-                  <property name="readOnly">
+                 <widget class="QWidget" name="verticalWidget_2" native="true">
+                  <property name="enabled">
                    <bool>false</bool>
                   </property>
-                  <property name="buttonSymbols">
-                   <enum>QAbstractSpinBox::NoButtons</enum>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>0.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.010000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>1.140000000000000</double>
-                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="linEQSlopeSpinBox">
+                     <property name="frame">
+                      <bool>true</bool>
+                     </property>
+                     <property name="buttonSymbols">
+                      <enum>QAbstractSpinBox::NoButtons</enum>
+                     </property>
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="minimum">
+                      <double>-9999.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>9999.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_4">
+                     <property name="text">
+                      <string>* HU</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_5">
+                     <property name="text">
+                      <string>+</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="linEQOffsetSpinBox">
+                     <property name="buttonSymbols">
+                      <enum>QAbstractSpinBox::NoButtons</enum>
+                     </property>
+                     <property name="decimals">
+                      <number>0</number>
+                     </property>
+                     <property name="minimum">
+                      <double>-9000.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>9000.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>1.000000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
                  </widget>
                 </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0">
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
                 <item>
-                 <spacer name="horizontalSpacer_3">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
+                 <widget class="QWidget" name="" native="true">
+                  <layout class="QHBoxLayout" name="horizontalLayout_15">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_13">
+                     <property name="text">
+                      <string>(ρ_ct +</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="rhoAshOffsetSpinBox">
+                     <property name="buttonSymbols">
+                      <enum>QAbstractSpinBox::NoButtons</enum>
+                     </property>
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="minimum">
+                      <double>-9.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>9.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>-0.090000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_14">
+                     <property name="text">
+                      <string>) /</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="rhoAshDivisorSpinBox">
+                     <property name="readOnly">
+                      <bool>false</bool>
+                     </property>
+                     <property name="buttonSymbols">
+                      <enum>QAbstractSpinBox::NoButtons</enum>
+                     </property>
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="minimum">
+                      <double>0.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>9.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>1.140000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_3">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
-              </widget>
-             </item>
-            </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0">
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QWidget" name="horizontalWidget_3" native="true">
+                  <layout class="QHBoxLayout" name="horizontalLayout_10">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_11">
+                     <property name="text">
+                      <string>ρ_ash /</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="rhoAppDivisorSpinBox">
+                     <property name="buttonSymbols">
+                      <enum>QAbstractSpinBox::NoButtons</enum>
+                     </property>
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="minimum">
+                      <double>-9.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>9.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>0.600000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_2">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0">
-             <property name="rightMargin">
-              <number>0</number>
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-             <item>
-              <widget class="QWidget" name="horizontalWidget_3" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_10">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-                <property name="margin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QCheckBox" name="rhoAppCheckBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>30</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>120</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_12">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>70</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ρ_app =</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_11">
-                  <property name="text">
-                   <string>ρ_ash /</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="rhoAppDivisorSpinBox">
-                  <property name="buttonSymbols">
-                   <enum>QAbstractSpinBox::NoButtons</enum>
-                  </property>
-                  <property name="decimals">
-                   <number>3</number>
-                  </property>
-                  <property name="minimum">
-                   <double>-9.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>9.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.010000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>0.600000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -909,9 +1054,6 @@ QWidget {
        </layout>
       </widget>
      </item>
-     <item>
-      <widget class="QWidget" name="widget_6" native="true"/>
-     </item>
     </layout>
    </item>
    <item>
@@ -972,24 +1114,8 @@ QWidget {
      <y>106</y>
     </hint>
     <hint type="destinationlabel">
-     <x>18</x>
+     <x>132</x>
      <y>395</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rhoAshCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>horizontalWidget_3</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>28</x>
-     <y>433</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>49</x>
-     <y>469</y>
     </hint>
    </hints>
   </connection>
@@ -1000,12 +1126,28 @@ QWidget {
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>28</x>
-     <y>444</y>
+     <x>27</x>
+     <y>439</y>
     </hint>
     <hint type="destinationlabel">
      <x>26</x>
      <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rhoAshCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>rhoAppCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>37</x>
+     <y>432</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>37</x>
+     <y>452</y>
     </hint>
    </hints>
   </connection>
