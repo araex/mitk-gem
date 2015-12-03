@@ -13,6 +13,7 @@ public:
     PowerLawWidgetManager(QWidget *_parent);
     PowerLawFunctor createFunctor();
     PowerLawWidget * getWidget(size_t);
+    size_t getNumberOfWidgets();
 
 public slots:
     PowerLawWidget* addPowerLaw();

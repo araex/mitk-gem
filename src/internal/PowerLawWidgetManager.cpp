@@ -14,8 +14,10 @@ PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
 
 bool PowerLawWidgetManager::removePowerLaw() {
     if(m_Widgets.size() > 1){
-        m_Parent->layout()->removeWidget(m_Widgets.back());
+        auto widget = m_Widgets.back();
+        m_Parent->layout()->removeWidget(widget);
         m_Widgets.pop_back();
+        delete widget;
         updateConnections();
         return true;
     }
@@ -67,4 +69,8 @@ PowerLawWidget* PowerLawWidgetManager::getWidget(size_t _idx) {
         return nullptr;
     }
     return m_Widgets[_idx];
+}
+
+size_t PowerLawWidgetManager::getNumberOfWidgets() {
+    return m_Widgets.size();
 }
