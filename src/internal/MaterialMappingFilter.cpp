@@ -150,13 +150,13 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const Vt
     erodedMaskCopy->DeepCopy(erodeFilter->GetOutput());
     inplaceExtendImage(imgCopy, erodedMaskCopy, true);
 
-    unsigned char *pl = (unsigned char *) xorLogic->GetOutput()->GetScalarPointer();
-    unsigned char *sl = (unsigned char *) erodeFilter->GetOutput()->GetScalarPointer();
+    unsigned char *peelPoints = (unsigned char *) xorLogic->GetOutput()->GetScalarPointer();
+    unsigned char *corePoints = (unsigned char *) erodeFilter->GetOutput()->GetScalarPointer();
     float *im = (float *) _img->GetScalarPointer();
     float *tim = (float *) imgCopy->GetScalarPointer();
     for(int i = 0; i < _img->GetNumberOfPoints(); i++) {
-        if(pl[i] && im[i] > tim[i])
-            sl[i] = 1;
+        if(peelPoints[i] && im[i] > tim[i])
+            corePoints[i] = 1;
     }
 
     return erodeFilter->GetOutput();
@@ -181,9 +181,6 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     auto imageconv = vtkSmartPointer<vtkImageConvolve>::New();
     auto maskconv = vtkSmartPointer<vtkImageConvolve>::New();
 
-    unsigned char *mp;
-    float *cp, *vp, *ip;
-
     boolmask->CopyStructure(_mask);
     boolmask->AllocateScalars(VTK_FLOAT,1);
     for(int i = 0; i < boolmask->GetNumberOfPoints(); i++)
@@ -197,21 +194,23 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     maskconv->SetKernel3x3x3(kernel);
     maskconv->SetInputData(boolmask);
     maskconv->Update();
-    mp = (unsigned char *) (_mask->GetScalarPointer());
-    cp = (float *) (maskconv->GetOutput()->GetScalarPointer());
-    vp = (float *) (imageconv->GetOutput()->GetScalarPointer());
-    ip = (float *) (_img->GetScalarPointer());
+    auto maskPoints = (unsigned char *) (_mask->GetScalarPointer());
+    auto convMaskPoints = (float *) (maskconv->GetOutput()->GetScalarPointer());
+    auto convImgPoints = (float *) (imageconv->GetOutput()->GetScalarPointer());
+    auto imagePoints = (float *) (_img->GetScalarPointer());
+
     for(int i = 0; i < _img->GetNumberOfPoints(); i++) {
-        if(cp[i] && !mp[i]) {
+        if(convMaskPoints[i] && !maskPoints[i]) {
+            auto val = convImgPoints[i] / convMaskPoints[i];
             if(_maxval) {
-                if(ip[i] < vp[i]/cp[i]) {
-                    ip[i] = vp[i] / cp[i];
+                if(imagePoints[i] < val) {
+                    imagePoints[i] = val;
                 }
             }
             else {
-                ip[i] = vp[i] / cp[i];
+                imagePoints[i] = val;
             }
-            mp[i] = 1;
+            maskPoints[i] = 1;
         }
     }
 
@@ -248,7 +247,8 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
         auto cellpoints = _mesh->GetCell(i)->GetPoints();
         double centroid[3] = {0, 0, 0};
 
-        for(auto j = 0; j < cellpoints->GetNumberOfPoints(); ++j){ // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
+        auto numberOfNodes = cellpoints->GetNumberOfPoints();
+        for(auto j = 0; j < numberOfNodes; ++j){ // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
             auto cellpoint = cellpoints->GetPoint(j);
             for(auto k = 0; k < 3; ++k){
                 centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
@@ -256,7 +256,7 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
         }
 
         double value = 0, denom = 0;
-        for(auto j = 0; j < cellpoints->GetNumberOfPoints(); ++j){ // TODO: original comment "Ten nodes of a quadratic tetrahedra"
+        for(auto j = 0; j < numberOfNodes; ++j){ // TODO: original comment "Ten nodes of a quadratic tetrahedra"
             auto cellpoint = cellpoints->GetPoint(j);
             double weight = 0;
             for(auto k = 0; k < 3; ++k){
