@@ -7,6 +7,7 @@
 #include "SurfaceToUnstructuredGridFilter.h"
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
 
+
 const std::string VolumeMeshView::VIEW_ID = "org.mitk.views.volumemesher";
 
 void VolumeMeshView::SetFocus() {
@@ -20,6 +21,15 @@ void VolumeMeshView::CreateQtPartControl(QWidget *parent) {
     m_Controls.surfaceComboBox->SetDataStorage(this->GetDataStorage());
     m_Controls.surfaceComboBox->SetAutoSelectNewItems(false);
     m_Controls.surfaceComboBox->SetPredicate(WorkbenchUtils::createIsSurfaceTypePredicate());
+
+    // tetgen options
+    m_TetgenOptionGrid.addOption("-p", "Tetrahedralizes a piecewise linear complex (PLC).");
+    m_TetgenOptionGrid.addIntOption("-t", "Test.");
+
+    m_Controls.settingsGroup->layout()->addWidget(&m_TetgenOptionGrid);
+//    m_Controls.settingsGroup->layout()->addWidget(maxvolume);
+
+//    options.maxvolume = pow(2 * A, 1.5) * pow(3, -1.75);
 
     // signals
     connect(m_Controls.generateButton, SIGNAL(clicked()), this, SLOT(generateButtonClicked()));

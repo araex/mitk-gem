@@ -122,6 +122,9 @@ QScrollArea{
     </widget>
    </item>
    <item>
+    <layout class="QGridLayout" name="gridLayout"/>
+   </item>
+   <item>
     <widget class="QToolButton" name="generateButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">

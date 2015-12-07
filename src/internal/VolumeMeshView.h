@@ -4,6 +4,7 @@
 #include <QmitkAbstractView.h>
 
 #include "ui_VolumeMeshViewControls.h"
+#include "TetgenOptionGrid.h"
 
 class VolumeMeshView : public QmitkAbstractView {
     Q_OBJECT
@@ -19,4 +20,5 @@ protected:
     virtual void SetFocus() override;
 
     Ui::VolumeMeshViewControls m_Controls;
+    TetgenOptionGrid m_TetgenOptionGrid;
 };

@@ -10,6 +10,8 @@ set(LIB_CPP_FILES
 set(INTERNAL_CPP_FILES
   ch_zhaw_volumemesh_Activator.cpp
   SurfaceToUnstructuredGridFilter.cpp
+  TetgenOptionGrid.cpp
+  TetgenOptionRow.cpp
   VolumeMeshView.cpp
 )
 
@@ -19,6 +21,7 @@ set(UI_FILES
 
 set(MOC_H_FILES
   src/internal/ch_zhaw_volumemesh_Activator.h
+  src/internal/TetgenOptionGrid.h
   src/internal/VolumeMeshView.h
 )
 
