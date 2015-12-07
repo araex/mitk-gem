@@ -18,6 +18,7 @@ public:
     TetgenOptionRow(std::string _flag, std::string _description, ValueType, QGridLayout*);
     ValueType getType();
     bool isChecked();
+    void setChecked(bool);
 
     bool hasValue();
     int getIntValue();

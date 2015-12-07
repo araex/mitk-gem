@@ -61,6 +61,10 @@ bool TetgenOptionRow::isChecked() {
     return m_CheckBox->isChecked();
 }
 
+void TetgenOptionRow::setChecked(bool _b) {
+    m_CheckBox->setChecked(_b);
+}
+
 bool TetgenOptionRow::hasValue() {
     return getType() == ValueType::INT || getType() == ValueType::FLOAT;
 }
