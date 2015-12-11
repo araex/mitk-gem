@@ -8,6 +8,8 @@
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 
+#include "lib/tetgen1.5.0/tetgen.h"
+
 class SurfaceToUnstructuredGridFilter : public mitk::UnstructuredGridSource {
 public:
     mitkClassMacro(SurfaceToUnstructuredGridFilter, mitk::UnstructuredGridSource
@@ -18,6 +20,8 @@ public:
     using itk::ProcessObject::SetInput;
 
     virtual void SetInput(const mitk::Surface *);
+
+    virtual void SetTetgenOptions(tetgenbehavior);
 
     virtual const mitk::Surface *GetInput();
 
@@ -30,4 +34,6 @@ protected:
 
 private:
     void tetgenMesh(vtkSmartPointer <vtkPolyData> _surface, vtkSmartPointer <vtkUnstructuredGrid> _mesh);
+
+    tetgenbehavior m_Options;
 };

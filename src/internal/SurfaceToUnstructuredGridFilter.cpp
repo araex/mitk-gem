@@ -9,6 +9,10 @@ void SurfaceToUnstructuredGridFilter::SetInput(const mitk::Surface *_surface) {
     this->ProcessObject::SetNthInput(0, const_cast<mitk::Surface *>(_surface));
 }
 
+void SurfaceToUnstructuredGridFilter::SetTetgenOptions(tetgenbehavior _o) {
+    m_Options = _o;
+}
+
 const mitk::Surface *SurfaceToUnstructuredGridFilter::GetInput() {
     return static_cast<const mitk::Surface *>(this->ProcessObject::GetInput(0));
 }
@@ -58,13 +62,12 @@ void SurfaceToUnstructuredGridFilter::tetgenMesh(vtkSmartPointer <vtkPolyData> s
 
     cout << inputmesh.numberofpoints << endl;
 
-    options.plc = 1;
-    options.quality = 1;
-    options.nobisect = 1;
-    options.fixedvolume = 1;
-    options.maxvolume = pow(2 * A, 1.5) * pow(3, -1.75);
+    if(m_Options.fixedvolume){
+        m_Options.maxvolume = pow(2 * A, 1.5) * pow(3, -1.75); // TODO: should this be configurable in the gui?
+    }
 
-    tetrahedralize(&options, &inputmesh, &outputmesh);
+
+    tetrahedralize(&m_Options, &inputmesh, &outputmesh);
 
     nodes->SetNumberOfPoints(outputmesh.numberofpoints);
     for (int i = 0; i < outputmesh.numberofpoints; i++) {
