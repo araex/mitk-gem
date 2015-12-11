@@ -1,0 +1,6 @@
+[submodule "src/internal/lib/GraphCut3D"]
+	path = src/internal/lib/GraphCut3D
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/ImageGraphCut3DSegmentation.git
+[submodule "src/internal/lib/WorkbenchUtils"]
+	path = src/internal/lib/WorkbenchUtils
+	url = git@github.engineering.zhaw.ch:fitz/MITK_WorkbenchUtils.git
