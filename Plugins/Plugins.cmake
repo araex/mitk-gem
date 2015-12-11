@@ -5,6 +5,6 @@ set(PROJECT_PLUGINS
   Plugins/ch.zhaw.resample:ON
 #  Plugins/ch.zhaw.splitcomponents:ON
   Plugins/ch.zhaw.voxel2mesh:ON
-#  Plugins/ch.zhaw.materialmapping:ON
-#  Plugins/ch.zhaw.volumemesh:ON
+  Plugins/ch.zhaw.materialmapping:ON
+  Plugins/ch.zhaw.volumemesh:ON
 )
