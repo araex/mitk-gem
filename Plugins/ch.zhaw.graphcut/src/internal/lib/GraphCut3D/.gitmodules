@@ -1,0 +1,3 @@
+[submodule "lib/imagegraphcut"]
+	path = lib/imagegraphcut
+	url = https://github.com/daviddoria/ImageGraphCutSegmentation.git
