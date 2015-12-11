@@ -1,21 +1,54 @@
-# Description 
-Workbench with all ch.zhaw. plugins included.
+Interactive GraphCut 3D Segmentation Workbench
+==============================================
+This software allows the user to perform an interactive foreground/background segmentation of a 3-dimensional grayscale image. It is implemented as plugin for the MITK-Workbench.
 
-# Building
-## Linux
-Install Qt5 (5.0 - 5.4, 5.5 not yet supported) with your package manager. Download source, configure with CMake and `make`. 
-## OSX
-Install Qt4 (Qt5 not yet supported) either via installer at https://www.qt.io/download/ or with brew. Download source, configure with CMake and `make`.
-## Windows
-You need a very specific setup of tools to make this work on Windows... Follow the instructions here http://www.mitk.org/wiki/Developer_Tutorial_(Microsoft_Windows)
-- MSVC 2012v4 or MSVC 2013 (e.g. Visual Studio 2013 Community Edition). ** MSVC 2015 IS NOT SUPPORTED**
-- Qt 5.0 - 5.4 ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build. Every other build will not work!!!
-- CMake 3.2
-- Save the source and the build in a ** very short ** top-level directory (about 10 characters for the total path).
-- Once you configured the project with CMake and generate a visual studio solution, build the `ALL_BUILD` target.
+# Introduction
+Please read through the following instructions carefully! Not following the instructions or skipping steps will result in build errors or missing features. If you have any issues, please consult the FAQ at the end of this document.
 
-# Issue with QT5 / QT4
-There's an ongoing issue with Qt versions in the current release. MITK decided to make Qt5 the default version on all 
-platforms even tho the QT5 build on OSX does not work properly (reported issue). Hopefully this will get fixed with the
-next release. For now, don' try to make a OSX build with Qt5 - you may get it to compile, but you will have some runtime
-issue with window resizing and colors.
+# Dependencies
+- CMake >=3.2 cmake-gui is recommended.
+- QT 4.8 (OSX), QT 5 (Windows & Linux)
+
+# Prerequisites
+## on Ubuntu
+If you use the latest Ubuntu release (>= 14.04 LTS), you can install all the dependencies with the following command:
+`sudo apt-get install git build-essential cmake-gui qt-sdk libxt-dev libtiff4-dev libwrap0-dev`
+### on Ubuntu 12.04 LTS
+Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.2 in order to build MITK. A manual update is required.
+
+1. Install dependencies with the following command: `sudo apt-get install git build-essential qt-sdk libxt-dev libtiff4-dev libwrap0-dev`
+2. Go to http://www.cmake.org/download/
+3. Download and install a more recent (>= 3.2) version of cmake.
+
+## on Mac OSX
+- Install Apple Xcode https://developer.apple.com/xcode/ and activate the command line tools. To do so, open Xcode, go to Preferences -> Downloads -> Components -> Command Line Tools.
+- Install QT 4.8 http://download.qt-project.org/archive/qt/
+- Install CMake http://www.cmake.org/download/
+
+# Building the workbench
+Once you've downloaded the source code and updated the submodules, you can start configuring the build with CMake. We are using the MITK Superbuild to automate as much as possible. However, there are a couple of steps you have to take manually - not doing so will result in missing functionality or build errors! Please follow both instructions, Superbuild and Configuring MITK-build, carefully:
+
+## Superbuild
+1. Create a new directory `mkdir MITK-GEM-build`.
+2. Open CMake.
+3. Set the CMake build directory to the one you created in step 1 `MITK-GEM-build`.
+4. Set the CMake source directory to the repository you downloaded `MITK-GEM-source`.
+5. Click `configure`. CMake will ask you about your generator, for this instruction we will use `Unix Makefile`.
+6. Click `configure` repeatedly until CMake shows no more new values (red lines).
+7. Click `generate`. This will create a Makefile in your build directory.
+8. Change to your build directory `cd GraphCut3D-build`.
+9. Start the build `make -j 8`. This can take a long time (more than 1 hour) and requires internet access.
+10. Everything is set up and your workbench should be ready to use. You can find the executable `MITK-GEM.app` in the directory `MITK-GEM-build/MITK-GEM-build/bin/`.
+
+# FAQ
+### What is MITK?
+The framework that runs our plugins. See http://www.mitk.org/
+### The compile process has stopped at 'Updating MITK'
+This step pulls the most recent version of MITK from the official git repository. Depending on the server and your internet connection, this might take some time. Please ensure your internet connection is working and try again later.
+### CMake Error: Found unsuitable Qt version "" from NOTFOUND
+You need to install Nokias QT library. See http://qt-project.org/downloads for instructions.
+
+# License
+This is a redistribution of the MITK-Workbench that includes the GraphCut3D Segmentation plugin. The MITK-Workbench has not been modified and is distributed as-is. License information about MITK can be found in `LICENSE`.
+
+The included plugin ch.zhaw.graphcut is release under GPLv3 (see `Plugins/ch.zhaw.graphcut/LICENSE`) because of the use of Kolmogorovs MAXFLOW library.
