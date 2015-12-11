@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 # Change project and application name to your own
-set(MY_PROJECT_NAME VCLabMITK)
-set(MY_APP_NAME VCLabWorkbench)
+set(MY_PROJECT_NAME MITK-GEM)
+set(MY_APP_NAME MITK-GEM)
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
@@ -346,7 +346,7 @@ ctkMacroSetupPlugins(${PROJECT_PLUGINS}
 # Add subdirectories
 #-----------------------------------------------------------------------------
 
-add_subdirectory(Apps/VCLabWorkbench)
+add_subdirectory(Apps/MITK-GEM)
 
 #-----------------------------------------------------------------------------
 # Installation

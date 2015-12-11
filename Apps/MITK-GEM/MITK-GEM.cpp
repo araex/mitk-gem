@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 {
   // Create a QApplication instance first
   mitk::BaseApplication myApp(argc, argv);
-  myApp.setApplicationName("VCLabWorkbench");
+  myApp.setApplicationName("MITK-GEM");
   myApp.setOrganizationName("ZHAW");
 
   myApp.setProperty(mitk::BaseApplication::PROP_APPLICATION, "org.mitk.qt.extapplication");
