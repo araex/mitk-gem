@@ -1117,38 +1117,6 @@ QWidget {
  </resources>
  <connections>
   <connection>
-   <sender>automaticFitCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>measurementsWidget</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>81</x>
-     <y>104</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>445</x>
-     <y>138</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>automaticFitCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>verticalWidget_2</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>140</x>
-     <y>106</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>132</x>
-     <y>395</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>rhoAshCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>rhoAppCheckBox</receiver>
@@ -1177,6 +1145,38 @@ QWidget {
     <hint type="destinationlabel">
      <x>37</x>
      <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>automaticFitCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>measurementsWidget</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>81</x>
+     <y>104</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>445</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>automaticFitCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>verticalWidget_2</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>106</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>132</x>
+     <y>395</y>
     </hint>
    </hints>
   </connection>

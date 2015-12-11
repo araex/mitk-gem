@@ -251,7 +251,7 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
         for(auto j = 0; j < numberOfNodes; ++j){ // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
             auto cellpoint = cellpoints->GetPoint(j);
             for(auto k = 0; k < 3; ++k){
-                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
+                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1); // TODO: ??
             }
         }
 
