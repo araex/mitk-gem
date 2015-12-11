@@ -16,3 +16,9 @@
 [submodule "Plugins/ch.zhaw.voxel2mesh"]
 	path = Plugins/ch.zhaw.voxel2mesh
 	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.voxel2mesh.git
+[submodule "Plugins/ch.zhaw.materialmapping"]
+	path = Plugins/ch.zhaw.materialmapping
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.materialmapping.git
+[submodule "Plugins/ch.zhaw.volumemesh"]
+	path = Plugins/ch.zhaw.volumemesh
+	url = git@github.engineering.zhaw.ch:VisualComputingLab/MITK_ch.zhaw.volumemesh.git
