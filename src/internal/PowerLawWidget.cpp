@@ -6,6 +6,9 @@
 
 #include "PowerLawWidget.h"
 
+const double PowerLawWidget::MinValue = std::numeric_limits<float>::lowest();
+const double PowerLawWidget::MaxValue = std::numeric_limits<float>::max();
+
 PowerLawWidget::PowerLawWidget(){
     m_Factor = new QDoubleSpinBox;
     m_Factor->setRange(MinValue, MaxValue);

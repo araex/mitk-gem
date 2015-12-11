@@ -11,7 +11,7 @@ class PowerLawWidget : public QWidget {
     Q_OBJECT
 
 public:
-    static constexpr double MinValue = std::numeric_limits<float>::lowest(), MaxValue = std::numeric_limits<float>::max();
+    static const double MinValue, MaxValue;
 
     PowerLawWidget();
     PowerLawParameters getPowerLawParameters();
