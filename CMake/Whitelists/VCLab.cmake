@@ -1,4 +1,5 @@
 set(enabled_modules
+  ACVD
   AlgorithmsExt
   AppUtil
   Core
@@ -22,6 +23,7 @@ set(enabled_modules
   QmlItems
   QtWidgets
   QtWidgetsExt
+  Remeshing
   RigidRegistration
   RigidRegistrationUI
   SceneSerialization
@@ -41,7 +43,6 @@ set(enabled_plugins
   "org.mitk.core.services"
   "org.mitk.gui.common"
   "org.mitk.gui.qt.application"
-  "org.mitk.gui.qt.basicimageprocessing"
   "org.mitk.gui.qt.common"
   "org.mitk.gui.qt.common.legacy"
   "org.mitk.gui.qt.datamanager"
@@ -50,8 +51,8 @@ set(enabled_plugins
   "org.mitk.gui.qt.ext"
   "org.mitk.gui.qt.imagecropper"
   "org.mitk.gui.qt.imagenavigator"
-  "org.mitk.gui.qt.measurementtoolbox"  
+  "org.mitk.gui.qt.measurementtoolbox"
+  "org.mitk.gui.qt.remeshing"
   "org.mitk.gui.qt.segmentation"
-  "org.mitk.gui.qt.stdmultiwidgeteditor"  
-  "org.mitk.gui.qt.volumevisualization"  
+  "org.mitk.gui.qt.stdmultiwidgeteditor"
 )
