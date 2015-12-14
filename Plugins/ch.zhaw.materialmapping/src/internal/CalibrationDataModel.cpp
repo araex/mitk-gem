@@ -20,7 +20,7 @@ CalibrationDataModel::CalibrationDataModel() {
 
     // init table
     m_ItemModel->setHorizontalHeaderItem(0, new QStandardItem(QString("Intensity [ HU ]")));
-    m_ItemModel->setHorizontalHeaderItem(1, new QStandardItem(QString("Bone density [ mgHA/cm³ ]")));
+    m_ItemModel->setHorizontalHeaderItem(1, new QStandardItem(QString("Bone density [ gHA/cm³ ]")));
     clear();
 }
 

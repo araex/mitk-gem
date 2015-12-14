@@ -301,7 +301,7 @@ QScrollArea{
         <item>
          <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Steps to evaluate bone density &lt;span style=&quot; font-weight:600;&quot;&gt;ρ &lt;/span&gt;[ mgHA/cm&lt;span style=&quot; vertical-align:super;&quot;&gt;3 &lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Steps to evaluate bone density &lt;span style=&quot; font-weight:600;&quot;&gt;ρ &lt;/span&gt;[ gHA/cm&lt;span style=&quot; vertical-align:super;&quot;&gt;3 &lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
