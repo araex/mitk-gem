@@ -49,7 +49,7 @@ void MaterialMappingFilter::GenerateData() {
     // TODO flag for peeling
     auto peeledMask = createPeeledMask(voi, stencil);
     auto imageDimension = m_IntensityImage->GetDimension(); // TODO: was "numberOfExtents", CLI argument.
-    for(int i = 0; i < imageDimension; ++i) { // TODO: is upper bound correct? why?
+    for(size_t i = 0; i < imageDimension; ++i) { // TODO: is upper bound correct? why?
         inplaceExtendImage(voi, peeledMask, true);
     }
 
@@ -111,7 +111,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUG
     blankImage->CopyStructure(_img);
     blankImage->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
     unsigned char *p = (unsigned char *) (blankImage->GetScalarPointer());
-    for(int i = 0; i < blankImage->GetNumberOfPoints(); i++){
+    for(auto i = 0; i < blankImage->GetNumberOfPoints(); i++){
         p[i] = 0;
     }
 
@@ -154,7 +154,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const Vt
     unsigned char *corePoints = (unsigned char *) erodeFilter->GetOutput()->GetScalarPointer();
     float *im = (float *) _img->GetScalarPointer();
     float *tim = (float *) imgCopy->GetScalarPointer();
-    for(int i = 0; i < _img->GetNumberOfPoints(); i++) {
+    for(auto i = 0; i < _img->GetNumberOfPoints(); i++) {
         if(peelPoints[i] && im[i] > tim[i])
             corePoints[i] = 1;
     }
@@ -183,7 +183,7 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
 
     boolmask->CopyStructure(_mask);
     boolmask->AllocateScalars(VTK_FLOAT,1);
-    for(int i = 0; i < boolmask->GetNumberOfPoints(); i++)
+    for(auto i = 0; i < boolmask->GetNumberOfPoints(); i++)
         boolmask->GetPointData()->GetScalars()->SetTuple1(i,_mask->GetPointData()->GetScalars()->GetTuple1(i));
     math->SetOperationToMultiply();
     math->SetInput1Data(_img);
@@ -199,7 +199,7 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     auto convImgPoints = (float *) (imageconv->GetOutput()->GetScalarPointer());
     auto imagePoints = (float *) (_img->GetScalarPointer());
 
-    for(int i = 0; i < _img->GetNumberOfPoints(); i++) {
+    for(auto i = 0; i < _img->GetNumberOfPoints(); i++) {
         if(convMaskPoints[i] && !maskPoints[i]) {
             auto val = convImgPoints[i] / convMaskPoints[i];
             if(_maxval) {
