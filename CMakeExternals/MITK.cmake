@@ -17,6 +17,7 @@ if(NOT MITK_DIR)
   option(MITK_BUILD_TUTORIAL "Build the MITK tutorial" OFF)
   option(MITK_BUILD_ALL_PLUGINS "Build all MITK plugins" ON)
   option(MITK_BUILD_TESTING "Build the MITK unit tests" OFF)
+  option(MITK_USE_ACVD "Use Approximated Centroidal Vornoi Diagrams" ON)
   option(MITK_USE_CTK "Use CTK in MITK" ${MITK_USE_BLUEBERRY})
   option(MITK_USE_DCMTK "Use DCMTK in MITK" ON)
   option(MITK_USE_QT "Use Nokia's Qt library in MITK" ON)
@@ -49,6 +50,7 @@ if(NOT MITK_DIR)
     MITK_USE_BLUEBERRY
     MITK_BUILD_TUTORIAL
     MITK_BUILD_ALL_PLUGINS
+    MITK_USE_ACVD
     MITK_USE_CTK
     MITK_USE_DCMTK
     MITK_USE_QT
