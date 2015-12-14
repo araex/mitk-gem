@@ -100,6 +100,9 @@ void MaterialMappingView::startButtonClicked() {
         filter->SetIntensityImage(image);
         filter->SetDensityFunctor(gui::createDensityFunctorFromGui(m_Controls, m_CalibrationDataModel));
         filter->SetPowerLawFunctor(m_PowerLawWidgetManager->createFunctor());
+        filter->SetDoPeelStep(m_Controls.uParamCheckBox->isChecked());
+        filter->SetNumberOfExtendImageSteps(m_Controls.eParamSpinBox->value());
+        filter->SetMinElementValue(m_Controls.fParamSpinBox->value());
 
         auto result = filter->GetOutput();
         filter->Update();

@@ -29,6 +29,18 @@ public:
         m_PowerLawFunctor = _f;
     }
 
+    void SetDoPeelStep(bool _b){
+        m_DoPeelStep = _b;
+    }
+
+    void SetNumberOfExtendImageSteps(unsigned int _i){
+        m_NumberOfExtendImageSteps = _i;
+    }
+
+    void SetMinElementValue(float _f){
+        m_MinimumElementValue = _f;
+    }
+
     virtual void GenerateData() override;
 
 protected:
@@ -51,4 +63,7 @@ protected:
     mitk::Image::Pointer m_IntensityImage;
     BoneDensityFunctor m_BoneDensityFunctor;
     PowerLawFunctor m_PowerLawFunctor;
+    bool m_DoPeelStep = true;
+    float m_MinimumElementValue = 0.0;
+    unsigned int m_NumberOfExtendImageSteps = 3;
 };

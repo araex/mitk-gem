@@ -1094,61 +1094,9 @@ QWidget {
            <number>0</number>
           </property>
           <property name="horizontalSpacing">
-           <number>0</number>
+           <number>-1</number>
           </property>
           <item row="1" column="0">
-           <widget class="QCheckBox" name="fParamCheckBox">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="eParamCheckBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="uParamCheckBox">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Number of image extends. TODO: description</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
            <widget class="QSpinBox" name="eParamSpinBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1164,13 +1112,25 @@ QWidget {
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
+          <item row="2" column="0">
            <widget class="QDoubleSpinBox" name="fParamSpinBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>16777215</height>
+             </size>
             </property>
             <property name="minimum">
              <double>-999999999.000000000000000</double>
@@ -1181,6 +1141,16 @@ QWidget {
            </widget>
           </item>
           <item row="1" column="1">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Number of image extends. TODO: description</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Minimum element data value for ρ. TODO: description</string>
@@ -1190,7 +1160,17 @@ QWidget {
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="uParamCheckBox">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
            <widget class="QLabel" name="label_15">
             <property name="text">
              <string>Perform peeling</string>

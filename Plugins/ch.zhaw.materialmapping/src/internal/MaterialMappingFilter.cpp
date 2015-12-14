@@ -33,7 +33,9 @@ void MaterialMappingFilter::GenerateData() {
     MITK_INFO("ch.zhaw.materialmapping") << m_PowerLawFunctor;
 
     MITK_INFO("ch.zhaw.materialmapping") << "material mapping parameters";
-    // TODO print GUI parameters
+    MITK_INFO("ch.zhaw.materialmapping") << "peel step: " << m_DoPeelStep;
+    MITK_INFO("ch.zhaw.materialmapping") << "image extend: " << m_NumberOfExtendImageSteps;
+    MITK_INFO("ch.zhaw.materialmapping") << "minimum element value: " << m_MinimumElementValue;
 
     // Bug in mitk::Image::GetVtkImageData(), Origin is wrong
     // http://bugs.mitk.org/show_bug.cgi?id=5050
@@ -45,20 +47,22 @@ void MaterialMappingFilter::GenerateData() {
     vtkImage->ShallowCopy(importedVtkImage);
     vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
 
-    auto surface = extractSurface(vtkInputGrid); // TODO: we don't really need this?
-    // TODO old: levelMidpoints, still needed?
+    auto surface = extractSurface(vtkInputGrid);
     auto voi = extractVOI(vtkImage, surface);
     auto stencil = createStencil(surface, voi);
 
-    // TODO: add peel as GUI parameter
-    auto peeledMask = createPeeledMask(voi, stencil);
-    auto numberOfExtends = 3;
-    for(auto i = 0; i < numberOfExtends; ++i) {
-        inplaceExtendImage(voi, peeledMask, true);
+    MaterialMappingFilter::VtkImage mask;
+    if(m_DoPeelStep){
+        mask = createPeeledMask(voi, stencil);
+    } else {
+        mask = voi;
     }
 
-    auto minElement = 0.0; // TODO: add as GUI parameter
-    auto nodeDataE = evaluateFunctorsForNodes(vtkInputGrid, voi, "E", minElement);
+    for(auto i = 0u; i < m_NumberOfExtendImageSteps; ++i) {
+        inplaceExtendImage(voi, mask, true);
+    }
+
+    auto nodeDataE = evaluateFunctorsForNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
     auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
 
     // create ouput
