@@ -3,6 +3,7 @@
 #include <vtkPointData.h>
 #include <vtkCellData.h>
 #include <vtkImageInterpolator.h>
+#include <vtkTetra.h>
 
 #include <vtkUnstructuredGridGeometryFilter.h>
 #include <vtkExtractVOI.h>
@@ -21,16 +22,18 @@ MaterialMappingFilter::MaterialMappingFilter() {
 }
 
 void MaterialMappingFilter::GenerateData() {
-    // TODO: flag "-o" old method, do we need this?
     mitk::UnstructuredGrid::Pointer inputGrid = const_cast<mitk::UnstructuredGrid*>(this->GetInput());
     if(inputGrid.IsNull() || m_IntensityImage == nullptr || m_IntensityImage.IsNull()) return;
 
     auto importedVtkImage = const_cast<vtkImageData*>(m_IntensityImage->GetVtkImageData());
     vtkSmartPointer<vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
 
-    MITK_INFO("ch.zhaw.materialmapping") << "material mapping filter parameters";
+    MITK_INFO("ch.zhaw.materialmapping") << "density functors";
     MITK_INFO("ch.zhaw.materialmapping") << m_BoneDensityFunctor;
     MITK_INFO("ch.zhaw.materialmapping") << m_PowerLawFunctor;
+
+    MITK_INFO("ch.zhaw.materialmapping") << "material mapping parameters";
+    // TODO print GUI parameters
 
     // Bug in mitk::Image::GetVtkImageData(), Origin is wrong
     // http://bugs.mitk.org/show_bug.cgi?id=5050
@@ -46,18 +49,19 @@ void MaterialMappingFilter::GenerateData() {
     // TODO old: levelMidpoints, still needed?
     auto voi = extractVOI(vtkImage, surface);
     auto stencil = createStencil(surface, voi);
-    // TODO flag for peeling
+
+    // TODO: add peel as GUI parameter
     auto peeledMask = createPeeledMask(voi, stencil);
-    auto imageDimension = m_IntensityImage->GetDimension(); // TODO: was "numberOfExtents", CLI argument.
-    for(size_t i = 0; i < imageDimension; ++i) { // TODO: is upper bound correct? why?
+    auto numberOfExtends = 3;
+    for(auto i = 0; i < numberOfExtends; ++i) {
         inplaceExtendImage(voi, peeledMask, true);
     }
 
-    auto nodeDataE = evaluateFunctorsForNodes(vtkInputGrid, voi, "E", 0.0); // TODO: get min elem from gui
+    auto minElement = 0.0; // TODO: add as GUI parameter
+    auto nodeDataE = evaluateFunctorsForNodes(vtkInputGrid, voi, "E", minElement);
     auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
 
     // create ouput
-    // TODO: CLI had argument to write surface mesh. do we need this?
     auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
     out->DeepCopy(vtkInputGrid);
     out->GetPointData()->AddArray(nodeDataE);
@@ -247,11 +251,15 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
         auto cellpoints = _mesh->GetCell(i)->GetPoints();
         double centroid[3] = {0, 0, 0};
 
+        // TODO:
+//        auto tetra = static_cast<vtkTetra*>(_mesh->GetCell(i));
+//        tetra->GetParametricCenter(centroid);
+
         auto numberOfNodes = cellpoints->GetNumberOfPoints();
         for(auto j = 0; j < numberOfNodes; ++j){ // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
             auto cellpoint = cellpoints->GetPoint(j);
             for(auto k = 0; k < 3; ++k){
-                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1); // TODO: ??
+                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
             }
         }
 
