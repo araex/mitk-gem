@@ -1,7 +1,12 @@
 #include "PowerLawWidgetManager.h"
 
 PowerLawWidgetManager::PowerLawWidgetManager(QWidget *_parent) : m_Parent(_parent) {
-    addPowerLaw(); // always need at least 1
+    // defaults from paper
+    addPowerLaw();
+    auto w1 = addPowerLaw();
+    w1->setMin(0);
+    w1->m_Factor->setValue(6850);
+    w1->m_Exponent->setValue(1.49);
 }
 
 PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
