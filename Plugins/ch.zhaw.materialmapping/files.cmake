@@ -14,6 +14,8 @@ set(INTERNAL_CPP_FILES
   PowerLawParameters.cpp
   PowerLawWidget.cpp
   PowerLawWidgetManager.cpp
+  UnstructuredGridMapper2D.cpp
+  vtkPointSetSlicer.cxx
   test/BoneDensityTest.cpp
   test/PowerLawFunctorTest.cpp
   test/PowerLawWidgetTest.cpp

@@ -11,6 +11,8 @@ void Runner::runUnitTests() {
     Catch::Session().run();
 }
 
-void Runner::compareGrids(mitk::UnstructuredGrid::Pointer, mitk::UnstructuredGrid::Pointer) {
-    MITK_INFO("TESTING") << "comparing unstructured grid...";
+void Runner::compareGrids(mitk::UnstructuredGrid::Pointer _a, mitk::UnstructuredGrid::Pointer _b) {
+    MITK_INFO("TESTING") << "comparing unstructured grids...";
+
+//    REQUIRE(_a->)
 }

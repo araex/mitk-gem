@@ -6,12 +6,21 @@
 #include <QMessageBox>
 #include <QShortcut>
 #include <mitkImage.h>
+#include <mitkGridRepresentationProperty.h>
+#include <mitkVtkScalarModeProperty.h>
+#include <mitkTransferFunction.h>
+#include <mitkTransferFunctionProperty.h>
+#include <mitkVtkMapper.h>
+#include <mitkVtkGLMapperWrapper.h>
+#include <mitkUnstructuredGridVtkMapper3D.h>
+//#include <mitkUnstructuredGridMapper2D.h>
 
 #include "MaterialMappingView.h"
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
 #include "GuiHelpers.h"
 #include "MaterialMappingFilter.h"
 #include "PowerLawWidget.h"
+#include "UnstructuredGridMapper2D.h"
 
 const std::string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
 Ui::MaterialMappingViewControls *MaterialMappingView::controls = nullptr;
@@ -113,6 +122,61 @@ void MaterialMappingView::startButtonClicked() {
         // set some node properties
         newNode->SetProperty("name", mitk::StringProperty::New("material mapped mesh"));
         newNode->SetProperty("layer", mitk::IntProperty::New(1));
+
+        // http://docs.mitk.org/2015.05/classmitk_1_1GridRepresentationProperty.html
+        newNode->SetProperty("grid representation", mitk::GridRepresentationProperty::New(0));
+        newNode->SetProperty("scalar mode", mitk::VtkScalarModeProperty::New(3));
+        newNode->SetProperty("visible", mitk::BoolProperty::New(true));
+        newNode->SetProperty("scalar visibility", mitk::BoolProperty::New(true));
+        newNode->SetProperty("outline polygons", mitk::BoolProperty::New(true));
+
+        auto tf = mitk::TransferFunction::New();
+        auto min = 0;
+        auto max = 100;
+        tf->SetMin(min);
+        tf->SetMax(max);
+        tf->GetColorTransferFunction()->AddRGBPoint ( min, 0.23, 0.29, 0.75 );
+        tf->GetColorTransferFunction()->AddRGBPoint ( (min + max) / 2.0, 0.9, 0.9, 0.9 );
+        tf->GetColorTransferFunction()->AddRGBPoint ( max, 0.70, 0.0, 0.15 );
+        tf->GetScalarOpacityFunction()->AddPoint ( tf->GetColorTransferFunction()->GetRange() [0], 1 );
+        tf->GetScalarOpacityFunction()->AddPoint ( tf->GetColorTransferFunction()->GetRange() [1], 1 );
+        newNode->SetProperty ( "TransferFunction", mitk::TransferFunctionProperty::New ( tf ) );
+
+        auto renderer = mitk::BaseRenderer::GetInstance(mitk::BaseRenderer::GetRenderWindowByName("stdmulti.widget1"));
+//        auto mapper2D = dynamic_cast<mitk::VtkMapper*>(newNode->GetMapper(mitk::BaseRenderer::Standard2D)); //VtkGLMapperWrapper
+//        mapper2D->Update(renderer);
+        auto mapper2D = mitk::UnstructuredGridPointMapper2D::New();
+        newNode->SetMapper(mitk::BaseRenderer::Standard2D, mapper2D);
+
+        auto mapper3D = dynamic_cast<mitk::UnstructuredGridVtkMapper3D*>(newNode->GetMapper(mitk::BaseRenderer::Standard3D));
+//        mapper2D->SelectColorArray("E");
+
+
+//        auto prop2d = mapper2D->GetVtkProp(renderer)->GetWrappedGLMapper();
+        auto prop3d = mapper3D->GetVtkProp(renderer);
+        auto assembly = dynamic_cast<vtkAssembly*>(mapper3D->GetVtkProp(renderer));
+        if(assembly){
+            auto collection = assembly->GetParts();
+            collection->InitTraversal();
+            vtkProp* prop;
+            do{
+                prop = collection->GetNextProp();
+                auto actor = dynamic_cast<vtkActor*>(prop);
+                if(actor){
+                    actor->GetMapper()->SelectColorArray("E");
+                }
+            } while(prop != collection->GetLastProp());
+        }
+
+//        auto mapper2 = static_cast<mitk::UnstructuredGridMapper2D*>(mapper);
+
+
+        auto list = newNode->GetPropertyList();
+        auto map = list->GetMap();
+
+        for(const auto &item : *map){
+            MITK_INFO << item.first;
+        }
 
         // add result to the storage
         this->GetDataStorage()->Add( newNode );

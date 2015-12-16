@@ -55,4 +55,5 @@ set(enabled_plugins
   "org.mitk.gui.qt.remeshing"
   "org.mitk.gui.qt.segmentation"
   "org.mitk.gui.qt.stdmultiwidgeteditor"
+  "org.mitk.gui.qt.ugvisualization"
 )
