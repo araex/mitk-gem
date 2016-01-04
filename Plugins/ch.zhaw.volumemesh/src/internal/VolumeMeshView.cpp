@@ -2,6 +2,8 @@
 #include <berryIWorkbenchWindow.h>
 #include <QMessageBox>
 #include <mitkImage.h>
+#include <mitkGridRepresentationProperty.h>
+#include <mitkImageVtkMapper2D.h>
 
 #include "VolumeMeshView.h"
 #include "SurfaceToUnstructuredGridFilter.h"
@@ -55,6 +57,10 @@ void VolumeMeshView::generateButtonClicked() {
         newNode->SetData(meshFilter->GetOutput());
         newNode->SetProperty("name", mitk::StringProperty::New("tetrahedral mesh"));
         newNode->SetProperty("layer", mitk::IntProperty::New(1));
+        newNode->SetProperty("grid representation", mitk::GridRepresentationProperty::New(2));
+        newNode->SetMapper(mitk::BaseRenderer::Standard2D, mitk::ImageVtkMapper2D::New());
+        newNode->SetMapper(mitk::BaseRenderer::Standard3D, nullptr);
+        newNode->SetProperty("visible", mitk::BoolProperty::New(false));
 
         // add result to the storage
         this->GetDataStorage()->Add( newNode );

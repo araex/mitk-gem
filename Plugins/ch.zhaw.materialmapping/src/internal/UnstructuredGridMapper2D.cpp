@@ -213,6 +213,7 @@ void mitk::UnstructuredGridPointMapper2D::Paint( mitk::BaseRenderer* renderer )
     vtkCellData *vcelldata = contour->GetCellData();
     vtkDataArray* vcellscalars = vcelldata->GetScalars();
 
+    const int numberOfPoints = contour->GetNumberOfPoints();
     const int numberOfLines = contour->GetNumberOfLines();
     const int numberOfPolys = contour->GetNumberOfPolys();
 
@@ -549,6 +550,7 @@ mitk::UnstructuredGridPointMapper2D::UnstructuredGridPointMapper2D()
     m_Slicer = vtkPointSetSlicer::New();
 
     m_Slicer->SetSlicePlane( m_Plane );
+    m_Slicer->SetGenerateCutScalars(true);
 
     m_ScalarsToColors = 0;
     m_ScalarsToOpacity = 0;
