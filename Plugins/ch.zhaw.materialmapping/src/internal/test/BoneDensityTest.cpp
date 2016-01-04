@@ -80,6 +80,8 @@ TEST_CASE("BoneDensityParameters"){
 }
 
 TEST_CASE("BoneDensityGui"){
+    CalibrationDataModel dataModel;
+
     BoneDensityParameters::RhoCt rhoCt(2, 10);
     BoneDensityParameters::RhoAsh rhoAsh(5, 2);
     BoneDensityParameters::RhoApp rhoApp(4);
@@ -90,22 +92,33 @@ TEST_CASE("BoneDensityGui"){
 
     Ui::MaterialMappingViewControls *gui = MaterialMappingView::controls;
     REQUIRE(gui != nullptr);
-    CalibrationDataModel dataModel;
 
-    dataModel.appendRow(0, 10);
-    dataModel.appendRow(-5, 0);
     gui->rhoAshCheckBox->setChecked(true);
     gui->rhoAshOffsetSpinBox->setValue(5);
     gui->rhoAshDivisorSpinBox->setValue(2);
     gui->rhoAppCheckBox->setChecked(true);
     gui->rhoAppDivisorSpinBox->setValue(4);
 
-    SECTION("data model line fitting"){
+    SECTION("data model line fitting grams"){
+        dataModel.setUnit(CalibrationDataModel::Unit::gHA_cm3);
+        dataModel.appendRow(0, 10);
+        dataModel.appendRow(-5, 0);
+        auto createdRhoCt = dataModel.getFittedLine();
+        REQUIRE(createdRhoCt == rhoCt);
+    }
+
+    SECTION("data model mg conversion"){
+        dataModel.setUnit(CalibrationDataModel::Unit::mgHA_cm3);
+        dataModel.appendRow(0, 10*1000.0);
+        dataModel.appendRow(-5, 0);
         auto createdRhoCt = dataModel.getFittedLine();
         REQUIRE(createdRhoCt == rhoCt);
     }
 
     SECTION("functor creation"){
+        dataModel.setUnit(CalibrationDataModel::Unit::gHA_cm3);
+        dataModel.appendRow(0, 10);
+        dataModel.appendRow(-5, 0);
         auto createdFunctor = gui::createDensityFunctorFromGui(*gui, dataModel);
         REQUIRE(createdFunctor == functor);
     }
