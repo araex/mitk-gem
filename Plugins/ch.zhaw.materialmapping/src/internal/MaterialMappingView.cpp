@@ -47,10 +47,13 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
         m_Controls.expectedResultComboBox->SetDataStorage(this->GetDataStorage());
         m_Controls.expectedResultComboBox->SetAutoSelectNewItems(false);
         m_Controls.expectedResultComboBox->SetPredicate(WorkbenchUtils::createIsUnstructuredGridTypePredicate());
+        m_Controls.expectedResultComboBox_2->SetDataStorage(this->GetDataStorage());
+        m_Controls.expectedResultComboBox_2->SetAutoSelectNewItems(false);
+        m_Controls.expectedResultComboBox_2->SetPredicate(WorkbenchUtils::createIsUnstructuredGridTypePredicate());
 
         m_TestRunner = std::unique_ptr<Testing::Runner>(new Testing::Runner());
         connect( m_Controls.runUnitTestsButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(runUnitTests()) );
-//        connect( m_Controls.selectLogFileButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(openLogFileDialog()) );
+        connect( m_Controls.compareGridsButton, SIGNAL(clicked()), this, SLOT(compareGrids()) );
     } else {
         m_Controls.testingGroup->hide();
     }
@@ -120,14 +123,6 @@ void MaterialMappingView::startButtonClicked() {
 
         // add result to the storage
         this->GetDataStorage()->Add( newNode );
-
-        if(TESTING){
-            if(m_Controls.testingDoComparisonCheckBox->isChecked()){
-                mitk::DataNode *expectedResultNode = m_Controls.expectedResultComboBox->GetSelectedNode();
-                mitk::UnstructuredGrid::Pointer expectedResult = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode->GetData());
-                m_TestRunner->compareGrids(result, expectedResult);
-            }
-        }
     }
 }
 
@@ -171,4 +166,12 @@ void MaterialMappingView::unitSelectionChanged(int){
     auto selectedText = m_Controls.unitSelectionComboBox->currentText();
     m_CalibrationDataModel.setUnit(selectedText);
     tableDataChanged();
+}
+
+void MaterialMappingView::compareGrids() {
+    mitk::DataNode *expectedResultNode0 = m_Controls.expectedResultComboBox->GetSelectedNode();
+    mitk::DataNode *expectedResultNode1 = m_Controls.expectedResultComboBox_2->GetSelectedNode();
+    mitk::UnstructuredGrid::Pointer u0 = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode0->GetData());
+    mitk::UnstructuredGrid::Pointer u1 = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode1->GetData());
+    m_TestRunner->compareGrids(u0, u1);
 }

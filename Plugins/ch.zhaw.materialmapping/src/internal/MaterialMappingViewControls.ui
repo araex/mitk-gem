@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>511</width>
-    <height>949</height>
+    <width>557</width>
+    <height>1078</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1326,7 +1326,7 @@ QWidget {
            <item>
             <widget class="QLabel" name="label_9">
              <property name="text">
-              <string>If you see this, you got a testing build. Executes and logs all checked steps.</string>
+              <string>If you see this, you got a testing build. </string>
              </property>
              <property name="scaledContents">
               <bool>false</bool>
@@ -1337,62 +1337,83 @@ QWidget {
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="runUnitTestsButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Compare unstructured grids</string>
              </property>
-             <property name="text">
-              <string>Run unit tests</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="testingComparisonWidget" native="true">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to be segmented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,2">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
               <item>
-               <widget class="QCheckBox" name="testingDoComparisonCheckBox">
-                <property name="text">
-                 <string>Compare results (NOT WORKING)</string>
+               <widget class="QWidget" name="testingComparisonWidget" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
                 </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to be segmented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QmitkDataStorageComboBox" name="expectedResultComboBox">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="editable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="duplicatesEnabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QmitkDataStorageComboBox" name="expectedResultComboBox_2">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="editable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="duplicatesEnabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
               <item>
-               <widget class="QmitkDataStorageComboBox" name="expectedResultComboBox">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
+               <widget class="QToolButton" name="compareGridsButton">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="editable">
-                 <bool>false</bool>
-                </property>
-                <property name="duplicatesEnabled">
-                 <bool>false</bool>
+                <property name="text">
+                 <string>Compare</string>
                 </property>
                </widget>
               </item>
@@ -1400,6 +1421,19 @@ QWidget {
             </widget>
            </item>
           </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="runUnitTestsButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Run unit tests</string>
+          </property>
          </widget>
         </item>
        </layout>

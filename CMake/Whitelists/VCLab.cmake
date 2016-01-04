@@ -39,6 +39,7 @@ set(enabled_plugins
   "org.blueberry.core.runtime"
   "org.blueberry.ui.qt"
   "org.blueberry.ui.qt.help"
+  "org.blueberry.ui.qt.log"
   "org.mitk.core.ext"
   "org.mitk.core.services"
   "org.mitk.gui.common"

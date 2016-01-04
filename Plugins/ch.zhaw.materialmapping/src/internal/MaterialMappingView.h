@@ -23,6 +23,7 @@ protected slots:
     void startButtonClicked();
     void tableDataChanged();
     void unitSelectionChanged(int);
+    void compareGrids();
 
 protected:
     virtual void CreateQtPartControl(QWidget *parent) override;
