@@ -31,7 +31,7 @@ void CalibrationDataModel::setUnit(QString _s) {
     } else if(_s == "gHA/cm³"){
         setUnit(Unit::gHA_cm3);
     } else {
-        MITK_ERROR("ch.zhaw.materialmapping") << "Invalid conversion unit.";
+        QMessageBox::warning(0, "Invalid conversion unit!", "Failed to set conversion unit: " + _s + ".");
     }
 }
 
@@ -164,6 +164,8 @@ void CalibrationDataModel::readFromFile(QString _path) {
 
     QTextStream in(&file);
     std::vector<std::pair<QString, QString>> measurements;
+    QString header = in.readLine();
+    setUnit(header);
     while(!in.atEnd()) {
         QString line = in.readLine();
         if(line.isEmpty()){
@@ -193,6 +195,14 @@ void CalibrationDataModel::saveToFile(QString _path) {
     }
 
     QTextStream out(&file);
+    switch(m_SelectedUnit){
+        case Unit::mgHA_cm3:
+            out << QString::fromUtf8("mgHA/cm³");
+            break;
+        case Unit::gHA_cm3:
+            out << QString::fromUtf8("gHA/cm³");
+    }
+    out << '\n';
     for(auto &pair : m_Data){
         out << pair.first << " " << pair.second << '\n';
     }

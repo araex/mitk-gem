@@ -127,6 +127,10 @@ void MaterialMappingView::startButtonClicked() {
 }
 
 void MaterialMappingView::tableDataChanged() {
+    // in case new data was loaded from a file, we need to update the combo box
+    int index = static_cast<int>(m_CalibrationDataModel.getUnit());
+    m_Controls.unitSelectionComboBox->setCurrentIndex(index);
+
     auto linearEqParams = m_CalibrationDataModel.getFittedLine();
     m_Controls.linEQSlopeSpinBox->setValue(linearEqParams.slope);
     m_Controls.linEQOffsetSpinBox->setValue(linearEqParams.offset);

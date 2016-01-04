@@ -13,8 +13,8 @@ class CalibrationDataModel : public QObject {
 
 public:
     enum class Unit {
-        mgHA_cm3,
-        gHA_cm3
+        mgHA_cm3 = 0,
+        gHA_cm3 = 1
     };
 
     CalibrationDataModel();
@@ -25,6 +25,9 @@ public:
     void removeRow(int);
     void setUnit(QString);
     void setUnit(Unit);
+    Unit getUnit(){
+        return m_SelectedUnit;
+    }
     bool hasExpectedValueRange();
 
     QAbstractItemModel *getQItemModel() const;
