@@ -322,6 +322,33 @@ QScrollArea{
           </layout>
          </widget>
         </item>
+        <item>
+         <widget class="QWidget" name="unitWarningLabel" native="true">
+          <property name="styleSheet">
+           <string notr="true">QWidget {
+	background-color: #ffb366
+}</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_13">
+           <item>
+            <widget class="QLabel" name="unitWarningLabel2">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;The entered bone density values are outside of the expected range. Verify the selected metric prefix (mgHA/cm³ vs gHA/cm³)!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -349,7 +376,7 @@ QScrollArea{
         <item>
          <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Steps to evaluate bone density &lt;span style=&quot; font-weight:600;&quot;&gt;ρ &lt;/span&gt;[ gHA/cm&lt;span style=&quot; vertical-align:super;&quot;&gt;3 &lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Steps to evaluate bone density &lt;span style=&quot; font-weight:600;&quot;&gt;ρ [ gHA/cm&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:super;&quot;&gt;3 &lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>

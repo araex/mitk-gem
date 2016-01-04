@@ -70,6 +70,9 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(addPowerLaw()) );
     connect( m_Controls.removePowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(removePowerLaw()) );
     connect( m_Controls.unitSelectionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(unitSelectionChanged(int)) );
+
+    m_Controls.unitSelectionComboBox->setCurrentIndex(0);
+    unitSelectionChanged(0);
 }
 
 void MaterialMappingView::deleteSelectedRows(){
@@ -132,6 +135,12 @@ void MaterialMappingView::tableDataChanged() {
     auto linearEqParams = m_CalibrationDataModel.getFittedLine();
     m_Controls.linEQSlopeSpinBox->setValue(linearEqParams.slope);
     m_Controls.linEQOffsetSpinBox->setValue(linearEqParams.offset);
+
+    if(m_CalibrationDataModel.hasExpectedValueRange()){
+        m_Controls.unitWarningLabel->hide();
+    } else {
+        m_Controls.unitWarningLabel->show();
+    }
 }
 
 bool MaterialMappingView::isValidSelection() {
@@ -158,7 +167,8 @@ bool MaterialMappingView::isValidSelection() {
     return false;
 }
 
-void MaterialMappingView::unitSelectionChanged(int _idx){
+void MaterialMappingView::unitSelectionChanged(int){
     auto selectedText = m_Controls.unitSelectionComboBox->currentText();
     m_CalibrationDataModel.setUnit(selectedText);
+    tableDataChanged();
 }

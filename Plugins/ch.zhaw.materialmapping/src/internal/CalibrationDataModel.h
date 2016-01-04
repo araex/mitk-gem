@@ -25,6 +25,7 @@ public:
     void removeRow(int);
     void setUnit(QString);
     void setUnit(Unit);
+    bool hasExpectedValueRange();
 
     QAbstractItemModel *getQItemModel() const;
     BoneDensityParameters::RhoCt getFittedLine();

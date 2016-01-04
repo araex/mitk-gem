@@ -145,7 +145,6 @@ BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() {
     for(auto i=0; i < m_Data.size(); ++i){
         A(i, 0) = m_Data[i].first;
         A(i, 1) = 1;
-        auto t = m_Data[i].second / factor;
         b[i] = m_Data[i].second / factor;
     }
     vnl_sparse_matrix_linear_system<double> ls(A,b);
@@ -212,4 +211,25 @@ bool CalibrationDataModel::isValidNumberPair(QStringList _stringlist) {
         isNumber = isNumber && b;
     }
     return isNumber;
+}
+
+bool CalibrationDataModel::hasExpectedValueRange() {
+    if(m_ItemModel->rowCount() <= 2){ // need more than 1 entry
+        return true;
+    }
+
+    auto factor = 1.0;
+    m_SelectedUnit == Unit::mgHA_cm3 ? factor = 1000.0 : 1.0;
+
+    auto lo = std::numeric_limits<double>::max();
+    auto hi = std::numeric_limits<double>::lowest();
+    for(auto i=0; i < m_Data.size(); ++i){
+        double value = m_Data[i].second / factor;
+        hi = std::max(hi, value);
+        lo = std::min(lo, value);
+    }
+    auto validRange = lo > -5.0 && hi < 5.0;
+    auto delta = hi - lo;
+    auto validDelta = delta > 0.0001;
+    return validRange && validDelta;
 }

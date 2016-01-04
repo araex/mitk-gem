@@ -123,3 +123,35 @@ TEST_CASE("BoneDensityGui"){
         REQUIRE(createdFunctor == functor);
     }
 }
+
+TEST_CASE("BoneDensity unit sanity check"){
+    CalibrationDataModel dataModel;
+
+    SECTION("value range too high"){
+        dataModel.setUnit(CalibrationDataModel::Unit::gHA_cm3);
+        dataModel.appendRow(100, 120);
+        dataModel.appendRow(120, 150);
+        REQUIRE(dataModel.hasExpectedValueRange() == false);
+    }
+
+    SECTION("value range too low"){
+        dataModel.setUnit(CalibrationDataModel::Unit::mgHA_cm3);
+        dataModel.appendRow(100, 0.12);
+        dataModel.appendRow(120, 0.15);
+        REQUIRE(dataModel.hasExpectedValueRange() == false);
+    }
+
+    SECTION("correct value range mg"){
+        dataModel.setUnit(CalibrationDataModel::Unit::mgHA_cm3);
+        dataModel.appendRow(100, 120);
+        dataModel.appendRow(120, 150);
+        REQUIRE(dataModel.hasExpectedValueRange() == true);
+    }
+
+    SECTION("correct value range"){
+        dataModel.setUnit(CalibrationDataModel::Unit::gHA_cm3);
+        dataModel.appendRow(100, 0.12);
+        dataModel.appendRow(120, 0.15);
+        REQUIRE(dataModel.hasExpectedValueRange() == true);
+    }
+}
