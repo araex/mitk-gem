@@ -49,8 +49,10 @@ TEST_CASE("PowerLawWidgetManager"){
     }
 
     SECTION("add / remove"){
+        REQUIRE(manager.getNumberOfWidgets() == 2); // default value
+        REQUIRE(manager.removePowerLaw() == true); // can remove the default
         REQUIRE(manager.getNumberOfWidgets() == 1);
-        REQUIRE(manager.removePowerLaw() == false); // cant remove the first widget
+        REQUIRE(manager.removePowerLaw() == false); // can't go below 1 row
         REQUIRE(manager.getNumberOfWidgets() == 1);
 
         REQUIRE(manager.addPowerLaw());
@@ -79,13 +81,16 @@ TEST_CASE("PowerLawWidgetManager"){
     }
 
     SECTION("range adaption on add / remove"){
+        REQUIRE(manager.removePowerLaw() == true); // pop the default value
+        REQUIRE(manager.getNumberOfWidgets() == 1);
+
         // TODO: these should be a field in the widgets
         auto minValue = PowerLawWidget::MinValue;
         auto maxValue = PowerLawWidget::MaxValue;
 
         auto w0 = manager.getWidget(0);
         REQUIRE(w0->getMin() == minValue);
-        REQUIRE(w0->getMax() == minValue);
+        REQUIRE(w0->getMax() == minValue); // note that this is the widgets max which is represented as a Qt special value = min
 
         auto w1 = manager.addPowerLaw();
         REQUIRE(w0->getMin() == minValue);
