@@ -1,7 +1,7 @@
+#include <string>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
-
 #include <mitkLogMacros.h>
 
 #include <vnl/algo/vnl_lsqr.h>
@@ -9,6 +9,8 @@
 #include <vnl/vnl_least_squares_function.h>
 
 #include "CalibrationDataModel.h"
+
+#include <stdexcept>
 
 using namespace std;
 
@@ -19,9 +21,35 @@ CalibrationDataModel::CalibrationDataModel() {
     QObject::connect(getQItemModel(), SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChanged(QStandardItem*)));
 
     // init table
-    m_ItemModel->setHorizontalHeaderItem(0, new QStandardItem(QString("Intensity [ HU ]")));
-    m_ItemModel->setHorizontalHeaderItem(1, new QStandardItem(QString("Bone density [ gHA/cm³ ]")));
+    setUnit(Unit::mgHA_cm3);
     clear();
+}
+
+void CalibrationDataModel::setUnit(QString _s) {
+    if(_s == "mgHA/cm³"){
+        setUnit(Unit::mgHA_cm3);
+    } else if(_s == "gHA/cm³"){
+        setUnit(Unit::gHA_cm3);
+    } else {
+        MITK_ERROR("ch.zhaw.materialmapping") << "Invalid conversion unit.";
+    }
+}
+
+void CalibrationDataModel::setUnit(Unit _u) {
+    m_SelectedUnit = _u;
+
+    QString s;
+    switch(m_SelectedUnit){
+        case Unit::mgHA_cm3:
+            s = "mgHA/cm³";
+            break;
+        case Unit::gHA_cm3:
+            s = "gHA/cm³";
+    }
+    QString header = "Bone density [ " + s + " ]";
+
+    m_ItemModel->setHorizontalHeaderItem(0, new QStandardItem(QString("Intensity [ HU ]")));
+    m_ItemModel->setHorizontalHeaderItem(1, new QStandardItem(QString(header)));
 }
 
 void CalibrationDataModel::itemChanged(QStandardItem *_item){
@@ -112,10 +140,13 @@ BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() {
     vnl_sparse_matrix<double> A(m_Data.size(), 2);
     vnl_vector<double> b(m_Data.size());
 
+    auto factor = 1.0;
+    m_SelectedUnit == Unit::mgHA_cm3 ? factor = 1000.0 : 1.0;
     for(auto i=0; i < m_Data.size(); ++i){
         A(i, 0) = m_Data[i].first;
         A(i, 1) = 1;
-        b[i] = m_Data[i].second;
+        auto t = m_Data[i].second / factor;
+        b[i] = m_Data[i].second / factor;
     }
     vnl_sparse_matrix_linear_system<double> ls(A,b);
     vnl_vector<double> x(2);

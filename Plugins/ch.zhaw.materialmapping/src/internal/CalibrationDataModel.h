@@ -12,12 +12,19 @@ class CalibrationDataModel : public QObject {
     using TData = QList<std::pair<double, double>>;
 
 public:
+    enum class Unit {
+        mgHA_cm3,
+        gHA_cm3
+    };
+
     CalibrationDataModel();
 
     // manipulation
     int appendRow(double, double);
     int appendRow(QString, QString);
     void removeRow(int);
+    void setUnit(QString);
+    void setUnit(Unit);
 
     QAbstractItemModel *getQItemModel() const;
     BoneDensityParameters::RhoCt getFittedLine();
@@ -36,6 +43,7 @@ private:
     void readFromFile(QString);
     void saveToFile(QString);
 
+    Unit m_SelectedUnit;
     std::unique_ptr <QStandardItemModel> m_ItemModel;
     TData m_Data;
 };
