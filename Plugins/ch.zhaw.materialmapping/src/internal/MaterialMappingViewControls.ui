@@ -82,7 +82,7 @@ QScrollArea{
      <item>
       <widget class="QWidget" name="meshSelector" native="true">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to be segmented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the unstructured grid containing the volume mesh.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,2">
         <property name="leftMargin">
@@ -120,7 +120,7 @@ QScrollArea{
      <item>
       <widget class="QWidget" name="greyscaleSelector" native="true">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to be segmented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to read the greyscale values from.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,2">
         <property name="leftMargin">
@@ -207,7 +207,7 @@ QScrollArea{
            <item>
             <widget class="QWidget" name="meshSelector_2" native="true">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to be segmented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the unit of the calibration bone density values. Will automatically get converted to gHA/cm³ before the next step.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,2">
               <property name="leftMargin">
@@ -299,6 +299,9 @@ QScrollArea{
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the entered calibration values to a .txt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="text">
                 <string>Save</string>
                </property>
@@ -311,6 +314,9 @@ QScrollArea{
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Load the calibration values from a .txt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Load</string>
@@ -1348,7 +1354,7 @@ QWidget {
                  <bool>true</bool>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the image to be segmented&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1">
                  <property name="leftMargin">
