@@ -18,8 +18,8 @@ bool BoneDensityFunctor::operator==(const BoneDensityFunctor &_other) const {
 
 std::ostream& operator<<(std::ostream& _out, const BoneDensityFunctor& _f) {
     _out << "Bone density rho: " << std::endl;
-    _out << "rho_ct  = " << _f.m_RhoCt.slope << " * HU + " << _f.m_RhoCt.offset << std::endl;
-    _out << "rho_ash = (rho_ct + " << _f.m_RhoAsh.offset << ") / " << _f.m_RhoAsh.divisor << std::endl;
-    _out << "rho_app = rho_ash / " << _f.m_RhoApp.divisor;
+    _out << _f.m_RhoCt << std::endl;
+    _out << _f.m_RhoAsh << std::endl;
+    _out << _f.m_RhoApp << std::endl;
     return _out;
 }

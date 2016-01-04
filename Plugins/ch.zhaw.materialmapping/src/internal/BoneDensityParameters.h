@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 namespace BoneDensityParameters {
     struct RhoCt{
         RhoCt();
@@ -24,4 +26,8 @@ namespace BoneDensityParameters {
     bool operator!=(const RhoCt& lhs, const RhoCt& rhs);
     bool operator!=(const RhoAsh& lhs, const RhoAsh& rhs);
     bool operator!=(const RhoApp& lhs, const RhoApp& rhs);
+
+    std::ostream& operator<<(std::ostream& _out, const RhoCt&);
+    std::ostream& operator<<(std::ostream& _out, const RhoAsh&);
+    std::ostream& operator<<(std::ostream& _out, const RhoApp&);
 };

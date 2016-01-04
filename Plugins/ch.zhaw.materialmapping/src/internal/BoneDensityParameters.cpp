@@ -40,4 +40,19 @@ namespace BoneDensityParameters {
     bool operator!=(const RhoApp& lhs, const RhoApp& rhs) {
         return !(lhs == rhs);
     }
+
+    std::ostream& operator<<(std::ostream& _out, const RhoCt& _r){
+        _out << "rho_ct  = " << _r.slope << " * HU + " << _r.offset;
+        return _out;
+    }
+
+    std::ostream& operator<<(std::ostream& _out, const RhoAsh& _r){
+        _out << "rho_ash = (rho_ct + " << _r.offset << ") / " << _r.divisor;
+        return _out;
+    }
+
+    std::ostream& operator<<(std::ostream& _out, const RhoApp& _r){
+        _out << "rho_app = rho_ash / " << _r.divisor;
+        return _out;
+    }
 }
