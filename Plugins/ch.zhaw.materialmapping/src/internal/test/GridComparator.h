@@ -11,10 +11,6 @@ public:
     GridComparator(UgridPtr, UgridPtr, std::stringstream*);
 
 private:
-    bool compareCellStructure();
-    void compareCellData();
-    void comparePointData();
-
     void compareArrayStructure(vtkDataArray *, vtkDataArray *, std::string _logPrefix);
     void compareArrayData(vtkDataArray *, vtkDataArray *, std::string _logPrefix);
 
