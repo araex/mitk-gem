@@ -63,7 +63,7 @@ void SurfaceToUnstructuredGridFilter::tetgenMesh(vtkSmartPointer <vtkPolyData> s
     cout << inputmesh.numberofpoints << endl;
 
     if(m_Options.fixedvolume){
-        m_Options.maxvolume = pow(2 * A, 1.5) * pow(3, -1.75); // TODO: should this be configurable in the gui?
+        m_Options.maxvolume = pow(2 * A, 1.5) * pow(3, -1.75); // TODO: for now we represent this as a binary switch in the GUI, maybe we'll add some additional options later on
     }
 
 

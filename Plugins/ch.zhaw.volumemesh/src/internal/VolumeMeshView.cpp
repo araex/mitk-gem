@@ -2,6 +2,8 @@
 #include <berryIWorkbenchWindow.h>
 #include <QMessageBox>
 #include <mitkImage.h>
+#include <mitkGridRepresentationProperty.h>
+
 
 #include "VolumeMeshView.h"
 #include "SurfaceToUnstructuredGridFilter.h"
@@ -33,7 +35,7 @@ void VolumeMeshView::CreateQtPartControl(QWidget *parent) {
     m_TetgenOptionGrid.addOption("-p", "Tetrahedralizes a piecewise linear complex (PLC).", &tetgenbehavior::plc);
     m_TetgenOptionGrid.addOption("-q", "Refines mesh (to improve mesh quality).", &tetgenbehavior::quality);
     m_TetgenOptionGrid.addOption("-Y", "Preserves the input surface mesh (does not modify it).", &tetgenbehavior::nobisect);
-    m_TetgenOptionGrid.addOption("-a", "Applies a maximum tetrahedron volume constraint.", &tetgenbehavior::fixedvolume);
+    m_TetgenOptionGrid.addOption("-a", "Applies a maximum tetrahedron volume constraint. Assumes uniform mesh density on the surface.", &tetgenbehavior::fixedvolume);
     m_Controls.settingsGroup->layout()->addWidget(&m_TetgenOptionGrid);
 
     // signals
