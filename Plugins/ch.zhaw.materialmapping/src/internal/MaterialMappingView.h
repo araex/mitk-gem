@@ -22,6 +22,7 @@ protected slots:
     void deleteSelectedRows();
     void startButtonClicked();
     void tableDataChanged();
+    void unitSelectionChanged(int);
 
 protected:
     virtual void CreateQtPartControl(QWidget *parent) override;

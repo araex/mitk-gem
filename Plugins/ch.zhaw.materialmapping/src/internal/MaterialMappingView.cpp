@@ -69,6 +69,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     connect( &m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()) );
     connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(addPowerLaw()) );
     connect( m_Controls.removePowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(removePowerLaw()) );
+    connect( m_Controls.unitSelectionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(unitSelectionChanged(int)) );
 }
 
 void MaterialMappingView::deleteSelectedRows(){
@@ -155,4 +156,9 @@ bool MaterialMappingView::isValidSelection() {
     }
     MITK_INFO("ch.zhaw.materialmapping") << "invalid data selection";
     return false;
+}
+
+void MaterialMappingView::unitSelectionChanged(int _idx){
+    auto selectedText = m_Controls.unitSelectionComboBox->currentText();
+    m_CalibrationDataModel.setUnit(selectedText);
 }
