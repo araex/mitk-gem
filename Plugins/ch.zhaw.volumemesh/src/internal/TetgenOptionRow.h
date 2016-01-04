@@ -7,8 +7,6 @@
 #include <QAbstractSpinBox>
 #include <QGridLayout>
 
-#include "lib/tetgen1.5.0/tetgen.h"
-
 class TetgenOptionRow {
 public:
     enum class ValueType {

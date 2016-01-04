@@ -12,10 +12,9 @@
 
 class SurfaceToUnstructuredGridFilter : public mitk::UnstructuredGridSource {
 public:
-    mitkClassMacro(SurfaceToUnstructuredGridFilter, mitk::UnstructuredGridSource
-    )
-    itkFactorylessNewMacro(Self)
-    itkCloneMacro(Self)
+    mitkClassMacro(SurfaceToUnstructuredGridFilter, mitk::UnstructuredGridSource);
+    itkFactorylessNewMacro(Self);
+    itkCloneMacro(Self);
 
     using itk::ProcessObject::SetInput;
 
