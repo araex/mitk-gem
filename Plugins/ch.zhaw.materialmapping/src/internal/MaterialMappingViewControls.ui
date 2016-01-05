@@ -772,7 +772,7 @@ QDoubleSpinBox {
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
                      <property name="decimals">
-                      <number>3</number>
+                      <number>5</number>
                      </property>
                      <property name="minimum">
                       <double>-999999999.000000000000000</double>
@@ -817,7 +817,7 @@ QDoubleSpinBox {
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
                      <property name="decimals">
-                      <number>0</number>
+                      <number>5</number>
                      </property>
                      <property name="minimum">
                       <double>-999999999.000000000000000</double>
