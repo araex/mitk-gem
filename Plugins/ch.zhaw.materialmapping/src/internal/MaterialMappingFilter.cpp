@@ -180,6 +180,8 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const Vt
 
 // as in assignElasticModulus.cc 26.11.15 (v3)
 void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxval) {
+    assert(_img->GetScalarType() == VTK_FLOAT && "Input image scalar type needs to be float!");
+
     static const double kernel[27] = {
         1/sqrt(3),1/sqrt(2),1/sqrt(3),
         1/sqrt(2),1,1/sqrt(2),
@@ -192,23 +194,25 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
         1/sqrt(3),1/sqrt(2),1/sqrt(3)
     };
 
-    auto boolmask = vtkSmartPointer<vtkImageData>::New();
     auto math = vtkSmartPointer<vtkImageMathematics>::New();
     auto imageconv = vtkSmartPointer<vtkImageConvolve>::New();
     auto maskconv = vtkSmartPointer<vtkImageConvolve>::New();
 
-    boolmask->CopyStructure(_mask);
-    boolmask->AllocateScalars(VTK_FLOAT,1);
-    for(auto i = 0; i < boolmask->GetNumberOfPoints(); i++)
-        boolmask->GetPointData()->GetScalars()->SetTuple1(i,_mask->GetPointData()->GetScalars()->GetTuple1(i));
+    // vtkImageMathematics needs both inputs to have the same scalar type
+    auto mask_float = vtkSmartPointer<vtkImageData>::New();
+    mask_float->CopyStructure(_mask);
+    mask_float->AllocateScalars(VTK_FLOAT,1);
+    for(auto i = 0; i < mask_float->GetNumberOfPoints(); i++)
+        mask_float->GetPointData()->GetScalars()->SetTuple1(i,_mask->GetPointData()->GetScalars()->GetTuple1(i));
+
     math->SetOperationToMultiply();
     math->SetInput1Data(_img);
-    math->SetInput2Data(boolmask);
+    math->SetInput2Data(mask_float);
     imageconv->SetKernel3x3x3(kernel);
     imageconv->SetInputConnection(math->GetOutputPort());
     imageconv->Update();
     maskconv->SetKernel3x3x3(kernel);
-    maskconv->SetInputData(boolmask);
+    maskconv->SetInputData(mask_float);
     maskconv->Update();
     auto maskPoints = (unsigned char *) (_mask->GetScalarPointer());
     auto convMaskPoints = (float *) (maskconv->GetOutput()->GetScalarPointer());
