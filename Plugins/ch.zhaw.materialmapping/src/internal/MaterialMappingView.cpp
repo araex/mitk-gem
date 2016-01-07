@@ -196,7 +196,7 @@ void MaterialMappingView::saveParametersButtonClicked() {
         root->LinkEndChild(bonedensity);
         root->LinkEndChild(powerlaws);
 
-        doc.LinkEndChild( new TiXmlDeclaration( "1.0", "", "" ) );
+        doc.LinkEndChild( new TiXmlDeclaration( "1.0", "utf-8", "" ) );
         doc.LinkEndChild(root);
         doc.SaveFile(filename.toUtf8().constData());
     } else {
