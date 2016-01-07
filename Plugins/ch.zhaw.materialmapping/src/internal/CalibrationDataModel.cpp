@@ -8,6 +8,8 @@
 #include <vnl/vnl_sparse_matrix_linear_system.h>
 #include <vnl/vnl_least_squares_function.h>
 
+
+
 #include "CalibrationDataModel.h"
 
 #include <stdexcept>
@@ -38,14 +40,7 @@ void CalibrationDataModel::setUnit(QString _s) {
 void CalibrationDataModel::setUnit(Unit _u) {
     m_SelectedUnit = _u;
 
-    QString s;
-    switch(m_SelectedUnit){
-        case Unit::mgHA_cm3:
-            s = "mgHA/cm³";
-            break;
-        case Unit::gHA_cm3:
-            s = "gHA/cm³";
-    }
+    auto s = QString::fromUtf8(getUnitString().c_str());
     QString header = "Bone density [ " + s + " ]";
 
     m_ItemModel->setHorizontalHeaderItem(0, new QStandardItem(QString("Intensity [ HU ]")));
@@ -157,56 +152,73 @@ BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() {
 }
 
 void CalibrationDataModel::readFromFile(QString _path) {
-    QFile file(_path);
-    if(!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(0, "failed to open file", file.errorString());
-    }
+    TiXmlDocument doc(_path.toUtf8().constData());
+    if (!doc.LoadFile()){
+        QMessageBox::warning(0, "failed to open file", "failed to open file");
+        return;
+    };
 
-    QTextStream in(&file);
-    std::vector<std::pair<QString, QString>> measurements;
-    QString header = in.readLine();
-    setUnit(header);
-    while(!in.atEnd()) {
-        QString line = in.readLine();
-        if(line.isEmpty()){
-            continue;
-        }
-        QStringList fields = line.split(" ");
-        if(isValidNumberPair(fields)){
-            measurements.push_back(std::make_pair(fields.at(0), fields.at(1)));
-        } else {
-            QMessageBox::warning(0, "failed to load file", "invalid file format.");
-            file.close();
-            return;
-        }
-    }
-    file.close();
-
-    clear();
-    for(auto &pair : measurements){
-        appendRow(pair.first, pair.second);
-    }
+    TiXmlHandle hDoc(&doc);
+    auto calib = hDoc.FirstChildElement().Element();
+    loadFromXml(calib);
 }
 
 void CalibrationDataModel::saveToFile(QString _path) {
-    QFile file(_path);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(0, "failed to open file", file.errorString());
-    }
+    TiXmlDocument doc;
+    auto calib = serializeToXml();
+    doc.LinkEndChild( new TiXmlDeclaration( "1.0", "", "" ) );
+    doc.LinkEndChild(calib);
+    doc.SaveFile(_path.toUtf8().constData());
+}
 
-    QTextStream out(&file);
+std::string CalibrationDataModel::getUnitString() {
     switch(m_SelectedUnit){
         case Unit::mgHA_cm3:
-            out << QString::fromUtf8("mgHA/cm³");
-            break;
+            return "mgHA/cm³";
         case Unit::gHA_cm3:
-            out << QString::fromUtf8("gHA/cm³");
+            return "gHA/cm³";
     }
-    out << '\n';
+}
+
+TiXmlElement* CalibrationDataModel::serializeToXml() {
+    auto root = new TiXmlElement("Calibration");
+    root->SetAttribute("unit", getUnitString());
+
     for(auto &pair : m_Data){
-        out << pair.first << " " << pair.second << '\n';
+        auto entry = new TiXmlElement("DataPoint");
+        entry->SetDoubleAttribute("HU", pair.first);
+        entry->SetDoubleAttribute("rho", pair.second);
+        root->LinkEndChild(entry);
     }
-    file.close();
+
+    return root;
+}
+
+void CalibrationDataModel::loadFromXml(TiXmlElement *_root) {
+    std::string unit;
+    auto r = _root->QueryStringAttribute("unit", &unit);
+    if(r != TIXML_SUCCESS){
+        QMessageBox::warning(0, "invalid file", "Invalid file format: Could not read calibration unit.");
+    }
+    setUnit(QString::fromUtf8(unit.c_str()));
+
+    std::vector<std::pair<double, double>> measurements;
+    double valHu, valRho;
+    for(auto child = _root->FirstChildElement("DataPoint"); child; child = child->NextSiblingElement() ){
+        auto r0 = child->QueryDoubleAttribute("HU", &valHu);
+        auto r1 = child->QueryDoubleAttribute("rho", &valRho);
+        if (r0 == TIXML_SUCCESS && r1 == TIXML_SUCCESS){
+            measurements.push_back(std::make_pair(valHu, valRho));
+        } else {
+            QMessageBox::warning(0, "failed to load file", "invalid file format.");
+            return;
+        }
+    }
+
+    clear();
+    for(auto &pair : measurements){
+        appendRow(QString::number(pair.first), QString::number(pair.second));
+    }
 }
 
 bool CalibrationDataModel::isValidNumberPair(QStringList _stringlist) {

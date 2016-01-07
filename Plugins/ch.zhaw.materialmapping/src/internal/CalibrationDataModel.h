@@ -4,6 +4,8 @@
 #include <QStandardItemModel>
 #include <QString>
 
+#include <tinyxml.h>
+
 #include "BoneDensityParameters.h"
 
 class CalibrationDataModel : public QObject {
@@ -28,6 +30,7 @@ public:
     Unit getUnit(){
         return m_SelectedUnit;
     }
+    std::string getUnitString();
     bool hasExpectedValueRange();
 
     QAbstractItemModel *getQItemModel() const;
@@ -46,6 +49,8 @@ private:
     bool isValidNumberPair(QStringList);
     void readFromFile(QString);
     void saveToFile(QString);
+    TiXmlElement* serializeToXml();
+    void loadFromXml(TiXmlElement*);
 
     Unit m_SelectedUnit;
     std::unique_ptr <QStandardItemModel> m_ItemModel;
