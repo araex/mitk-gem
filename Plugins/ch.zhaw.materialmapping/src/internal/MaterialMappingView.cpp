@@ -204,7 +204,7 @@ void MaterialMappingView::saveParametersButtonClicked() {
 void MaterialMappingView::loadParametersButtonClicked() {
     auto filename = QFileDialog::getOpenFileName(0, tr("Open parameter file"), "", tr("parameter file (*.matmap)"));
     if(!filename.isNull()){
-        MITK_INFO << "loading parameter from file: " << filename.toUtf8().constData();
+        MITK_INFO << "loading parameters from file: " << filename.toUtf8().constData();
 
         TiXmlDocument doc(filename.toUtf8().constData());
         TiXmlHandle hDoc(&doc);
@@ -214,10 +214,15 @@ void MaterialMappingView::loadParametersButtonClicked() {
         };
         auto root = hDoc.FirstChildElement().Element();
         auto calibration = root->FirstChildElement("Calibration");
+        if(calibration){
+            MITK_INFO << "loading calibration...";
+            m_CalibrationDataModel.loadFromXml(calibration);
+        }
         auto powerlaws = root->FirstChildElement("PowerLaws");
-
-        m_CalibrationDataModel.loadFromXml(calibration);
-        m_PowerLawWidgetManager->loadFromXml(powerlaws);
+        if(powerlaws){
+            MITK_INFO << "loading power laws...";
+            m_PowerLawWidgetManager->loadFromXml(powerlaws);
+        }
     } else {
         MITK_INFO << "canceled file open dialog.";
     }
