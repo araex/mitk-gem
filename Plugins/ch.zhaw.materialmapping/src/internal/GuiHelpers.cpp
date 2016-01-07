@@ -105,3 +105,33 @@ void gui::loadDensityParametersFromXml(Ui::MaterialMappingViewControls &_control
         _controls.rhoAppDivisorSpinBox->setValue(d);
     }
 }
+
+TiXmlElement * gui::serializeOptionsToXml(Ui::MaterialMappingViewControls &_controls) {
+    auto root = new TiXmlElement("Options");
+    root->SetAttribute("doPeel", _controls.uParamCheckBox->isChecked());
+    root->SetAttribute("numberOfExtends", _controls.eParamSpinBox->value());
+    root->SetAttribute("minValue", _controls.fParamSpinBox->value());
+
+    return root;
+}
+
+void gui::loadOptionsFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *_root) {
+    bool b;
+    int i;
+    double d;
+
+    auto ret = _root->QueryBoolAttribute("doPeel", &b);
+    if(ret == TIXML_SUCCESS){
+        _controls.uParamCheckBox->setChecked(b);
+    }
+
+    ret = _root->QueryIntAttribute("numberOfExtends", &i);
+    if(ret == TIXML_SUCCESS){
+        _controls.eParamSpinBox->setValue(i);
+    }
+
+    ret = _root->QueryDoubleAttribute("minValue", &d);
+    if(ret == TIXML_SUCCESS){
+        _controls.fParamSpinBox->setValue(d);
+    }
+}

@@ -189,12 +189,15 @@ void MaterialMappingView::saveParametersButtonClicked() {
 
         TiXmlDocument doc;
         auto root = new TiXmlElement("MaterialMapping");
+        root->SetAttribute("Version", "2016.2");
         auto calibration = m_CalibrationDataModel.serializeToXml();
         auto bonedensity = gui::serializeDensityParametersToXml(m_Controls);
         auto powerlaws = m_PowerLawWidgetManager->serializeToXml();
+        auto options = gui::serializeOptionsToXml(m_Controls);
         root->LinkEndChild(calibration);
         root->LinkEndChild(bonedensity);
         root->LinkEndChild(powerlaws);
+        root->LinkEndChild(options);
 
         doc.LinkEndChild( new TiXmlDeclaration( "1.0", "utf-8", "" ) );
         doc.LinkEndChild(root);
@@ -230,6 +233,11 @@ void MaterialMappingView::loadParametersButtonClicked() {
         if(powerlaws){
             MITK_INFO << "loading power laws...";
             m_PowerLawWidgetManager->loadFromXml(powerlaws);
+        }
+        auto options = root->FirstChildElement("Options");
+        if(options){
+            MITK_INFO << "loading options...";
+            gui::loadOptionsFromXml(m_Controls, options);
         }
     } else {
         MITK_INFO << "canceled file open dialog.";
