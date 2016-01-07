@@ -1,5 +1,4 @@
 #include <string>
-#include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
 #include <mitkLogMacros.h>
@@ -105,26 +104,6 @@ QAbstractItemModel *CalibrationDataModel::getQItemModel() const {
     return m_ItemModel.get();
 }
 
-void CalibrationDataModel::openLoadFileDialog() {
-    auto filename = QFileDialog::getOpenFileName(0, tr("Open measurement file"), "", tr("measurement file (*.txt)"));
-    if(!filename.isNull()){
-        MITK_INFO << "loading measurments from file: " << filename.toUtf8().constData();
-        readFromFile(filename);
-    } else {
-        MITK_INFO << "canceled file open dialog.";
-    }
-}
-
-void CalibrationDataModel::openSaveFileDialog() {
-    auto filename = QFileDialog::getSaveFileName(0, tr("Save measurement file"), "", tr("measurement file (*.txt)"));
-    if(!filename.isNull()){
-        MITK_INFO << "saving measurments to file: " << filename.toUtf8().constData();
-        saveToFile(filename);
-    } else {
-        MITK_INFO << "canceled file save dialog.";
-    }
-}
-
 void CalibrationDataModel::clear() {
     m_ItemModel->removeRows(0, m_ItemModel->rowCount());
     m_Data.clear();
@@ -149,26 +128,6 @@ BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() {
     lsqr.minimize(x);
 
     return BoneDensityParameters::RhoCt(x[0], x[1]);
-}
-
-void CalibrationDataModel::readFromFile(QString _path) {
-    TiXmlDocument doc(_path.toUtf8().constData());
-    if (!doc.LoadFile()){
-        QMessageBox::warning(0, "failed to open file", "failed to open file");
-        return;
-    };
-
-    TiXmlHandle hDoc(&doc);
-    auto calib = hDoc.FirstChildElement().Element();
-    loadFromXml(calib);
-}
-
-void CalibrationDataModel::saveToFile(QString _path) {
-    TiXmlDocument doc;
-    auto calib = serializeToXml();
-    doc.LinkEndChild( new TiXmlDeclaration( "1.0", "", "" ) );
-    doc.LinkEndChild(calib);
-    doc.SaveFile(_path.toUtf8().constData());
 }
 
 std::string CalibrationDataModel::getUnitString() {

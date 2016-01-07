@@ -43,8 +43,6 @@ signals:
     void dataChanged();
 
 public slots:
-    void openLoadFileDialog();
-    void openSaveFileDialog();
     void itemChanged(QStandardItem*);
 
 private:

@@ -67,8 +67,6 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     m_PowerLawWidgetManager = std::unique_ptr<PowerLawWidgetManager>(new PowerLawWidgetManager(m_Controls.powerLawWidgets));
 
     // signals
-    connect( m_Controls.loadButton, SIGNAL(clicked()), &m_CalibrationDataModel, SLOT(openLoadFileDialog()) );
-    connect( m_Controls.saveButton, SIGNAL(clicked()), &m_CalibrationDataModel, SLOT(openSaveFileDialog()) );
     connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
     connect( m_Controls.saveParametersButton, SIGNAL(clicked()), this, SLOT(saveParametersButtonClicked()) );
     connect( m_Controls.loadParametersButton, SIGNAL(clicked()), this, SLOT(loadParametersButtonClicked()) );
