@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QShortcut>
 #include <mitkImage.h>
+#include <tinyxml.h>
 
 #include "MaterialMappingView.h"
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
@@ -189,8 +190,10 @@ void MaterialMappingView::saveParametersButtonClicked() {
         TiXmlDocument doc;
         auto root = new TiXmlElement("MaterialMapping");
         auto calibration = m_CalibrationDataModel.serializeToXml();
+        auto bonedensity = gui::serializeDensityParametersToXml(m_Controls);
         auto powerlaws = m_PowerLawWidgetManager->serializeToXml();
         root->LinkEndChild(calibration);
+        root->LinkEndChild(bonedensity);
         root->LinkEndChild(powerlaws);
 
         doc.LinkEndChild( new TiXmlDeclaration( "1.0", "", "" ) );
@@ -217,6 +220,11 @@ void MaterialMappingView::loadParametersButtonClicked() {
         if(calibration){
             MITK_INFO << "loading calibration...";
             m_CalibrationDataModel.loadFromXml(calibration);
+        }
+        auto bonedensity = root->FirstChildElement("BoneDensityParameters");
+        if(bonedensity){
+            MITK_INFO << "loading bone density parameters...";
+            gui::loadDensityParametersFromXml(m_Controls, bonedensity);
         }
         auto powerlaws = root->FirstChildElement("PowerLaws");
         if(powerlaws){

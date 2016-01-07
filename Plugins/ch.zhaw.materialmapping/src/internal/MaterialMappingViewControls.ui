@@ -1244,7 +1244,7 @@ QWidget {
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the entered calibration values to a .txt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Save</string>
+          <string>Save parameters</string>
          </property>
         </widget>
        </item>
@@ -1260,7 +1260,7 @@ QWidget {
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Load the calibration values from a .txt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Load</string>
+          <string>Load parameters</string>
          </property>
         </widget>
        </item>
