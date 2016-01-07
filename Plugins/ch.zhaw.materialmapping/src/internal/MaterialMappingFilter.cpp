@@ -14,6 +14,7 @@
 #include <vtkImageLogic.h>
 #include <vtkImageMathematics.h>
 #include <vtkImageConvolve.h>
+#include <vtkImageCast.h>
 
 
 #include "MaterialMappingFilter.h"
@@ -46,6 +47,13 @@ void MaterialMappingFilter::GenerateData() {
     auto vtkImage = vtkSmartPointer<vtkImageData>::New();
     vtkImage->ShallowCopy(importedVtkImage);
     vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
+
+    // we would not gain anything by handling integer type scalars individually, so it's easier to work with floats from the beginning
+    auto imageCast = vtkSmartPointer<vtkImageCast>::New();
+    imageCast->SetInputData(vtkImage);
+    imageCast->SetOutputScalarTypeToFloat();
+    imageCast->Update();
+    vtkImage = imageCast->GetOutput();
 
     auto surface = extractSurface(vtkInputGrid);
     auto voi = extractVOI(vtkImage, surface);
