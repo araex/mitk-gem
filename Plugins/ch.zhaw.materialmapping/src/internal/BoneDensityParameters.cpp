@@ -17,27 +17,27 @@ namespace BoneDensityParameters {
         return std::abs(a - b) < 0.0000001;
     }
 
-    bool operator==(const RhoCt& lhs, const RhoCt& rhs) {
+    bool operator==(const RhoCt& lhs, const RhoCt& rhs){
         return almostEqual(lhs.slope, rhs.slope) && almostEqual(lhs.offset, rhs.offset);
     }
 
-    bool operator==(const RhoAsh& lhs, const RhoAsh& rhs) {
+    bool operator==(const RhoAsh& lhs, const RhoAsh& rhs){
         return almostEqual(lhs.offset, rhs.offset) && almostEqual(lhs.divisor, rhs.divisor);
     }
 
-    bool operator==(const RhoApp& lhs, const RhoApp& rhs) {
+    bool operator==(const RhoApp& lhs, const RhoApp& rhs){
         return almostEqual(lhs.divisor, rhs.divisor);
     }
 
-    bool operator!=(const RhoCt& lhs, const RhoCt& rhs) {
+    bool operator!=(const RhoCt& lhs, const RhoCt& rhs){
         return !(lhs == rhs);
     }
 
-    bool operator!=(const RhoAsh& lhs, const RhoAsh& rhs) {
+    bool operator!=(const RhoAsh& lhs, const RhoAsh& rhs){
         return !(lhs == rhs);
     }
 
-    bool operator!=(const RhoApp& lhs, const RhoApp& rhs) {
+    bool operator!=(const RhoApp& lhs, const RhoApp& rhs){
         return !(lhs == rhs);
     }
 

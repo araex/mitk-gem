@@ -23,3 +23,15 @@ std::ostream& operator<<(std::ostream& _out, const BoneDensityFunctor& _f) {
     _out << _f.m_RhoApp << std::endl;
     return _out;
 }
+
+void BoneDensityFunctor::SetRhoCt(BoneDensityParameters::RhoCt _rhoCt) {
+    m_RhoCt = _rhoCt;
+}
+
+void BoneDensityFunctor::SetRhoAsh(BoneDensityParameters::RhoAsh _rhoAsh) {
+    m_RhoAsh = _rhoAsh;
+}
+
+void BoneDensityFunctor::SetRhoApp(BoneDensityParameters::RhoApp _rhoApp) {
+    m_RhoApp = _rhoApp;
+}

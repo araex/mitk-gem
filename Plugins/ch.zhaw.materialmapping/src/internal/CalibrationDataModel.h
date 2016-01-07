@@ -14,38 +14,60 @@ class CalibrationDataModel : public QObject {
     using TData = QList<std::pair<double, double>>;
 
 public:
+    /**
+     * Enum representing the unit of the entered bone density calibration values
+     */
     enum class Unit {
         mgHA_cm3 = 0,
         gHA_cm3 = 1
     };
 
     CalibrationDataModel();
+    int appendRow(double _ctVal, double _rhoVal);
+    void removeRow(int _index);
+    QAbstractItemModel *getQItemModel() const;
 
-    // manipulation
-    int appendRow(double, double);
-    int appendRow(QString, QString);
-    void removeRow(int);
+    /**
+     * Set the unit from a given string. Pops a warning box if the unit is not recognized.
+     */
     void setUnit(QString);
     void setUnit(Unit);
-    Unit getUnit(){
+    Unit getUnit() const{
         return m_SelectedUnit;
     }
-    std::string getUnitString();
-    bool hasExpectedValueRange();
+    std::string getUnitString() const;
 
-    QAbstractItemModel *getQItemModel() const;
-    BoneDensityParameters::RhoCt getFittedLine();
+    /**
+     * Performs a sanity check whether or not the currently entered values are within an expected range for the given unit
+     */
+    bool hasExpectedValueRange() const;
 
-    TiXmlElement* serializeToXml();
+    /**
+     * Returns a fitted curve for the currently entered calibration values using a least squares fitting
+     */
+    BoneDensityParameters::RhoCt getFittedLine() const;
+
+    /**
+     * Serializes current GUI state to XML
+     */
+    TiXmlElement* serializeToXml() const;
+
+    /**
+     * Load GUI state from XML
+     */
     void loadFromXml(TiXmlElement*);
 
 signals:
+    /**
+     * Table content changed
+     */
     void dataChanged();
 
 public slots:
     void itemChanged(QStandardItem*);
 
 private:
+    int appendRow(QString, QString);
     void clear();
     bool isValidNumberPair(QStringList);
     void readFromFile(QString);

@@ -110,7 +110,7 @@ void CalibrationDataModel::clear() {
     m_ItemModel->appendRow(new QStandardItem("")); // add empty row
 }
 
-BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() {
+BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() const {
     vnl_sparse_matrix<double> A(m_Data.size(), 2);
     vnl_vector<double> b(m_Data.size());
 
@@ -130,7 +130,7 @@ BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() {
     return BoneDensityParameters::RhoCt(x[0], x[1]);
 }
 
-std::string CalibrationDataModel::getUnitString() {
+std::string CalibrationDataModel::getUnitString() const {
     switch(m_SelectedUnit){
         case Unit::mgHA_cm3:
             return "mgHA/cm³";
@@ -139,7 +139,7 @@ std::string CalibrationDataModel::getUnitString() {
     }
 }
 
-TiXmlElement* CalibrationDataModel::serializeToXml() {
+TiXmlElement* CalibrationDataModel::serializeToXml() const {
     auto root = new TiXmlElement("Calibration");
     root->SetAttribute("unit", getUnitString());
 
@@ -194,7 +194,7 @@ bool CalibrationDataModel::isValidNumberPair(QStringList _stringlist) {
     return isNumber;
 }
 
-bool CalibrationDataModel::hasExpectedValueRange() {
+bool CalibrationDataModel::hasExpectedValueRange() const {
     if(m_ItemModel->rowCount() <= 2){ // need more than 1 entry
         return true;
     }
