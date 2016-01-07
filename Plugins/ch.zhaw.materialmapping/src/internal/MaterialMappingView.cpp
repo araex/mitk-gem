@@ -4,6 +4,7 @@
 #include <berryISelectionService.h>
 #include <berryIWorkbenchWindow.h>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QShortcut>
 #include <mitkImage.h>
 
@@ -69,6 +70,8 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     connect( m_Controls.loadButton, SIGNAL(clicked()), &m_CalibrationDataModel, SLOT(openLoadFileDialog()) );
     connect( m_Controls.saveButton, SIGNAL(clicked()), &m_CalibrationDataModel, SLOT(openSaveFileDialog()) );
     connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
+    connect( m_Controls.saveParametersButton, SIGNAL(clicked()), this, SLOT(saveParametersButtonClicked()) );
+    connect( m_Controls.loadParametersButton, SIGNAL(clicked()), this, SLOT(loadParametersButtonClicked()) );
     connect( &m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()) );
     connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(addPowerLaw()) );
     connect( m_Controls.removePowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(removePowerLaw()) );
@@ -178,4 +181,46 @@ void MaterialMappingView::compareGrids() {
     mitk::UnstructuredGrid::Pointer u0 = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode0->GetData());
     mitk::UnstructuredGrid::Pointer u1 = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode1->GetData());
     m_TestRunner->compareGrids(u0, u1);
+}
+
+void MaterialMappingView::saveParametersButtonClicked() {
+    auto filename = QFileDialog::getSaveFileName(0, tr("Save parameter file"), "", tr("parameter file (*.matmap)"));
+    if(!filename.isNull()){
+        MITK_INFO << "saving parameters to file: " << filename.toUtf8().constData();
+
+        TiXmlDocument doc;
+        auto root = new TiXmlElement("MaterialMapping");
+        auto calibration = m_CalibrationDataModel.serializeToXml();
+        auto powerlaws = m_PowerLawWidgetManager->serializeToXml();
+        root->LinkEndChild(calibration);
+        root->LinkEndChild(powerlaws);
+
+        doc.LinkEndChild( new TiXmlDeclaration( "1.0", "", "" ) );
+        doc.LinkEndChild(root);
+        doc.SaveFile(filename.toUtf8().constData());
+    } else {
+        MITK_INFO << "canceled file save dialog.";
+    }
+}
+
+void MaterialMappingView::loadParametersButtonClicked() {
+    auto filename = QFileDialog::getOpenFileName(0, tr("Open parameter file"), "", tr("parameter file (*.matmap)"));
+    if(!filename.isNull()){
+        MITK_INFO << "loading parameter from file: " << filename.toUtf8().constData();
+
+        TiXmlDocument doc(filename.toUtf8().constData());
+        TiXmlHandle hDoc(&doc);
+        if (!doc.LoadFile()){
+            QMessageBox::warning(0, "", "could not read from file.");
+            return;
+        };
+        auto root = hDoc.FirstChildElement().Element();
+        auto calibration = root->FirstChildElement("Calibration");
+        auto powerlaws = root->FirstChildElement("PowerLaws");
+
+        m_CalibrationDataModel.loadFromXml(calibration);
+        m_PowerLawWidgetManager->loadFromXml(powerlaws);
+    } else {
+        MITK_INFO << "canceled file open dialog.";
+    }
 }

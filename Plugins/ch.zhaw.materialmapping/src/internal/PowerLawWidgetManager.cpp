@@ -1,5 +1,7 @@
 #include "PowerLawWidgetManager.h"
 
+#include <QMessageBox>
+
 PowerLawWidgetManager::PowerLawWidgetManager(QWidget *_parent) : m_Parent(_parent) {
     // defaults from paper
     addPowerLaw();
@@ -78,4 +80,58 @@ PowerLawWidget* PowerLawWidgetManager::getWidget(size_t _idx) {
 
 size_t PowerLawWidgetManager::getNumberOfWidgets() {
     return m_Widgets.size();
+}
+
+TiXmlElement * PowerLawWidgetManager::serializeToXml() {
+    auto root = new TiXmlElement("PowerLaws");
+
+    for(auto &widget : m_Widgets){
+        auto params = widget->getPowerLawParameters();
+        auto law = new TiXmlElement("PowerLawParameters");
+        law->SetDoubleAttribute("factor", params.factor);
+        law->SetDoubleAttribute("exponent", params.exponent);
+        law->SetDoubleAttribute("offset", params.offset);
+        law->SetDoubleAttribute("rangeMin", widget->getMin());
+        law->SetDoubleAttribute("rangeMax", widget->getMax());
+        root->LinkEndChild(law);
+    }
+
+    return root;
+}
+
+void PowerLawWidgetManager::loadFromXml(TiXmlElement *_root) {
+    std::vector<PowerLawWidget *> widgets;
+
+    double valFactor, valExponent, valOffset, valMin, valMax;
+    for(auto child = _root->FirstChildElement("PowerLawParameters"); child; child = child->NextSiblingElement() ){
+        auto r0 = child->QueryDoubleAttribute("factor", &valFactor);
+        auto r1 = child->QueryDoubleAttribute("exponent", &valExponent);
+        auto r2 = child->QueryDoubleAttribute("offset", &valOffset);
+        auto r3 = child->QueryDoubleAttribute("rangeMin", &valMin);
+        auto r4 = child->QueryDoubleAttribute("rangeMax", &valMax);
+
+        if (r0 == TIXML_SUCCESS && r1 == TIXML_SUCCESS && r2 == TIXML_SUCCESS && r3 == TIXML_SUCCESS && r4 == TIXML_SUCCESS){
+            auto w = new PowerLawWidget();
+            w->m_Factor->setValue(valFactor);
+            w->m_Exponent->setValue(valExponent);
+            w->m_Offset->setValue(valOffset);
+            w->setMin(valMin);
+            w->setMax(valMax);
+            widgets.push_back(w);
+        } else {
+            QMessageBox::warning(0, "failed to load power laws", "could not load power laws: invalid file structure.");
+            return;
+        }
+    }
+
+    setPowerLawWidgets(widgets);
+}
+
+void PowerLawWidgetManager::setPowerLawWidgets(std::vector<PowerLawWidget *> _widgets) {
+    while(removePowerLaw()); // clear
+    for(auto &widget : _widgets){
+        m_Parent->layout()->addWidget(widget);
+        m_Widgets.push_back(widget);
+        updateConnections();
+    }
 }

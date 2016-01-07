@@ -36,6 +36,9 @@ public:
     QAbstractItemModel *getQItemModel() const;
     BoneDensityParameters::RhoCt getFittedLine();
 
+    TiXmlElement* serializeToXml();
+    void loadFromXml(TiXmlElement*);
+
 signals:
     void dataChanged();
 
@@ -49,8 +52,6 @@ private:
     bool isValidNumberPair(QStringList);
     void readFromFile(QString);
     void saveToFile(QString);
-    TiXmlElement* serializeToXml();
-    void loadFromXml(TiXmlElement*);
 
     Unit m_SelectedUnit;
     std::unique_ptr <QStandardItemModel> m_ItemModel;
