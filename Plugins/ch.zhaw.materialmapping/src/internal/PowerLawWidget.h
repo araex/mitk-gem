@@ -43,8 +43,10 @@ public:
      */
     void connect(PowerLawWidget *_other);
 
-    /**
-     * TODO: these should be private
-     */
+    void setFactor(double);
+    void setExponent(double);
+    void setOffset(double);
+
+private:
     QDoubleSpinBox *m_Factor, *m_Exponent, *m_Offset, *m_Min, *m_Max;
 };

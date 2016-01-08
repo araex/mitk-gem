@@ -117,3 +117,15 @@ void PowerLawWidget::connect(PowerLawWidget *_other) {
     QWidget::connect(m_Max, SIGNAL(valueChanged(double)), _other->m_Min, SLOT(setValue(double)));
     QWidget::connect(_other->m_Min, SIGNAL(valueChanged(double)), m_Max, SLOT(setValue(double)));
 }
+
+void PowerLawWidget::setFactor(double _d) {
+    m_Factor->setValue(_d);
+}
+
+void PowerLawWidget::setExponent(double _d) {
+    m_Exponent->setValue(_d);
+}
+
+void PowerLawWidget::setOffset(double _d) {
+    m_Offset->setValue(_d);
+}

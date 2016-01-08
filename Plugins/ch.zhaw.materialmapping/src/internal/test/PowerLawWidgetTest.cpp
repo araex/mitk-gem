@@ -5,13 +5,13 @@
 
 TEST_CASE("PowerLawWidget"){
     PowerLawWidget w0, w1;
-    w0.m_Factor->setValue(1);
-    w0.m_Exponent->setValue(2);
-    w0.m_Offset->setValue(3);
+    w0.setFactor(1);
+    w0.setExponent(2);
+    w0.setOffset(3);
 
-    w1.m_Factor->setValue(4);
-    w1.m_Exponent->setValue(5);
-    w1.m_Offset->setValue(6);
+    w1.setFactor(4);
+    w1.setExponent(5);
+    w1.setOffset(6);
 
     SECTION("constructing parameters from gui"){
         PowerLawParameters expectedP0(1,2,3);

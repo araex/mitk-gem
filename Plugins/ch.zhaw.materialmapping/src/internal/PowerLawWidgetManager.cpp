@@ -7,8 +7,8 @@ PowerLawWidgetManager::PowerLawWidgetManager(QWidget *_parent) : m_Parent(_paren
     addPowerLaw();
     auto w1 = addPowerLaw();
     w1->setMin(0);
-    w1->m_Factor->setValue(6850);
-    w1->m_Exponent->setValue(1.49);
+    w1->setFactor(6850);
+    w1->setExponent(1.49);
 }
 
 PowerLawWidget *PowerLawWidgetManager::addPowerLaw() {
@@ -113,9 +113,9 @@ void PowerLawWidgetManager::loadFromXml(TiXmlElement *_root) {
         if (r0 == TIXML_SUCCESS && r1 == TIXML_SUCCESS && r2 == TIXML_SUCCESS && r3 == TIXML_SUCCESS &&
             r4 == TIXML_SUCCESS) {
             auto w = new PowerLawWidget();
-            w->m_Factor->setValue(valFactor);
-            w->m_Exponent->setValue(valExponent);
-            w->m_Offset->setValue(valOffset);
+            w->setFactor(valFactor);
+            w->setExponent(valExponent);
+            w->setOffset(valOffset);
             w->setMin(valMin);
             w->setMax(valMax);
             widgets.push_back(w);
