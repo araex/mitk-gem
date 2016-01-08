@@ -119,7 +119,7 @@ TEST_CASE("BoneDensityGui"){
         dataModel.setUnit(CalibrationDataModel::Unit::gHA_cm3);
         dataModel.appendRow(0, 10);
         dataModel.appendRow(-5, 0);
-        auto createdFunctor = gui::createDensityFunctorFromGui(*gui, dataModel);
+        auto createdFunctor = gui::createDensityFunctor(*gui, dataModel);
         REQUIRE(createdFunctor == functor);
     }
 }

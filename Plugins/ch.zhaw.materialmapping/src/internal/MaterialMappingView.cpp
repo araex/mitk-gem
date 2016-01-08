@@ -108,7 +108,7 @@ void MaterialMappingView::startButtonClicked() {
         auto filter = MaterialMappingFilter::New();
         filter->SetInput(ugrid);
         filter->SetIntensityImage(image);
-        filter->SetDensityFunctor(gui::createDensityFunctorFromGui(m_Controls, m_CalibrationDataModel));
+        filter->SetDensityFunctor(gui::createDensityFunctor(m_Controls, m_CalibrationDataModel));
         filter->SetPowerLawFunctor(m_PowerLawWidgetManager->createFunctor());
         filter->SetDoPeelStep(m_Controls.uParamCheckBox->isChecked());
         filter->SetNumberOfExtendImageSteps(m_Controls.eParamSpinBox->value());
@@ -151,8 +151,8 @@ bool MaterialMappingView::isValidSelection() {
     mitk::DataNode *ugridNode = m_Controls.unstructuredGridComboBox->GetSelectedNode();
 
     // set the mandatory field based on whether or not the nodes are NULL
-    gui::setMandatoryField(m_Controls.greyscaleSelector, (imageNode == nullptr));
-    gui::setMandatoryField(m_Controls.meshSelector, (ugridNode == nullptr));
+    gui::setMandatoryQSSField(m_Controls.greyscaleSelector, (imageNode == nullptr));
+    gui::setMandatoryQSSField(m_Controls.meshSelector, (ugridNode == nullptr));
 
     if (imageNode && ugridNode) {
         mitk::Image::Pointer image = dynamic_cast<mitk::Image *>(imageNode->GetData());
@@ -192,9 +192,9 @@ void MaterialMappingView::saveParametersButtonClicked() {
         auto root = new TiXmlElement("MaterialMapping");
         root->SetAttribute("Version", "2016.2");
         auto calibration = m_CalibrationDataModel.serializeToXml();
-        auto bonedensity = gui::serializeDensityParametersToXml(m_Controls);
+        auto bonedensity = gui::serializeDensityGroupStateToXml(m_Controls);
         auto powerlaws = m_PowerLawWidgetManager->serializeToXml();
-        auto options = gui::serializeOptionsToXml(m_Controls);
+        auto options = gui::serializeOptionsGroupStateToXml(m_Controls);
         root->LinkEndChild(calibration);
         root->LinkEndChild(bonedensity);
         root->LinkEndChild(powerlaws);
@@ -228,7 +228,7 @@ void MaterialMappingView::loadParametersButtonClicked() {
         auto bonedensity = root->FirstChildElement("BoneDensityParameters");
         if (bonedensity) {
             MITK_INFO << "loading bone density parameters...";
-            gui::loadDensityParametersFromXml(m_Controls, bonedensity);
+            gui::loadDensityGroupStateFromXml(m_Controls, bonedensity);
         }
         auto powerlaws = root->FirstChildElement("PowerLaws");
         if (powerlaws) {
@@ -238,7 +238,7 @@ void MaterialMappingView::loadParametersButtonClicked() {
         auto options = root->FirstChildElement("Options");
         if (options) {
             MITK_INFO << "loading options...";
-            gui::loadOptionsFromXml(m_Controls, options);
+            gui::loadOptionsGroupStateFromXml(m_Controls, options);
         }
     } else {
         MITK_INFO << "canceled file open dialog.";

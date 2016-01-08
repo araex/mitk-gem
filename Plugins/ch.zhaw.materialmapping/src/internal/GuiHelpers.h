@@ -9,38 +9,45 @@
 #include "CalibrationDataModel.h"
 
 /**
- * Utility functions to work with the GUI fields
+ * Utility functions to work with the gui components that are not self managed.
+ *
+ *      --- CalibrationDataModel  ---
+ *     |                             |
+ *     |        self managed         |
+ *     |                             |
+ *      ---  Bone density group   ---
+ *     |                             |
+ *     |   *managed via GuiHelper*   |
+ *     |                             |
+ *      --- PowerLawWidgetManager ---
+ *     |                             |
+ *     |        self managed         |
+ *     |                             |
+ *      ---     Options group     ---
+ *     |                             |
+ *     |   *managed via GuiHelper*   |
+ *     |                             |
+ *      -----------------------------
+ *     | save params |  load params  |
+ *      -----------------------------
  */
 namespace gui {
-    // TODO: naming of the functions in here is terrible, refactor
-
     /**
      * Gathers all field data needed for the rho calculation and creates a functor with them
      */
-    BoneDensityFunctor createDensityFunctorFromGui(Ui::MaterialMappingViewControls &_controls, CalibrationDataModel &_dataModel);
+    BoneDensityFunctor createDensityFunctor(Ui::MaterialMappingViewControls &_controls, CalibrationDataModel &_dataModel);
+
+    // XML (de-)serialization
+    TiXmlElement* serializeDensityGroupStateToXml(Ui::MaterialMappingViewControls &_controls);
+    void loadDensityGroupStateFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *);
+    TiXmlElement* serializeOptionsGroupStateToXml(Ui::MaterialMappingViewControls &_controls);
+    void loadOptionsGroupStateFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *);
 
     /**
-     * Returns a XML representation of the current bone density GUI group state
+     * Convenience functions to highlight QWidgets with predefined background-colors
      */
-    TiXmlElement* serializeDensityParametersToXml(Ui::MaterialMappingViewControls &_controls);
-
-    /**
-     * Load a bone density GUI group GUI state from XML
-     */
-    void loadDensityParametersFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *);
-
-    /**
-     * Returns a XML representation of the options GUI group state
-     */
-    TiXmlElement* serializeOptionsToXml(Ui::MaterialMappingViewControls &_controls);
-
-    /**
-     * Load a options GUI group state from XML
-     */
-    void loadOptionsFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *);
-
-    void setQStyleSheetField(QWidget *widget, const char *fieldName, bool bEnabled);
-    void setMandatoryField(QWidget *widget, bool bEnabled);
-    void setWarningField(QWidget *widget, bool bEnabled);
-    void setErrorField(QWidget *widget, bool bEnabled);
+    void setMandatoryQSSField(QWidget *widget, bool bEnabled);
+    void setWarningQSSField(QWidget *widget, bool bEnabled);
+    void setErrorQSSField(QWidget *widget, bool bEnabled);
+    void setNamedQSSField(QWidget *widget, const char *fieldName, bool bEnabled);
 }

@@ -1,7 +1,6 @@
 #include "GuiHelpers.h"
 
-BoneDensityFunctor gui::createDensityFunctorFromGui(Ui::MaterialMappingViewControls &_controls,
-                                                    CalibrationDataModel &_dataModel) {
+BoneDensityFunctor gui::createDensityFunctor(Ui::MaterialMappingViewControls &_controls, CalibrationDataModel &_dataModel) {
     BoneDensityFunctor ret;
     ret.SetRhoCt(_dataModel.getFittedLine());
 
@@ -20,26 +19,26 @@ BoneDensityFunctor gui::createDensityFunctorFromGui(Ui::MaterialMappingViewContr
     return ret;
 }
 
-void gui::setQStyleSheetField(QWidget *widget, const char *fieldName, bool bEnabled) {
+void gui::setNamedQSSField(QWidget *widget, const char *fieldName, bool bEnabled) {
     widget->setProperty(fieldName, bEnabled);
     widget->style()->unpolish(widget); // need to do this since we changed the stylesheet
     widget->style()->polish(widget);
     widget->update();
 }
 
-void gui::setMandatoryField(QWidget *widget, bool bEnabled) {
-    setQStyleSheetField(widget, "mandatoryField", bEnabled);
+void gui::setMandatoryQSSField(QWidget *widget, bool bEnabled) {
+    setNamedQSSField(widget, "mandatoryField", bEnabled);
 }
 
-void gui::setWarningField(QWidget *widget, bool bEnabled) {
-    setQStyleSheetField(widget, "warningField", bEnabled);
+void gui::setWarningQSSField(QWidget *widget, bool bEnabled) {
+    setNamedQSSField(widget, "warningField", bEnabled);
 }
 
-void gui::setErrorField(QWidget *widget, bool bEnabled) {
-    setQStyleSheetField(widget, "errorField", bEnabled);
+void gui::setErrorQSSField(QWidget *widget, bool bEnabled) {
+    setNamedQSSField(widget, "errorField", bEnabled);
 }
 
-TiXmlElement *gui::serializeDensityParametersToXml(Ui::MaterialMappingViewControls &_controls) {
+TiXmlElement *gui::serializeDensityGroupStateToXml(Ui::MaterialMappingViewControls &_controls) {
     auto root = new TiXmlElement("BoneDensityParameters");
 
     auto rhoCt = new TiXmlElement("RhoCT");
@@ -63,7 +62,7 @@ TiXmlElement *gui::serializeDensityParametersToXml(Ui::MaterialMappingViewContro
     return root;
 }
 
-void gui::loadDensityParametersFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *_root) {
+void gui::loadDensityGroupStateFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *_root) {
     bool b;
     double d;
     int ret;
@@ -107,7 +106,7 @@ void gui::loadDensityParametersFromXml(Ui::MaterialMappingViewControls &_control
     }
 }
 
-TiXmlElement *gui::serializeOptionsToXml(Ui::MaterialMappingViewControls &_controls) {
+TiXmlElement *gui::serializeOptionsGroupStateToXml(Ui::MaterialMappingViewControls &_controls) {
     auto root = new TiXmlElement("Options");
     root->SetAttribute("doPeel", _controls.uParamCheckBox->isChecked());
     root->SetAttribute("numberOfExtends", _controls.eParamSpinBox->value());
@@ -116,7 +115,7 @@ TiXmlElement *gui::serializeOptionsToXml(Ui::MaterialMappingViewControls &_contr
     return root;
 }
 
-void gui::loadOptionsFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *_root) {
+void gui::loadOptionsGroupStateFromXml(Ui::MaterialMappingViewControls &_controls, TiXmlElement *_root) {
     bool b;
     int i;
     double d;
