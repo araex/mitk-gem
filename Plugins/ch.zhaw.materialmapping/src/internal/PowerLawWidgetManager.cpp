@@ -129,7 +129,16 @@ void PowerLawWidgetManager::loadFromXml(TiXmlElement *_root) {
 }
 
 void PowerLawWidgetManager::setPowerLawWidgets(std::vector < PowerLawWidget * > _widgets) {
+    // TODO: ugly code, refactor
     while (removePowerLaw()); // clear
+
+    // there's still one left
+    auto widget = m_Widgets.back();
+    m_Parent->layout()->removeWidget(widget);
+    m_Widgets.pop_back();
+    delete widget;
+
+    // add new ones
     for (auto &widget : _widgets) {
         m_Parent->layout()->addWidget(widget);
         m_Widgets.push_back(widget);
