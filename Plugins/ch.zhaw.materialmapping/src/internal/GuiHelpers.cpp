@@ -2,7 +2,14 @@
 
 BoneDensityFunctor gui::createDensityFunctor(Ui::MaterialMappingViewControls &_controls, CalibrationDataModel &_dataModel) {
     BoneDensityFunctor ret;
-    ret.SetRhoCt(_dataModel.getFittedLine());
+    if(_controls.automaticFitCheckBox->isChecked()){
+        ret.SetRhoCt(_dataModel.getFittedLine());
+    } else {
+        auto rhoCt_slope = _controls.linEQSlopeSpinBox->value();
+        auto rhoCt_offset = _controls.linEQOffsetSpinBox->value();
+        BoneDensityParameters::RhoCt rhoCt(rhoCt_slope, rhoCt_offset);
+        ret.SetRhoCt(rhoCt);
+    }
 
     if (_controls.rhoAshCheckBox->isChecked()) {
         auto rhoAsh_offset = _controls.rhoAshOffsetSpinBox->value();
