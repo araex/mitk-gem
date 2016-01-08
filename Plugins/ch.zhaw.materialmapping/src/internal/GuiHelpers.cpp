@@ -43,17 +43,17 @@ TiXmlElement *gui::serializeDensityGroupStateToXml(Ui::MaterialMappingViewContro
 
     auto rhoCt = new TiXmlElement("RhoCT");
     rhoCt->SetAttribute("AutomaticFit", _controls.automaticFitCheckBox->isChecked());
-    rhoCt->SetAttribute("slope", _controls.linEQSlopeSpinBox->value());
-    rhoCt->SetAttribute("offset", _controls.linEQOffsetSpinBox->value());
+    rhoCt->SetDoubleAttribute("slope", _controls.linEQSlopeSpinBox->value());
+    rhoCt->SetDoubleAttribute("offset", _controls.linEQOffsetSpinBox->value());
 
     auto rhoAsh = new TiXmlElement("RhoAsh");
     rhoAsh->SetAttribute("enabled", _controls.rhoAshCheckBox->isChecked());
-    rhoAsh->SetAttribute("offset", _controls.rhoAshOffsetSpinBox->value());
-    rhoAsh->SetAttribute("divisor", _controls.rhoAshDivisorSpinBox->value());
+    rhoAsh->SetDoubleAttribute("offset", _controls.rhoAshOffsetSpinBox->value());
+    rhoAsh->SetDoubleAttribute("divisor", _controls.rhoAshDivisorSpinBox->value());
 
     auto rhoApp = new TiXmlElement("RhoApp");
     rhoApp->SetAttribute("enabled", _controls.rhoAppCheckBox->isChecked());
-    rhoApp->SetAttribute("divisor", _controls.rhoAppDivisorSpinBox->value());
+    rhoApp->SetDoubleAttribute("divisor", _controls.rhoAppDivisorSpinBox->value());
 
     root->LinkEndChild(rhoCt);
     root->LinkEndChild(rhoAsh);

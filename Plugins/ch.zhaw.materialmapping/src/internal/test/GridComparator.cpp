@@ -113,7 +113,7 @@ void GridComparator::compareArrayData(vtkDataArray *_a0, vtkDataArray *_a1, std:
         *out << _prefix << " #:      " << numberOfErrors << std::endl;
         *out << _prefix << " mean:   " << Testing::getMean(diff) << std::endl;
         *out << _prefix << " median: " << Testing::getMedian(diff) << std::endl;
-        *out << _prefix << " stddev: " << Testing::getStdDev(diff) < std::endl;
+        *out << _prefix << " stddev: " << Testing::getStdDev(diff) << std::endl;
         *out << _prefix << " min:    " << Testing::getMin(diff) << std::endl;
         *out << _prefix << " max:    " << Testing::getMax(diff) << std::endl;
     }
