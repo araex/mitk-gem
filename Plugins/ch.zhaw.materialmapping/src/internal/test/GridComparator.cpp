@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vtkCellData.h>
 #include <vtkPointData.h>
+#include "Statistics.h"
 
 using namespace std;
 
@@ -89,33 +90,32 @@ void GridComparator::compareArrayData(vtkDataArray *_a0, vtkDataArray *_a1, std:
     auto ncomp = _a0->GetNumberOfComponents();
     auto ntup = _a1->GetNumberOfTuples();
     double a0_buf[ncomp], a1_buf[ncomp];
+    std::vector<double> diff;
     for(auto j = 0; j<ntup; ++j){
         _a0->GetTuple(j, a0_buf);
         _a1->GetTuple(j, a1_buf);
 
-        bool isEqual = true;
         for(auto k = 0; k < ncomp; ++k){
-            if(a0_buf[k] != a1_buf[k]){
-                isEqual = false;
-            }
-        }
-
-        if(!isEqual){
-            *out << _prefix << " FAIL: tuple (id '" << j << "'): \t'";
-            printBuf(a0_buf, ncomp);
-            *out << "\t != \t";
-            printBuf(a1_buf, ncomp);
-            *out << std::endl;
-
-            if(++numberOfErrors >= 20){
-                *out << _prefix << " ERROR: too many fails, skipping cell..." << std::endl;
-                return;
+            double v0 = a0_buf[k];
+            double v1 = a1_buf[k];
+            auto d = std::abs(v0 - v1);
+            if(d > 0.00001){
+                diff.push_back(std::abs(d));
+                ++numberOfErrors;
             }
         }
     }
 
     if(numberOfErrors == 0){
         *out << _prefix << " PASS: same data." << std::endl;
+    } else {
+        *out << _prefix << " FAIL: values differ too much" << std::endl;
+        *out << _prefix << " #:      " << numberOfErrors << std::endl;
+        *out << _prefix << " mean:   " << Testing::getMean(diff) << std::endl;
+        *out << _prefix << " median: " << Testing::getMedian(diff) << std::endl;
+        *out << _prefix << " stddev: " << Testing::getStdDev(diff) < std::endl;
+        *out << _prefix << " min:    " << Testing::getMin(diff) << std::endl;
+        *out << _prefix << " max:    " << Testing::getMax(diff) << std::endl;
     }
 }
 

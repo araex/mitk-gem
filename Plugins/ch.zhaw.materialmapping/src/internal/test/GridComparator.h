@@ -3,6 +3,7 @@
 
 #include <vtkSmartPointer.h>
 #include <vtkUnstructuredGrid.h>
+#include <cmath>
 
 class GridComparator {
 public:
@@ -17,4 +18,8 @@ private:
     void printBuf(double *, int);
     UgridPtr u0, u1;
     std::stringstream *out;
+
+    bool almostEqual(double a, double b) {
+        return std::abs(a - b) < 0.0001;
+    }
 };
