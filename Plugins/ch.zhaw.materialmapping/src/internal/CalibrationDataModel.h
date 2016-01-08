@@ -8,6 +8,9 @@
 
 #include "BoneDensityParameters.h"
 
+/**
+ * Wrapper for a Qt ItemModel representing the calibration table
+ */
 class CalibrationDataModel : public QObject {
     Q_OBJECT
 
@@ -32,10 +35,10 @@ public:
      */
     void setUnit(QString);
     void setUnit(Unit);
-    Unit getUnit() const{
+    std::string getUnitString() const;
+    Unit getUnit() const {
         return m_SelectedUnit;
     }
-    std::string getUnitString() const;
 
     /**
      * Performs a sanity check whether or not the currently entered values are within an expected range for the given unit
@@ -55,7 +58,7 @@ public:
     /**
      * Load GUI state from XML
      */
-    void loadFromXml(TiXmlElement*);
+    void loadFromXml(TiXmlElement *);
 
 signals:
     /**
@@ -64,7 +67,7 @@ signals:
     void dataChanged();
 
 public slots:
-    void itemChanged(QStandardItem*);
+    void itemChanged(QStandardItem *);
 
 private:
     int appendRow(QString, QString);

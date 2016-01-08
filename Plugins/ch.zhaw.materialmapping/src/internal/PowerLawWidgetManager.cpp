@@ -11,7 +11,7 @@ PowerLawWidgetManager::PowerLawWidgetManager(QWidget *_parent) : m_Parent(_paren
     w1->m_Exponent->setValue(1.49);
 }
 
-PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
+PowerLawWidget *PowerLawWidgetManager::addPowerLaw() {
     auto widget = new PowerLawWidget;
     m_Parent->layout()->addWidget(widget);
     m_Widgets.push_back(widget);
@@ -20,7 +20,7 @@ PowerLawWidget* PowerLawWidgetManager::addPowerLaw() {
 }
 
 bool PowerLawWidgetManager::removePowerLaw() {
-    if(m_Widgets.size() > 1){
+    if (m_Widgets.size() > 1) {
         auto widget = m_Widgets.back();
         m_Parent->layout()->removeWidget(widget);
         m_Widgets.pop_back();
@@ -32,14 +32,14 @@ bool PowerLawWidgetManager::removePowerLaw() {
 }
 
 void PowerLawWidgetManager::updateConnections() {
-    if(m_Widgets.size() == 0){
+    if (m_Widgets.size() == 0) {
         return;
     }
 
     auto first = *(m_Widgets.cbegin());
     auto last = *(m_Widgets.cend() - 1);
 
-    if(m_Widgets.size() == 1){
+    if (m_Widgets.size() == 1) {
         first->lockMin(true);
         first->lockMax(true);
     } else if (m_Widgets.size() == 2) {
@@ -51,8 +51,8 @@ void PowerLawWidgetManager::updateConnections() {
     } else {
         auto previousLast = *(m_Widgets.cend() - 2);
         auto min = previousLast->getMin();
-        previousLast->setMax(min+1);
-        last->setMin(min+1);
+        previousLast->setMax(min + 1);
+        last->setMin(min + 1);
         last->lockMax(true);
         previousLast->connect(last);
     }
@@ -60,7 +60,7 @@ void PowerLawWidgetManager::updateConnections() {
 
 PowerLawFunctor PowerLawWidgetManager::createFunctor() {
     PowerLawFunctor ret;
-    for(const auto& widget : m_Widgets){
+    for (const auto &widget : m_Widgets) {
         auto upperBound = widget->getMax();
 
         // "max" is implemented as SpinBox::setSpecialValueTex, so we need to convert it back
@@ -71,8 +71,8 @@ PowerLawFunctor PowerLawWidgetManager::createFunctor() {
     return ret;
 }
 
-PowerLawWidget* PowerLawWidgetManager::getWidget(size_t _idx) {
-    if(m_Widgets.size() <= _idx){
+PowerLawWidget *PowerLawWidgetManager::getWidget(size_t _idx) {
+    if (m_Widgets.size() <= _idx) {
         return nullptr;
     }
     return m_Widgets[_idx];
@@ -82,10 +82,10 @@ size_t PowerLawWidgetManager::getNumberOfWidgets() {
     return m_Widgets.size();
 }
 
-TiXmlElement * PowerLawWidgetManager::serializeToXml() {
+TiXmlElement *PowerLawWidgetManager::serializeToXml() {
     auto root = new TiXmlElement("PowerLaws");
 
-    for(auto &widget : m_Widgets){
+    for (auto &widget : m_Widgets) {
         auto params = widget->getPowerLawParameters();
         auto law = new TiXmlElement("PowerLawParameters");
         law->SetDoubleAttribute("factor", params.factor);
@@ -100,17 +100,18 @@ TiXmlElement * PowerLawWidgetManager::serializeToXml() {
 }
 
 void PowerLawWidgetManager::loadFromXml(TiXmlElement *_root) {
-    std::vector<PowerLawWidget *> widgets;
+    std::vector < PowerLawWidget * > widgets;
 
     double valFactor, valExponent, valOffset, valMin, valMax;
-    for(auto child = _root->FirstChildElement("PowerLawParameters"); child; child = child->NextSiblingElement() ){
+    for (auto child = _root->FirstChildElement("PowerLawParameters"); child; child = child->NextSiblingElement()) {
         auto r0 = child->QueryDoubleAttribute("factor", &valFactor);
         auto r1 = child->QueryDoubleAttribute("exponent", &valExponent);
         auto r2 = child->QueryDoubleAttribute("offset", &valOffset);
         auto r3 = child->QueryDoubleAttribute("rangeMin", &valMin);
         auto r4 = child->QueryDoubleAttribute("rangeMax", &valMax);
 
-        if (r0 == TIXML_SUCCESS && r1 == TIXML_SUCCESS && r2 == TIXML_SUCCESS && r3 == TIXML_SUCCESS && r4 == TIXML_SUCCESS){
+        if (r0 == TIXML_SUCCESS && r1 == TIXML_SUCCESS && r2 == TIXML_SUCCESS && r3 == TIXML_SUCCESS &&
+            r4 == TIXML_SUCCESS) {
             auto w = new PowerLawWidget();
             w->m_Factor->setValue(valFactor);
             w->m_Exponent->setValue(valExponent);
@@ -127,9 +128,9 @@ void PowerLawWidgetManager::loadFromXml(TiXmlElement *_root) {
     setPowerLawWidgets(widgets);
 }
 
-void PowerLawWidgetManager::setPowerLawWidgets(std::vector<PowerLawWidget *> _widgets) {
-    while(removePowerLaw()); // clear
-    for(auto &widget : _widgets){
+void PowerLawWidgetManager::setPowerLawWidgets(std::vector < PowerLawWidget * > _widgets) {
+    while (removePowerLaw()); // clear
+    for (auto &widget : _widgets) {
         m_Parent->layout()->addWidget(widget);
         m_Widgets.push_back(widget);
         updateConnections();

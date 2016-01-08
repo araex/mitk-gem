@@ -14,18 +14,18 @@ class PowerLawWidgetManager : public QObject {
 public:
     PowerLawWidgetManager(QWidget *_parent);
     PowerLawFunctor createFunctor();
-    PowerLawWidget * getWidget(size_t);
+    PowerLawWidget *getWidget(size_t);
     size_t getNumberOfWidgets();
 
-    TiXmlElement* serializeToXml();
-    void loadFromXml(TiXmlElement*);
+    TiXmlElement *serializeToXml();
+    void loadFromXml(TiXmlElement *);
 
 public slots:
     PowerLawWidget* addPowerLaw();
     bool removePowerLaw();
 
 private:
-    void setPowerLawWidgets(std::vector<PowerLawWidget*>);
+    void setPowerLawWidgets(std::vector<PowerLawWidget *>);
     void updateConnections();
 
     QWidget *m_Parent;

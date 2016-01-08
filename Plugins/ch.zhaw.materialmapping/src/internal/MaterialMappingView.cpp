@@ -23,7 +23,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     // table
     auto table = m_Controls.calibrationTableView;
     table->setModel(m_CalibrationDataModel.getQItemModel());
-    auto setResizeMode = [=](int _column, QHeaderView::ResizeMode _mode){
+    auto setResizeMode = [=](int _column, QHeaderView::ResizeMode _mode) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) // renamed in 5.0
         table->horizontalHeader()->setResizeMode(_column, _mode);
 #else
@@ -43,7 +43,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     m_Controls.greyscaleImageComboBox->SetPredicate(WorkbenchUtils::createIsImageTypePredicate());
 
     // testing
-    if(TESTING){
+    if (TESTING) {
         controls = &m_Controls;
         m_Controls.testingGroup->show();
         m_Controls.expectedResultComboBox->SetDataStorage(this->GetDataStorage());
@@ -54,50 +54,51 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
         m_Controls.expectedResultComboBox_2->SetPredicate(WorkbenchUtils::createIsUnstructuredGridTypePredicate());
 
         m_TestRunner = std::unique_ptr<Testing::Runner>(new Testing::Runner());
-        connect( m_Controls.runUnitTestsButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(runUnitTests()) );
-        connect( m_Controls.compareGridsButton, SIGNAL(clicked()), this, SLOT(compareGrids()) );
+        connect(m_Controls.runUnitTestsButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(runUnitTests()));
+        connect(m_Controls.compareGridsButton, SIGNAL(clicked()), this, SLOT(compareGrids()));
     } else {
         m_Controls.testingGroup->hide();
     }
 
     // delete key on table
-    QShortcut* shortcut = new QShortcut(QKeySequence(QKeySequence::Delete), table);
+    QShortcut *shortcut = new QShortcut(QKeySequence(QKeySequence::Delete), table);
     connect(shortcut, SIGNAL(activated()), this, SLOT(deleteSelectedRows()));
 
     // power law widgets
     m_PowerLawWidgetManager = std::unique_ptr<PowerLawWidgetManager>(new PowerLawWidgetManager(m_Controls.powerLawWidgets));
 
     // signals
-    connect( m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()) );
-    connect( m_Controls.saveParametersButton, SIGNAL(clicked()), this, SLOT(saveParametersButtonClicked()) );
-    connect( m_Controls.loadParametersButton, SIGNAL(clicked()), this, SLOT(loadParametersButtonClicked()) );
-    connect( &m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()) );
-    connect( m_Controls.addPowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(addPowerLaw()) );
-    connect( m_Controls.removePowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(removePowerLaw()) );
-    connect( m_Controls.unitSelectionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(unitSelectionChanged(int)) );
+    connect(m_Controls.startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
+    connect(m_Controls.saveParametersButton, SIGNAL(clicked()), this, SLOT(saveParametersButtonClicked()));
+    connect(m_Controls.loadParametersButton, SIGNAL(clicked()), this, SLOT(loadParametersButtonClicked()));
+    connect(&m_CalibrationDataModel, SIGNAL(dataChanged()), this, SLOT(tableDataChanged()));
+    connect(m_Controls.addPowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(addPowerLaw()));
+    connect(m_Controls.removePowerLawButton, SIGNAL(clicked()), m_PowerLawWidgetManager.get(), SLOT(removePowerLaw()));
+    connect(m_Controls.unitSelectionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(unitSelectionChanged(int)));
 
     m_Controls.unitSelectionComboBox->setCurrentIndex(0);
     unitSelectionChanged(0);
 }
 
-void MaterialMappingView::deleteSelectedRows(){
+void MaterialMappingView::deleteSelectedRows() {
     auto selection = m_Controls.calibrationTableView->selectionModel();
     auto selectedItems = selection->selectedRows();
     std::set<int> rowsToDelete;
 
-    foreach(auto item, selectedItems){
+    for(auto &item : selectedItems) {
         rowsToDelete.insert(item.row());
     }
 
-    for(std::set<int>::reverse_iterator rit = rowsToDelete.rbegin(); rit != rowsToDelete.rend(); ++rit){
+    for (std::set<int>::reverse_iterator rit = rowsToDelete.rbegin(); rit != rowsToDelete.rend(); ++rit) {
         m_CalibrationDataModel.removeRow(*rit);
     }
+
     tableDataChanged();
 }
 
 void MaterialMappingView::startButtonClicked() {
     MITK_INFO("ch.zhaw.materialmapping") << "processing input";
-    if(isValidSelection()){
+    if (isValidSelection()) {
         mitk::DataNode *imageNode = m_Controls.greyscaleImageComboBox->GetSelectedNode();
         mitk::DataNode *ugridNode = m_Controls.unstructuredGridComboBox->GetSelectedNode();
 
@@ -124,7 +125,7 @@ void MaterialMappingView::startButtonClicked() {
         newNode->SetProperty("layer", mitk::IntProperty::New(1));
 
         // add result to the storage
-        this->GetDataStorage()->Add( newNode );
+        this->GetDataStorage()->Add(newNode);
     }
 }
 
@@ -137,7 +138,7 @@ void MaterialMappingView::tableDataChanged() {
     m_Controls.linEQSlopeSpinBox->setValue(linearEqParams.slope);
     m_Controls.linEQOffsetSpinBox->setValue(linearEqParams.offset);
 
-    if(m_CalibrationDataModel.hasExpectedValueRange()){
+    if (m_CalibrationDataModel.hasExpectedValueRange()) {
         m_Controls.unitWarningLabel->hide();
     } else {
         m_Controls.unitWarningLabel->show();
@@ -153,22 +154,22 @@ bool MaterialMappingView::isValidSelection() {
     gui::setMandatoryField(m_Controls.greyscaleSelector, (imageNode == nullptr));
     gui::setMandatoryField(m_Controls.meshSelector, (ugridNode == nullptr));
 
-    if(imageNode && ugridNode){
+    if (imageNode && ugridNode) {
         mitk::Image::Pointer image = dynamic_cast<mitk::Image *>(imageNode->GetData());
         mitk::UnstructuredGrid::Pointer ugrid = dynamic_cast<mitk::UnstructuredGrid *>(ugridNode->GetData());
 
-        if(image && ugrid){
+        if (image && ugrid) {
             return true;
-        } else{
+        } else {
             QString msg("Invalid data. Select an image and a unstructured grid.");
-            QMessageBox::warning ( NULL, "Error", msg);
+            QMessageBox::warning(NULL, "Error", msg);
         }
     }
     MITK_INFO("ch.zhaw.materialmapping") << "invalid data selection";
     return false;
 }
 
-void MaterialMappingView::unitSelectionChanged(int){
+void MaterialMappingView::unitSelectionChanged(int) {
     auto selectedText = m_Controls.unitSelectionComboBox->currentText();
     m_CalibrationDataModel.setUnit(selectedText);
     tableDataChanged();
@@ -184,7 +185,7 @@ void MaterialMappingView::compareGrids() {
 
 void MaterialMappingView::saveParametersButtonClicked() {
     auto filename = QFileDialog::getSaveFileName(0, tr("Save parameter file"), "", tr("parameter file (*.matmap)"));
-    if(!filename.isNull()){
+    if (!filename.isNull()) {
         MITK_INFO << "saving parameters to file: " << filename.toUtf8().constData();
 
         TiXmlDocument doc;
@@ -199,7 +200,7 @@ void MaterialMappingView::saveParametersButtonClicked() {
         root->LinkEndChild(powerlaws);
         root->LinkEndChild(options);
 
-        doc.LinkEndChild( new TiXmlDeclaration( "1.0", "utf-8", "" ) );
+        doc.LinkEndChild(new TiXmlDeclaration("1.0", "utf-8", ""));
         doc.LinkEndChild(root);
         doc.SaveFile(filename.toUtf8().constData());
     } else {
@@ -209,33 +210,33 @@ void MaterialMappingView::saveParametersButtonClicked() {
 
 void MaterialMappingView::loadParametersButtonClicked() {
     auto filename = QFileDialog::getOpenFileName(0, tr("Open parameter file"), "", tr("parameter file (*.matmap)"));
-    if(!filename.isNull()){
+    if (!filename.isNull()) {
         MITK_INFO << "loading parameters from file: " << filename.toUtf8().constData();
 
         TiXmlDocument doc(filename.toUtf8().constData());
         TiXmlHandle hDoc(&doc);
-        if (!doc.LoadFile()){
+        if (!doc.LoadFile()) {
             QMessageBox::warning(0, "", "could not read from file.");
             return;
         };
         auto root = hDoc.FirstChildElement().Element();
         auto calibration = root->FirstChildElement("Calibration");
-        if(calibration){
+        if (calibration) {
             MITK_INFO << "loading calibration...";
             m_CalibrationDataModel.loadFromXml(calibration);
         }
         auto bonedensity = root->FirstChildElement("BoneDensityParameters");
-        if(bonedensity){
+        if (bonedensity) {
             MITK_INFO << "loading bone density parameters...";
             gui::loadDensityParametersFromXml(m_Controls, bonedensity);
         }
         auto powerlaws = root->FirstChildElement("PowerLaws");
-        if(powerlaws){
+        if (powerlaws) {
             MITK_INFO << "loading power laws...";
             m_PowerLawWidgetManager->loadFromXml(powerlaws);
         }
         auto options = root->FirstChildElement("Options");
-        if(options){
+        if (options) {
             MITK_INFO << "loading options...";
             gui::loadOptionsFromXml(m_Controls, options);
         }

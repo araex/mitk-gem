@@ -23,11 +23,11 @@ MaterialMappingFilter::MaterialMappingFilter() {
 }
 
 void MaterialMappingFilter::GenerateData() {
-    mitk::UnstructuredGrid::Pointer inputGrid = const_cast<mitk::UnstructuredGrid*>(this->GetInput());
-    if(inputGrid.IsNull() || m_IntensityImage == nullptr || m_IntensityImage.IsNull()) return;
+    mitk::UnstructuredGrid::Pointer inputGrid = const_cast<mitk::UnstructuredGrid *>(this->GetInput());
+    if (inputGrid.IsNull() || m_IntensityImage == nullptr || m_IntensityImage.IsNull()) { return; }
 
-    auto importedVtkImage = const_cast<vtkImageData*>(m_IntensityImage->GetVtkImageData());
-    vtkSmartPointer<vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
+    auto importedVtkImage = const_cast<vtkImageData *>(m_IntensityImage->GetVtkImageData());
+    vtkSmartPointer <vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
 
     MITK_INFO("ch.zhaw.materialmapping") << "density functors";
     MITK_INFO("ch.zhaw.materialmapping") << m_BoneDensityFunctor;
@@ -60,13 +60,13 @@ void MaterialMappingFilter::GenerateData() {
     auto stencil = createStencil(surface, voi);
 
     MaterialMappingFilter::VtkImage mask;
-    if(m_DoPeelStep){
+    if (m_DoPeelStep) {
         mask = createPeeledMask(voi, stencil);
     } else {
         mask = voi;
     }
 
-    for(auto i = 0u; i < m_NumberOfExtendImageSteps; ++i) {
+    for (auto i = 0u; i < m_NumberOfExtendImageSteps; ++i) {
         inplaceExtendImage(voi, mask, true);
     }
 
@@ -97,16 +97,16 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage
     auto extent = _img->GetExtent();
     auto bounds = _surMesh->GetBounds();
 
-    auto clamp = [](double x, int a, int b){
+    auto clamp = [](double x, int a, int b) {
         return x < a ? a : (x > b ? b : x);
     };
 
     auto border = 4;
     int voiExt[6];
-    for(auto i = 0; i < 2; ++i){
-        for(auto j = 0; j < 3; ++j){
-            auto val = (bounds[i+2*j]-origin[j])/spacing[j] + (2*i-1)*border; // coordinate -> index
-            voiExt[i+2*j] = clamp(val, extent[2*j], extent[2*j+1]); // prevent wrap around
+    for (auto i = 0; i < 2; ++i) {
+        for (auto j = 0; j < 3; ++j) {
+            auto val = (bounds[i + 2 * j] - origin[j]) / spacing[j] + (2 * i - 1) * border; // coordinate -> index
+            voiExt[i + 2 * j] = clamp(val, extent[2 * j], extent[2 * j + 1]); // prevent wrap around
         }
     }
     voi->SetVOI(voiExt);
@@ -127,7 +127,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUG
     blankImage->CopyStructure(_img);
     blankImage->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
     unsigned char *p = (unsigned char *) (blankImage->GetScalarPointer());
-    for(auto i = 0; i < blankImage->GetNumberOfPoints(); i++){
+    for (auto i = 0; i < blankImage->GetNumberOfPoints(); i++) {
         p[i] = 0;
     }
 
@@ -147,7 +147,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUG
 MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const VtkImage _img, const VtkImage _mask) {
     // configure
     auto erodeFilter = vtkSmartPointer<vtkImageContinuousErode3D>::New();
-    erodeFilter->SetKernelSize(3,3,3);
+    erodeFilter->SetKernelSize(3, 3, 3);
     auto xorLogic = vtkSmartPointer<vtkImageLogic>::New();
     xorLogic->SetOperationToXor();
     xorLogic->SetOutputTrueValue(1);
@@ -170,9 +170,10 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const Vt
     unsigned char *corePoints = (unsigned char *) erodeFilter->GetOutput()->GetScalarPointer();
     float *im = (float *) _img->GetScalarPointer();
     float *tim = (float *) imgCopy->GetScalarPointer();
-    for(auto i = 0; i < _img->GetNumberOfPoints(); i++) {
-        if(peelPoints[i] && im[i] > tim[i])
+    for (auto i = 0; i < _img->GetNumberOfPoints(); i++) {
+        if (peelPoints[i] && im[i] > tim[i]) {
             corePoints[i] = 1;
+        }
     }
 
     return erodeFilter->GetOutput();
@@ -183,15 +184,15 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     assert(_img->GetScalarType() == VTK_FLOAT && "Input image scalar type needs to be float!");
 
     static const double kernel[27] = {
-        1/sqrt(3),1/sqrt(2),1/sqrt(3),
-        1/sqrt(2),1,1/sqrt(2),
-        1/sqrt(3),1/sqrt(2),1/sqrt(3),
-        1/sqrt(2),1,1/sqrt(2),
-        1,0,1,
-        1/sqrt(2),1,1/sqrt(2),
-        1/sqrt(3),1/sqrt(2),1/sqrt(3),
-        1/sqrt(2),1,1/sqrt(2),
-        1/sqrt(3),1/sqrt(2),1/sqrt(3)
+            1 / sqrt(3), 1 / sqrt(2), 1 / sqrt(3),
+            1 / sqrt(2), 1, 1 / sqrt(2),
+            1 / sqrt(3), 1 / sqrt(2), 1 / sqrt(3),
+            1 / sqrt(2), 1, 1 / sqrt(2),
+            1, 0, 1,
+            1 / sqrt(2), 1, 1 / sqrt(2),
+            1 / sqrt(3), 1 / sqrt(2), 1 / sqrt(3),
+            1 / sqrt(2), 1, 1 / sqrt(2),
+            1 / sqrt(3), 1 / sqrt(2), 1 / sqrt(3)
     };
 
     auto math = vtkSmartPointer<vtkImageMathematics>::New();
@@ -201,9 +202,10 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     // vtkImageMathematics needs both inputs to have the same scalar type
     auto mask_float = vtkSmartPointer<vtkImageData>::New();
     mask_float->CopyStructure(_mask);
-    mask_float->AllocateScalars(VTK_FLOAT,1);
-    for(auto i = 0; i < mask_float->GetNumberOfPoints(); i++)
-        mask_float->GetPointData()->GetScalars()->SetTuple1(i,_mask->GetPointData()->GetScalars()->GetTuple1(i));
+    mask_float->AllocateScalars(VTK_FLOAT, 1);
+    for (auto i = 0; i < mask_float->GetNumberOfPoints(); i++) {
+        mask_float->GetPointData()->GetScalars()->SetTuple1(i, _mask->GetPointData()->GetScalars()->GetTuple1(i));
+    }
 
     math->SetOperationToMultiply();
     math->SetInput1Data(_img);
@@ -219,11 +221,11 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     auto convImgPoints = (float *) (imageconv->GetOutput()->GetScalarPointer());
     auto imagePoints = (float *) (_img->GetScalarPointer());
 
-    for(auto i = 0; i < _img->GetNumberOfPoints(); i++) {
-        if(convMaskPoints[i] && !maskPoints[i]) {
+    for (auto i = 0; i < _img->GetNumberOfPoints(); i++) {
+        if (convMaskPoints[i] && !maskPoints[i]) {
             auto val = convImgPoints[i] / convMaskPoints[i];
-            if(_maxval) {
-                if(imagePoints[i] < val) {
+            if (_maxval) {
+                if (imagePoints[i] < val) {
                     imagePoints[i] = val;
                 }
             }
@@ -237,7 +239,10 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
 
 }
 
-MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::evaluateFunctorsForNodes(const VtkUGrid _mesh, const VtkImage _img, std::string _name, double _minElem) {
+MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::evaluateFunctorsForNodes(const VtkUGrid _mesh,
+                                                                                      const VtkImage _img,
+                                                                                      std::string _name,
+                                                                                      double _minElem) {
     auto data = vtkSmartPointer<vtkDoubleArray>::New();
     data->SetNumberOfComponents(1);
     data->SetName(_name.c_str());
@@ -247,23 +252,25 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::evaluateFunctorsFor
     interpolator->SetInterpolationModeToLinear();
     interpolator->Update();
 
-    for(auto i = 0; i < _mesh->GetNumberOfPoints(); ++i){
+    for (auto i = 0; i < _mesh->GetNumberOfPoints(); ++i) {
         auto p = _mesh->GetPoint(i);
         auto valCT = interpolator->Interpolate(p[0], p[1], p[2], 0);
         auto valDensity = m_BoneDensityFunctor(valCT);
         auto valEMorgan = m_PowerLawFunctor(valDensity);
-        data->InsertTuple1(i, valEMorgan > _minElem? valEMorgan : _minElem);
+        data->InsertTuple1(i, valEMorgan > _minElem ? valEMorgan : _minElem);
     }
 
     return data;
 }
 
-MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(const VtkUGrid _mesh, VtkDoubleArray _nodeData, std::string _name) {
+MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(const VtkUGrid _mesh,
+                                                                             VtkDoubleArray _nodeData,
+                                                                             std::string _name) {
     auto data = vtkSmartPointer<vtkDoubleArray>::New();
     data->SetNumberOfComponents(1);
     data->SetName(_name.c_str());
 
-    for(auto i = 0; i < _mesh->GetNumberOfCells(); ++i){
+    for (auto i = 0; i < _mesh->GetNumberOfCells(); ++i) {
         auto cellpoints = _mesh->GetCell(i)->GetPoints();
         double centroid[3] = {0, 0, 0};
 
@@ -272,18 +279,19 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
 //        tetra->GetParametricCenter(centroid);
 
         auto numberOfNodes = cellpoints->GetNumberOfPoints();
-        for(auto j = 0; j < numberOfNodes; ++j){ // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
+        for (auto j = 0;
+             j < numberOfNodes; ++j) { // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
             auto cellpoint = cellpoints->GetPoint(j);
-            for(auto k = 0; k < 3; ++k){
-                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j+1);
+            for (auto k = 0; k < 3; ++k) {
+                centroid[k] = (centroid[k] * j + cellpoint[k]) / (j + 1);
             }
         }
 
         double value = 0, denom = 0;
-        for(auto j = 0; j < numberOfNodes; ++j){ // TODO: original comment "Ten nodes of a quadratic tetrahedra"
+        for (auto j = 0; j < numberOfNodes; ++j) { // TODO: original comment "Ten nodes of a quadratic tetrahedra"
             auto cellpoint = cellpoints->GetPoint(j);
             double weight = 0;
-            for(auto k = 0; k < 3; ++k){
+            for (auto k = 0; k < 3; ++k) {
                 weight += pow(cellpoint[k] - centroid[k], 2);
             }
             weight = 1.0 / sqrt(weight);

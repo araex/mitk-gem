@@ -17,27 +17,27 @@ public:
     itkFactorylessNewMacro(Self)
     itkCloneMacro(Self)
 
-    void SetIntensityImage(mitk::Image::Pointer _p){
+    void SetIntensityImage(mitk::Image::Pointer _p) {
         m_IntensityImage = _p;
     }
 
-    void SetDensityFunctor(BoneDensityFunctor &&_f){
+    void SetDensityFunctor(BoneDensityFunctor &&_f) {
         m_BoneDensityFunctor = _f;
     }
 
-    void SetPowerLawFunctor(PowerLawFunctor &&_f){
+    void SetPowerLawFunctor(PowerLawFunctor &&_f) {
         m_PowerLawFunctor = _f;
     }
 
-    void SetDoPeelStep(bool _b){
+    void SetDoPeelStep(bool _b) {
         m_DoPeelStep = _b;
     }
 
-    void SetNumberOfExtendImageSteps(unsigned int _i){
+    void SetNumberOfExtendImageSteps(unsigned int _i) {
         m_NumberOfExtendImageSteps = _i;
     }
 
-    void SetMinElementValue(float _f){
+    void SetMinElementValue(float _f) {
         m_MinimumElementValue = _f;
     }
 
@@ -50,7 +50,7 @@ protected:
     using VtkDoubleArray = vtkSmartPointer<vtkDoubleArray>;
 
     MaterialMappingFilter();
-    virtual ~MaterialMappingFilter(){};
+    virtual ~MaterialMappingFilter() { };
 
     VtkUGrid extractSurface(const VtkUGrid);
     VtkImage extractVOI(const VtkImage, const VtkUGrid);

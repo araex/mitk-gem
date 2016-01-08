@@ -9,8 +9,8 @@
  */
 class BoneDensityFunctor {
 public:
-    bool operator!=(const BoneDensityFunctor& _other) const;
-    bool operator==(const BoneDensityFunctor& _other) const;
+    bool operator!=(const BoneDensityFunctor &_other) const;
+    bool operator==(const BoneDensityFunctor &_other) const;
 
     /**
      * Evaluates bone density for a given ct value
@@ -29,4 +29,4 @@ public:
     BoneDensityParameters::RhoApp m_RhoApp;
 };
 
-std::ostream& operator<<(std::ostream& _out, const BoneDensityFunctor& _f);
+std::ostream &operator<<(std::ostream &_out, const BoneDensityFunctor &_f);

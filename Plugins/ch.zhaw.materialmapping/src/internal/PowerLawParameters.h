@@ -6,5 +6,5 @@ struct PowerLawParameters {
     double factor, exponent, offset;
 };
 
-bool operator==(const PowerLawParameters& lhs, const PowerLawParameters& rhs);
-bool operator!=(const PowerLawParameters& lhs, const PowerLawParameters& rhs);
+bool operator==(const PowerLawParameters &lhs, const PowerLawParameters &rhs);
+bool operator!=(const PowerLawParameters &lhs, const PowerLawParameters &rhs);
