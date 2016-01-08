@@ -1,5 +1,8 @@
 #pragma once
 
+/**
+ * E = factor * rho ^ exponent + offset
+ */
 struct PowerLawParameters {
     PowerLawParameters();
     PowerLawParameters(double _factor, double _exponent, double _offset);

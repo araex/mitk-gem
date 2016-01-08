@@ -11,6 +11,15 @@
 #include "BoneDensityFunctor.h"
 #include "PowerLawFunctor.h"
 
+/**
+ * Given the input:
+ * - CT image
+ * - Volume mesh (unstructured grid)
+ * - Bone Density Functor (HU->gHA/cmˆ3)
+ * - Power Law Functor
+ * This filter outputs a material mapped mesh.
+ * TODO: add description
+ */
 class MaterialMappingFilter : public mitk::UnstructuredGridToUnstructuredGridFilter {
 public:
     mitkClassMacro(MaterialMappingFilter, UnstructuredGridToUnstructuredGridFilter)

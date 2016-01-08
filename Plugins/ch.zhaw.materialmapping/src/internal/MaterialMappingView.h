@@ -15,6 +15,7 @@ class MaterialMappingView : public QmitkAbstractView {
 
 public:
     static const std::string VIEW_ID;
+    // enables building of the GUI unit testing
     static const bool TESTING = true;
     static Ui::MaterialMappingViewControls *controls;
 
