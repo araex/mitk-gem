@@ -71,14 +71,17 @@ void gui::loadDensityGroupStateFromXml(Ui::MaterialMappingViewControls &_control
     ret = rhoCt->QueryBoolAttribute("AutomaticFit", &b);
     if (ret == TIXML_SUCCESS) {
         _controls.automaticFitCheckBox->setChecked(b);
-    }
-    ret = rhoCt->QueryDoubleAttribute("slope", &d);
-    if (ret == TIXML_SUCCESS) {
-        _controls.linEQSlopeSpinBox->setValue(d);
-    }
-    ret = rhoCt->QueryDoubleAttribute("offset", &d);
-    if (ret == TIXML_SUCCESS) {
-        _controls.linEQOffsetSpinBox->setValue(d);
+
+        if(!b){
+            ret = rhoCt->QueryDoubleAttribute("slope", &d);
+            if (ret == TIXML_SUCCESS) {
+                _controls.linEQSlopeSpinBox->setValue(d);
+            }
+            ret = rhoCt->QueryDoubleAttribute("offset", &d);
+            if (ret == TIXML_SUCCESS) {
+                _controls.linEQOffsetSpinBox->setValue(d);
+            }
+        }
     }
 
     auto rhoAsh = _root->FirstChildElement("RhoAsh");
