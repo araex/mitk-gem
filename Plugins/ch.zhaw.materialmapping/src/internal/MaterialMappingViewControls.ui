@@ -854,7 +854,7 @@ QDoubleSpinBox {
                       <double>0.010000000000000</double>
                      </property>
                      <property name="value">
-                      <double>-0.090000000000000</double>
+                      <double>0.090000000000000</double>
                      </property>
                     </widget>
                    </item>
