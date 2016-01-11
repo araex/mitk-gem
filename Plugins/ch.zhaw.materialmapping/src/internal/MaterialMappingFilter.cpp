@@ -4,6 +4,7 @@
 #include <vtkCellData.h>
 #include <vtkImageInterpolator.h>
 #include <vtkTetra.h>
+#include <vtkMetaImageWriter.h>
 
 #include <vtkUnstructuredGridGeometryFilter.h>
 #include <vtkExtractVOI.h>
@@ -58,7 +59,9 @@ void MaterialMappingFilter::GenerateData() {
     auto surface = extractSurface(vtkInputGrid);
     auto voi = extractVOI(vtkImage, surface);
     inplaceApplyFunctorsToImage(voi);
+
     auto stencil = createStencil(surface, voi);
+
 
     MaterialMappingFilter::VtkImage mask;
     if (m_DoPeelStep) {
@@ -67,8 +70,19 @@ void MaterialMappingFilter::GenerateData() {
         mask = voi;
     }
 
+    if(m_VerboseOutput){
+        writeMetaImageToVerboseOut("1_VOI_emorgan.mhd", voi);
+        writeMetaImageToVerboseOut("2_Stencil.mhd", stencil);
+        writeMetaImageToVerboseOut("3_Peeled_mask.mhd", mask);
+    }
+
     for (auto i = 0u; i < m_NumberOfExtendImageSteps; ++i) {
         inplaceExtendImage(voi, mask, true);
+    }
+
+    if(m_VerboseOutput && m_NumberOfExtendImageSteps > 0){
+        writeMetaImageToVerboseOut("4_Peeled_mask_extended.mhd", mask);
+        writeMetaImageToVerboseOut("5_VOI_emorgan_extended", voi);
     }
 
     auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
@@ -310,4 +324,11 @@ void MaterialMappingFilter::inplaceApplyFunctorsToImage(MaterialMappingFilter::V
         auto valEMorgan = m_PowerLawFunctor(valDensity);
         _img->GetPointData()->GetScalars()->SetTuple1(i, valEMorgan);
     }
+}
+
+void MaterialMappingFilter::writeMetaImageToVerboseOut(const std::string _filename, vtkSmartPointer <vtkImageData> _img) {
+    vtkSmartPointer<vtkMetaImageWriter> writer = vtkSmartPointer<vtkMetaImageWriter>::New();
+    writer->SetFileName((m_VerboseOutputDirectory + "/" + _filename).c_str());
+    writer->SetInputData(_img);
+    writer->Write();
 }

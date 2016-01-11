@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <mitkImage.h>
 #include <mitkUnstructuredGridToUnstructuredGridFilter.h>
 
@@ -7,6 +9,7 @@
 #include <vtkImageData.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkImageStencil.h>
+
 
 #include "BoneDensityFunctor.h"
 #include "PowerLawFunctor.h"
@@ -50,6 +53,11 @@ public:
         m_MinimumElementValue = _f;
     }
 
+    void SetIntermediateResultOutputDirectory(std::string _d){
+        m_VerboseOutput = true;
+        m_VerboseOutputDirectory = _d;
+    }
+
     virtual void GenerateData() override;
 
 protected:
@@ -73,7 +81,10 @@ protected:
     mitk::Image::Pointer m_IntensityImage;
     BoneDensityFunctor m_BoneDensityFunctor;
     PowerLawFunctor m_PowerLawFunctor;
-    bool m_DoPeelStep = true;
+    bool m_DoPeelStep = true, m_VerboseOutput;
+    std::string m_VerboseOutputDirectory;
     float m_MinimumElementValue = 0.0;
     unsigned int m_NumberOfExtendImageSteps = 3;
+
+    void writeMetaImageToVerboseOut(const std::string filename, vtkSmartPointer<vtkImageData> image);
 };
