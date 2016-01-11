@@ -6,9 +6,9 @@
 #include "../MaterialMappingView.h"
 
 TEST_CASE("BoneDensityFunctor"){
-    BoneDensityParameters::RhoCt rhoCt(2, 10); // f(x) = 2x + 10
-    BoneDensityParameters::RhoAsh rhoAsh(5, 2); // g(f(x)) = (x + 5) / 2
-    BoneDensityParameters::RhoApp rhoApp(4); // h(g(f(x))) = x / 4
+    BoneDensityParameters::RhoCt rhoCt(0.0087, -0.00159); // f(x) = 2x + 10
+    BoneDensityParameters::RhoAsh rhoAsh(0.09, 1.14); // g(f(x)) = (x + 5) / 2
+    BoneDensityParameters::RhoApp rhoApp(0.6); // h(g(f(x))) = x / 4
     BoneDensityFunctor functor;
     functor.SetRhoCt(rhoCt);
     functor.SetRhoAsh(rhoAsh);
@@ -16,9 +16,9 @@ TEST_CASE("BoneDensityFunctor"){
 
     SECTION("functionality"){
         auto expectedFunctor = [](double x){
-            auto ctVal = 2 * x + 10;
-            auto ashVal = (ctVal + 5) / 2;
-            auto appVal = ashVal / 4;
+            auto ctVal = 0.0087 * x - 0.00159;
+            auto ashVal = (ctVal + 0.09) / 1.14;
+            auto appVal = ashVal / 0.6;
             return appVal;
         };
 
