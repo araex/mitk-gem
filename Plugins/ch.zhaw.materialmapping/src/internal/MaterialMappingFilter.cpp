@@ -57,6 +57,7 @@ void MaterialMappingFilter::GenerateData() {
 
     auto surface = extractSurface(vtkInputGrid);
     auto voi = extractVOI(vtkImage, surface);
+    inplaceApplyFunctorsToImage(voi);
     auto stencil = createStencil(surface, voi);
 
     MaterialMappingFilter::VtkImage mask;
@@ -70,7 +71,7 @@ void MaterialMappingFilter::GenerateData() {
         inplaceExtendImage(voi, mask, true);
     }
 
-    auto nodeDataE = evaluateFunctorsForNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
+    auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
     auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
 
     // create ouput
@@ -239,7 +240,7 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
 
 }
 
-MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::evaluateFunctorsForNodes(const VtkUGrid _mesh,
+MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::interpolateToNodes(const VtkUGrid _mesh,
                                                                                       const VtkImage _img,
                                                                                       std::string _name,
                                                                                       double _minElem) {
@@ -254,10 +255,8 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::evaluateFunctorsFor
 
     for (auto i = 0; i < _mesh->GetNumberOfPoints(); ++i) {
         auto p = _mesh->GetPoint(i);
-        auto valCT = interpolator->Interpolate(p[0], p[1], p[2], 0);
-        auto valDensity = m_BoneDensityFunctor(valCT);
-        auto valEMorgan = m_PowerLawFunctor(valDensity);
-        data->InsertTuple1(i, valEMorgan > _minElem ? valEMorgan : _minElem);
+        auto val = interpolator->Interpolate(p[0], p[1], p[2], 0);
+        data->InsertTuple1(i, val > _minElem ? val : _minElem);
     }
 
     return data;
@@ -302,4 +301,13 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
     }
 
     return data;
+}
+
+void MaterialMappingFilter::inplaceApplyFunctorsToImage(MaterialMappingFilter::VtkImage _img) {
+    for (auto i = 0; i < _img->GetNumberOfPoints(); i++) {
+        auto valCT = _img->GetPointData()->GetScalars()->GetTuple1(i);
+        auto valDensity = m_BoneDensityFunctor(valCT);
+        auto valEMorgan = m_PowerLawFunctor(valDensity);
+        _img->GetPointData()->GetScalars()->SetTuple1(i, valEMorgan);
+    }
 }
