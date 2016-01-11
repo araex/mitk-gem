@@ -724,7 +724,7 @@ QDoubleSpinBox {
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
                      <property name="decimals">
-                      <number>5</number>
+                      <number>20</number>
                      </property>
                      <property name="minimum">
                       <double>-999999999.000000000000000</double>
@@ -769,7 +769,7 @@ QDoubleSpinBox {
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
                      <property name="decimals">
-                      <number>5</number>
+                      <number>20</number>
                      </property>
                      <property name="minimum">
                       <double>-999999999.000000000000000</double>
@@ -842,7 +842,7 @@ QDoubleSpinBox {
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
                      <property name="decimals">
-                      <number>3</number>
+                      <number>10</number>
                      </property>
                      <property name="minimum">
                       <double>-999999999.000000000000000</double>
@@ -886,7 +886,7 @@ QDoubleSpinBox {
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
                      <property name="decimals">
-                      <number>3</number>
+                      <number>10</number>
                      </property>
                      <property name="minimum">
                       <double>-999999999.000000000000000</double>
@@ -962,7 +962,7 @@ QDoubleSpinBox {
                       <enum>QAbstractSpinBox::NoButtons</enum>
                      </property>
                      <property name="decimals">
-                      <number>3</number>
+                      <number>10</number>
                      </property>
                      <property name="minimum">
                       <double>-999999999.000000000000000</double>
