@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>557</width>
+    <width>720</width>
     <height>1078</height>
    </rect>
   </property>
@@ -1439,6 +1439,19 @@ QWidget {
           </property>
           <property name="text">
            <string>Run unit tests</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="createEMorganButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Create emorgan image</string>
           </property>
          </widget>
         </item>

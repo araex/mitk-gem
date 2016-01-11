@@ -25,6 +25,7 @@ protected slots:
     void tableDataChanged();
     void unitSelectionChanged(int);
     void compareGrids();
+    void createEMorganImage();
     void loadParametersButtonClicked();
     void saveParametersButtonClicked();
 

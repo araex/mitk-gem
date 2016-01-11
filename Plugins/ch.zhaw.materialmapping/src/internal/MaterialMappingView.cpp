@@ -9,6 +9,10 @@
 #include <mitkImage.h>
 #include <tinyxml.h>
 
+#include <vtkImageCast.h>
+#include <vtkCellArray.h>
+#include <vtkPointData.h>
+
 #include "MaterialMappingView.h"
 #include "lib/WorkbenchUtils/WorkbenchUtils.h"
 #include "GuiHelpers.h"
@@ -56,6 +60,7 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
         m_TestRunner = std::unique_ptr<Testing::Runner>(new Testing::Runner());
         connect(m_Controls.runUnitTestsButton, SIGNAL(clicked()), m_TestRunner.get(), SLOT(runUnitTests()));
         connect(m_Controls.compareGridsButton, SIGNAL(clicked()), this, SLOT(compareGrids()));
+        connect(m_Controls.createEMorganButton, SIGNAL(clicked()), this, SLOT(createEMorganImage()));
     } else {
         m_Controls.testingGroup->hide();
     }
@@ -181,6 +186,42 @@ void MaterialMappingView::compareGrids() {
     mitk::UnstructuredGrid::Pointer u0 = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode0->GetData());
     mitk::UnstructuredGrid::Pointer u1 = dynamic_cast<mitk::UnstructuredGrid *>(expectedResultNode1->GetData());
     m_TestRunner->compareGrids(u0, u1);
+}
+
+void MaterialMappingView::createEMorganImage() {
+    mitk::DataNode *imageNode = m_Controls.greyscaleImageComboBox->GetSelectedNode();
+    mitk::Image::Pointer image = dynamic_cast<mitk::Image *>(imageNode->GetData());
+
+    auto densityFunctor = gui::createDensityFunctor(m_Controls, m_CalibrationDataModel);
+    auto powerLawFunctor = m_PowerLawWidgetManager->createFunctor();
+
+    //// http://bugs.mitk.org/show_bug.cgi?id=5050
+    auto mitkOrigin = image->GetGeometry()->GetOrigin();
+    auto vtkImage = vtkSmartPointer<vtkImageData>::New();
+    vtkImage->ShallowCopy(const_cast<vtkImageData *>(image->GetVtkImageData()));
+    vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
+    auto imageCast = vtkSmartPointer<vtkImageCast>::New();
+    imageCast->SetInputData(vtkImage);
+    imageCast->SetOutputScalarTypeToFloat();
+    imageCast->Update();
+    vtkImage = imageCast->GetOutput();
+
+    for (auto i = 0; i < vtkImage->GetNumberOfPoints(); i++) {
+        auto ct_val = vtkImage->GetPointData()->GetScalars()->GetTuple1(i);
+        auto rho = densityFunctor(ct_val);
+        auto val = powerLawFunctor(rho);
+        vtkImage->GetPointData()->GetScalars()->SetTuple1(i, val);
+    }
+
+    // save results
+    mitk::Image::Pointer result = mitk::Image::New();
+    result->Initialize(vtkImage);
+    result->SetVolume(vtkImage->GetScalarPointer());
+    mitk::DataNode::Pointer newNode = mitk::DataNode::New();
+    newNode->SetData(result);
+    newNode->SetProperty("name", mitk::StringProperty::New("emorgan"));
+    newNode->SetProperty("layer", mitk::IntProperty::New(1));
+    this->GetDataStorage()->Add(newNode);
 }
 
 void MaterialMappingView::saveParametersButtonClicked() {
