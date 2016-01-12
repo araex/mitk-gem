@@ -36,11 +36,11 @@ Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.2 in order to buil
 - Install CMake http://www.cmake.org/download/
 
 # Build instructions Linux & OSX
-1. Download the source code `git clone https://github.com/araex/mitk-gem src`.
-2. Create a new directory for the build `mkdir build`.
+1. Download the source code `git clone https://github.com/araex/mitk-gem src`
+2. Create a new directory for the build `mkdir build`
 3. Change to the build directory and run CMake `cd build; cmake ../src`
 4. Start the build `make -j 8`. This will take a long time (up to an hour) and requires internet access.
-5. Once compilation is finished, you can find the executable `MITK-GEM` in the directory `build/MITK-GEM-build/bin/`.
+5. Once compilation is finished, you can find the executable `MITK-GEM` in the directory `build/MITK-GEM-build/bin/`
 
 # FAQ
 For questions regarding the usage of MITK-GEM, refer to our [application FAQ](http://araex.github.io/mitk-gem-site/#faq).
