@@ -7,6 +7,7 @@ It is built on top of the [Medical Imaging Interaction Toolkit (MITK)](http://mi
 - Surface mesh generation
 - Tetrahedral mesh generation
 - Material mapping
+
 For more information, check our [website](http://araex.github.io/mitk-gem-site/) and our [simtk project](https://simtk.org/home/mitk-gem).
 
 # Download
