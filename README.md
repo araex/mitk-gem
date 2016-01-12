@@ -19,21 +19,25 @@ If you'd like to build MITK-GEM from source, follow the instructions below.
 - QT 4.8 (OSX), QT 5 (Windows & Linux)
 
 # Prerequisites
-## on Ubuntu
+## Ubuntu
 If you use the latest Ubuntu release (>= 14.04 LTS), you can install all the dependencies with the following command:
 `sudo apt-get install git build-essential cmake-gui qt-sdk libxt-dev libtiff4-dev libwrap0-dev`
 
-### on Ubuntu 12.04 LTS
+### Ubuntu 12.04 LTS
 Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.2 in order to build MITK. A manual update is required.
 
 1. Install dependencies: `sudo apt-get install git build-essential qt-sdk libxt-dev libtiff4-dev libwrap0-dev`
-2. Go to http://www.cmake.org/download/
-3. Download and install a more recent (>= 3.2) version of cmake.
+2. Install CMake 3.2+ http://www.cmake.org/download/ 
 
-## on Mac OSX
-- Install Apple Xcode https://developer.apple.com/xcode/ and activate the command line tools. To do so, open Xcode, go to Preferences -> Downloads -> Components -> Command Line Tools.
-- Install QT 4.8 http://download.qt-project.org/archive/qt/
-- Install CMake http://www.cmake.org/download/
+## Mac OSX
+- Apple Xcode https://developer.apple.com/xcode/ with activated command line tools. To do so, open Xcode, go to Preferences -> Downloads -> Components -> Command Line Tools.
+- QT 4.8 http://download.qt-project.org/archive/qt/
+- CMake 3.2+ http://www.cmake.org/download/
+
+## Windows
+- MSVC 2012v4 or MSVC 2013 (e.g. Visual Studio 2013 Community Edition). ** MSVC 2015 IS NOT SUPPORTED**
+- Qt 5.0 - 5.4 ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build.
+- CMake 3.2+ http://www.cmake.org/download/
 
 # Build instructions Linux & OSX
 1. Download the source code `git clone https://github.com/araex/mitk-gem src`
@@ -41,6 +45,10 @@ Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.2 in order to buil
 3. Change to the build directory and run CMake `cd build; cmake ../src`
 4. Start the build `make -j 8`. This will take a long time (up to an hour) and requires internet access.
 5. Once compilation is finished, you can find the executable `MITK-GEM` in the directory `build/MITK-GEM-build/bin/`
+
+# Build instructions Windows
+Follow the instructions here http://www.mitk.org/wiki/Developer_Tutorial_(Microsoft_Windows)".
+Remember to save the source and the build in a ** very short ** top-level directory.
 
 # FAQ
 For questions regarding the usage of MITK-GEM, refer to our [application FAQ](http://araex.github.io/mitk-gem-site/#faq).
