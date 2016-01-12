@@ -1,4 +1,4 @@
-![MITK-GEM logo](https://github.com/araex/mitk-gem/blob/material-mapping/mitk-gem.png)
+![MITK-GEM logo](https://github.com/araex/mitk-gem/blob/material-mapping/mitk_gem.png)
 MITK - Generate Models (MITK-GEM) is a free open-source software pipeline to generate finite element models from image data. 
 It is built on top of the [Medical Imaging Interaction Toolkit (MITK)](http://mitk.org/wiki/MITK) Workbench.
 
