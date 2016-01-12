@@ -107,15 +107,16 @@ void GridComparator::compareArrayData(vtkDataArray *_a0, vtkDataArray *_a1, std:
     }
 
     if(numberOfErrors == 0){
-        *out << _prefix << " PASS: same data." << std::endl;
+        *out << _prefix << " PASS: data is equal" << std::endl;
     } else {
-        *out << _prefix << " FAIL: values differ too much" << std::endl;
-        *out << _prefix << " #:      " << numberOfErrors << std::endl;
-        *out << _prefix << " mean:   " << Testing::getMean(diff) << std::endl;
-        *out << _prefix << " median: " << Testing::getMedian(diff) << std::endl;
-        *out << _prefix << " stddev: " << Testing::getStdDev(diff) << std::endl;
-        *out << _prefix << " min:    " << Testing::getMin(diff) << std::endl;
-        *out << _prefix << " max:    " << Testing::getMax(diff) << std::endl;
+        auto errorPerc = 100.0 / ntup * numberOfErrors;
+        *out << _prefix << " FAIL: is not equal" << std::endl;
+        *out << _prefix << " \t " << numberOfErrors << " / " << ntup << " (" << errorPerc << "% error rate)" << std::endl;
+        *out << _prefix << " \t mean error:\t" << Testing::getMean(diff) << std::endl;
+        *out << _prefix << " \t median error:\t" << Testing::getMedian(diff) << std::endl;
+        *out << _prefix << " \t stddev error:\t" << Testing::getStdDev(diff) << std::endl;
+        *out << _prefix << " \t min error:\t" << Testing::getMin(diff) << std::endl;
+        *out << _prefix << " \t max error:\t" << Testing::getMax(diff) << std::endl;
     }
 }
 
