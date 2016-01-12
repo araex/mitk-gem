@@ -15,7 +15,7 @@ public:
      * Selects the correct power law for the given rho and applies it.
      */
     template<class TPixel>
-    inline TPixel operator()(const TPixel &_rho) const {
+    inline double operator()(const TPixel &_rho) const {
         auto it = m_ParamMap.upper_bound(_rho);
 
         if (it != cached_it) {  // the PowerLawParameter comparator is rather slow, so we'll use the iterator
@@ -27,7 +27,7 @@ public:
             cached_it = it;
         }
 
-        return static_cast<TPixel>(cached_param->factor * std::pow(_rho, cached_param->exponent) + cached_param->offset);
+        return cached_param->factor * std::pow(_rho, cached_param->exponent) + cached_param->offset;
     }
 
     /**

@@ -16,8 +16,8 @@ public:
      * Evaluates bone density for a given ct value
      */
     template<class TPixel>
-    inline TPixel operator()(const TPixel &_ct) const {
-        return static_cast<TPixel>((((_ct * m_RhoCt.slope + m_RhoCt.offset) + m_RhoAsh.offset) / m_RhoAsh.divisor) / m_RhoApp.divisor);
+    inline double operator()(const TPixel &_ct) const {
+        return (((_ct * m_RhoCt.slope + m_RhoCt.offset) + m_RhoAsh.offset) / m_RhoAsh.divisor) / m_RhoApp.divisor;
     }
 
     void SetRhoCt(BoneDensityParameters::RhoCt _rhoCt);
