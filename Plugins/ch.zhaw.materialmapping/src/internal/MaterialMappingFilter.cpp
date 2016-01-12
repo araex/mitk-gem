@@ -16,6 +16,7 @@
 #include <vtkImageMathematics.h>
 #include <vtkImageConvolve.h>
 #include <vtkImageCast.h>
+#include <vtkImageWrapPad.h>
 
 
 #include "MaterialMappingFilter.h"
@@ -107,6 +108,7 @@ MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkU
 
 MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage _img, const VtkUGrid _surMesh) {
     auto voi = vtkSmartPointer<vtkExtractVOI>::New();
+    auto padder = vtkSmartPointer<vtkImageWrapPad>::New();
     auto spacing = _img->GetSpacing();
     auto origin = _img->GetOrigin();
     auto extent = _img->GetExtent();
@@ -116,7 +118,13 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage
         return x < a ? a : (x > b ? b : x);
     };
 
-    auto border = 3;
+    auto border = m_NumberOfExtendImageSteps;
+    for(auto i = 0; i < 6; ++i) {
+      extent[i] += border * (2 * (i%2) - 1);
+    }
+    padder->SetInputData(_img);
+    padder->SetOutputWholeExtent(extent);
+    
     int voiExt[6];
     for (auto i = 0; i < 2; ++i) {
         for (auto j = 0; j < 3; ++j) {
@@ -125,7 +133,8 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage
         }
     }
     voi->SetVOI(voiExt);
-    voi->SetInputData(_img);
+    //voi->SetInputData(_img);
+    voi->SetInputConnection(padder->GetOutputPort());
     voi->Update();
     return voi->GetOutput();
 }
