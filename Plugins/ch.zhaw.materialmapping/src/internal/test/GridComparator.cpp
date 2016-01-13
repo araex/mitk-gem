@@ -1,5 +1,6 @@
 #include "GridComparator.h"
 
+#include <cassert>
 #include <iostream>
 #include <sstream>
 #include <vtkCellData.h>
@@ -89,7 +90,9 @@ void GridComparator::compareArrayData(vtkDataArray *_a0, vtkDataArray *_a1, std:
 
     auto ncomp = _a0->GetNumberOfComponents();
     auto ntup = _a1->GetNumberOfTuples();
-    double a0_buf[ncomp], a1_buf[ncomp];
+
+    assert(ncomp < 10);
+    double a0_buf[10], a1_buf[10];
     std::vector<double> diff;
     for(auto j = 0; j<ntup; ++j){
         _a0->GetTuple(j, a0_buf);
