@@ -16,7 +16,9 @@ PowerLawWidget::PowerLawWidget() {
     m_Factor->setDecimals(3);
     m_Factor->setValue(1.0);
     m_Factor->setButtonSymbols(QAbstractSpinBox::NoButtons);
-    m_Factor->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    m_Factor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_Factor->setMinimumWidth(75);
+    m_Factor->setMaximumWidth(250);
 
     m_Exponent = new QDoubleSpinBox;
     m_Exponent->setRange(MinValue, MaxValue);
@@ -24,7 +26,9 @@ PowerLawWidget::PowerLawWidget() {
     m_Exponent->setDecimals(3);
     m_Exponent->setValue(1.0);
     m_Exponent->setButtonSymbols(QAbstractSpinBox::NoButtons);
-    m_Exponent->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    m_Exponent->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_Exponent->setMinimumWidth(75);
+    m_Exponent->setMaximumWidth(200);
 
     m_Offset = new QDoubleSpinBox;
     m_Offset->setRange(MinValue, MaxValue);
@@ -32,7 +36,9 @@ PowerLawWidget::PowerLawWidget() {
     m_Offset->setDecimals(3);
     m_Offset->setValue(0.0);
     m_Offset->setButtonSymbols(QAbstractSpinBox::NoButtons);
-    m_Offset->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    m_Offset->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_Offset->setMinimumWidth(75);
+    m_Offset->setMaximumWidth(250);
 
     m_Min = new QDoubleSpinBox;
     m_Min->setRange(MinValue, MaxValue);
@@ -40,7 +46,9 @@ PowerLawWidget::PowerLawWidget() {
     m_Min->setDecimals(2);
     m_Min->setButtonSymbols(QAbstractSpinBox::NoButtons);
     m_Min->setSpecialValueText(tr("min"));
-    m_Min->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    m_Min->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_Min->setMinimumWidth(50);
+    m_Min->setMaximumWidth(150);
     lockMin(true);
 
     m_Max = new QDoubleSpinBox;
@@ -50,22 +58,24 @@ PowerLawWidget::PowerLawWidget() {
     m_Max->setValue(MinValue); // we're using the setSpecialValue functionality to show text, but that requires the value to be equal to minimum()
     m_Max->setButtonSymbols(QAbstractSpinBox::NoButtons);
     m_Max->setSpecialValueText(tr("max"));
-    m_Max->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    m_Max->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_Max->setMinimumWidth(50);
+    m_Max->setMaximumWidth(150);
     lockMax(true);
 
     auto formulaLayout = new QHBoxLayout;
     formulaLayout->setContentsMargins(0, 0, 0, 0);
     formulaLayout->setMargin(0);
     formulaLayout->setSpacing(0);
-    formulaLayout->addWidget(new QLabel(tr("E = ")));
+    formulaLayout->addWidget(new QLabel(tr("E=")));
     formulaLayout->addWidget(m_Factor);
-    formulaLayout->addWidget(new QLabel(tr("* ρ ^")));
+    formulaLayout->addWidget(new QLabel(tr("*ρ^")));
     formulaLayout->addWidget(m_Exponent);
     formulaLayout->addWidget(new QLabel(tr("+")));
     formulaLayout->addWidget(m_Offset);
     formulaLayout->addSpacerItem(new QSpacerItem(15, 1));
     formulaLayout->addWidget(m_Min);
-    formulaLayout->addWidget(new QLabel(tr(" ≤ ρ < ")));
+    formulaLayout->addWidget(new QLabel(tr("≤ρ<")));
     formulaLayout->addWidget(m_Max);
 
     auto formulaWidget = new QWidget;
@@ -77,6 +87,7 @@ PowerLawWidget::PowerLawWidget() {
     mainLayout->setSpacing(0);
     mainLayout->addWidget(formulaWidget);
     setLayout(mainLayout);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 }
 
 void PowerLawWidget::lockMin(bool _b) {
