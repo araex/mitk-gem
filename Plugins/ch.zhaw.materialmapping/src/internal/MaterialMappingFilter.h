@@ -21,7 +21,19 @@
  * - Bone Density Functor (HU->gHA/cmˆ3)
  * - Power Law Functor
  * This filter outputs a material mapped mesh.
- * TODO: add description
+ *
+ *  1. Creates a working copy of the CT image
+ *  2. Casts the working copy value type to float
+ *  3. Extracts a surface out of the unstructured grid (ugrid)
+ *  4. Extracts a volume of interest (VOI) defined by the axis aligned bounding box of the surface + padding
+ *  5. Evaluates the given functors for each voxel in the VOI
+ *  6. Get a stencil from the surface
+ *  7. (configurable) peel step. TODO: description
+ *  8. (configurable) image extends. TODO: description
+ *  9. Interpolate functor results to mesh nodes (=points)
+ * 10. Calculate element (=cell) values by averaging surrounding node values.
+ * 11. Add point and cell data (both named "E") to the output mesh.
+ * 12. Return mesh
  */
 class MaterialMappingFilter : public mitk::UnstructuredGridToUnstructuredGridFilter {
 public:
