@@ -110,21 +110,25 @@ void CalibrationDataModel::clear() {
 }
 
 BoneDensityParameters::RhoCt CalibrationDataModel::getFittedLine() const {
-    vnl_sparse_matrix<double> A(m_Data.size(), 2);
-    vnl_vector<double> b(m_Data.size());
-
-    auto factor = 1.0;
-    m_SelectedUnit == Unit::mgHA_cm3 ? factor = 1000.0 : 1.0;
-    for (auto i = 0; i < m_Data.size(); ++i) {
-        A(i, 0) = m_Data[i].first;
-        A(i, 1) = 1;
-        b[i] = m_Data[i].second / factor;
-    }
-    vnl_sparse_matrix_linear_system<double> ls(A, b);
     vnl_vector<double> x(2);
     x[0] = x[1] = 0.0;
-    vnl_lsqr lsqr(ls);
-    lsqr.minimize(x);
+
+    if(m_Data.size() > 1) { // on windows, lsqr.minimize crashes when called with too few data points
+        vnl_sparse_matrix<double> A(m_Data.size(), 2);
+        vnl_vector<double> b(m_Data.size());
+
+        auto factor = 1.0;
+        m_SelectedUnit == Unit::mgHA_cm3 ? factor = 1000.0 : 1.0;
+        for (auto i = 0; i < m_Data.size(); ++i) {
+            A(i, 0) = m_Data[i].first;
+            A(i, 1) = 1;
+            b[i] = m_Data[i].second / factor;
+        }
+        vnl_sparse_matrix_linear_system<double> ls(A, b);
+
+        vnl_lsqr lsqr(ls);
+        lsqr.minimize(x);
+    }
 
     return BoneDensityParameters::RhoCt(x[0], x[1]);
 }
