@@ -128,7 +128,17 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage
     voi->SetInputData(_img);
     voi->Update();
 
-    return voi->GetOutput();
+    // vtkExtractVOI has unexpected output scalar types. see https://github.com/araex/mitk-gem/issues/13
+    if(voi->GetOutput()->GetScalarType() != _img->GetScalarType()){
+        MITK_WARN("ch.zhaw.materialmapping") << "vtkExtractVOI produced an unexpected scalar type. Correcting...";
+        auto imageCast = vtkSmartPointer<vtkImageCast>::New();
+        imageCast->SetInputData(voi->GetOutput());
+        imageCast->SetOutputScalarType(_img->GetScalarType());
+        imageCast->Update();
+        return imageCast->GetOutput();
+    } else {
+        return voi->GetOutput();
+    }
 }
 
 MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUGrid _surMesh, const VtkImage _img) {
