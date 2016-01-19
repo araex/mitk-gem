@@ -16,8 +16,6 @@
 #include <vtkImageMathematics.h>
 #include <vtkImageConvolve.h>
 #include <vtkImageCast.h>
-#include <vtkImageWrapPad.h>
-
 
 #include "MaterialMappingFilter.h"
 
@@ -108,29 +106,28 @@ MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkU
 
 MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage _img, const VtkUGrid _surMesh) {
     auto voi = vtkSmartPointer<vtkExtractVOI>::New();
-    auto padder = vtkSmartPointer<vtkImageWrapPad>::New();
     auto spacing = _img->GetSpacing();
     auto origin = _img->GetOrigin();
     auto extent = _img->GetExtent();
     auto bounds = _surMesh->GetBounds();
 
+    auto clamp = [](double x, int a, int b) {
+        return x < a ? a : (x > b ? b : x);
+    };
+
     auto border = static_cast<int>(m_NumberOfExtendImageSteps);
-    int paddedExtents[6];
-    for(auto i = 0; i < 6; ++i) {
-        paddedExtents[i] += extent[i] + border * (2 * (i%2) - 1);
-    }
-    padder->SetInputData(_img);
-    padder->SetOutputWholeExtent(paddedExtents);
 
     int voiExt[6];
     for (auto i = 0; i < 2; ++i) {
         for (auto j = 0; j < 3; ++j) {
-            voiExt[i + 2 * j] = (bounds[i + 2 * j] - origin[j]) / spacing[j] + (2 * i - 1) * border; // coordinate -> index
+            auto val = (bounds[i + 2 * j] - origin[j]) / spacing[j] + (2 * i - 1) * border; // coordinate -> index
+            voiExt[i + 2 * j] = clamp(val, extent[2 * j], extent[2 * j + 1]); // prevent wrap around
         }
     }
     voi->SetVOI(voiExt);
-    voi->SetInputConnection(padder->GetOutputPort());
+    voi->SetInputData(_img);
     voi->Update();
+
     return voi->GetOutput();
 }
 
