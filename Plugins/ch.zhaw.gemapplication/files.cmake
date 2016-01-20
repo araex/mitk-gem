@@ -4,14 +4,12 @@ set(INTERNAL_CPP_FILES
         QmitkExtApplication.cpp
         QmitkExtApplicationPlugin.cpp
         QmitkExtAppWorkbenchAdvisor.cpp
-        QmitkMitkWorkbenchIntroPart.cpp
         perspectives/GemPerspective.cpp
         )
 
 set(MOC_H_FILES
         src/internal/QmitkExtApplication.h
         src/internal/QmitkExtApplicationPlugin.h
-        src/internal/QmitkMitkWorkbenchIntroPart.h
         src/internal/perspectives/GemPerspective.h
         )
 

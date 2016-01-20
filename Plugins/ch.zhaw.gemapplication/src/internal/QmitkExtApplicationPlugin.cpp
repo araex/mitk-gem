@@ -15,7 +15,6 @@ See LICENSE.txt or http://www.mitk.org for details.
 ===================================================================*/
 
 #include "QmitkExtApplicationPlugin.h"
-#include "QmitkMitkWorkbenchIntroPart.h"
 #include "QmitkExtApplication.h"
 #include "perspectives/GemPerspective.h"
 
@@ -52,7 +51,6 @@ void QmitkExtApplicationPlugin::start(ctkPluginContext* context)
   this->context = context;
 
   BERRY_REGISTER_EXTENSION_CLASS(GemPerspective, context);
-  BERRY_REGISTER_EXTENSION_CLASS(QmitkMitkWorkbenchIntroPart, context);
   BERRY_REGISTER_EXTENSION_CLASS(QmitkExtApplication, context);
 
   ctkServiceReference cmRef = context->getServiceReference<ctkConfigurationAdmin>();

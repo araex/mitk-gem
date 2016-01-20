@@ -47,6 +47,7 @@ QmitkExtAppWorkbenchAdvisor::CreateWorkbenchWindowAdvisor(
   QList<QString> excludeViews;
   excludeViews.push_back("org.mitk.views.modules");
   excludeViews.push_back( "org.blueberry.ui.internal.introview" );
+  excludeViews.push_back( "org.blueberry.ui.qt.help" );
   advisor->SetViewExcludeList(excludeViews);
 
   advisor->SetWindowIcon(":/org.mitk.gui.qt.extapplication/icon.png");
