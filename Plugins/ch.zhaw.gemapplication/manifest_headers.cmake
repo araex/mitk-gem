@@ -1,0 +1,5 @@
+set(Plugin-Name "MITK-GEM Workbench")
+set(Plugin-Version "1.0.0")
+set(Plugin-Vendor "ZHAW")
+set(Plugin-ContactAddress "")
+set(Require-Plugin org.mitk.gui.qt.ext)
