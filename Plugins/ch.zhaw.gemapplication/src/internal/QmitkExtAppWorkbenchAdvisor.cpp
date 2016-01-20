@@ -38,12 +38,20 @@ QmitkExtAppWorkbenchAdvisor::CreateWorkbenchWindowAdvisor(berry::IWorkbenchWindo
   // The perspective gets a dedicated menu entry in the help menu
   QList<QString> excludePerspectives;
   excludePerspectives.push_back("org.blueberry.perspectives.help");
+  excludePerspectives.push_back("org.mitk.mitkworkbench.perspectives.editor");
+  excludePerspectives.push_back("org.mitk.mitkworkbench.perspectives.visualization");
   advisor->SetPerspectiveExcludeList(excludePerspectives);
 
   // Exclude some views from the normal view list
   QList<QString> excludeViews;
   excludeViews.push_back("org.mitk.views.modules");
+  excludeViews.push_back("org.blueberry.views.helpindex");
+  excludeViews.push_back("org.blueberry.views.helpsearch");
+  excludeViews.push_back("org.mitk.views.deformableclippingplane");
+  excludeViews.push_back("org.mitk.views.datamanager");
   advisor->SetViewExcludeList(excludeViews);
+
+  // general settings
   advisor->SetWindowIcon(":/ch.zhaw.gemapplication/icon.png");
   advisor->SetProductName("MITK-GEM v2016.2-alpha.3");
   advisor->ShowVersionInfo(false);
