@@ -1,7 +1,7 @@
 #pragma once
 
 #include <berryIPerspectiveFactory.h>
-#include <QObject.h>
+#include <QObject>
 
 class GemPerspective : public QObject, public berry::IPerspectiveFactory
 {
