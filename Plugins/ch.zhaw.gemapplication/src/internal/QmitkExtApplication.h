@@ -14,18 +14,23 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 ===================================================================*/
 
+#ifndef QMITKEXTAPPLICATION_H_
+#define QMITKEXTAPPLICATION_H_
 
-#include <mitkBaseApplication.h>
+#include <berryIApplication.h>
 
-#include <QVariant>
 
-int main(int argc, char** argv)
+class QmitkExtApplication : public QObject, public berry::IApplication
 {
-  // Create a QApplication instance first
-  mitk::BaseApplication myApp(argc, argv);
-  myApp.setApplicationName("MITK-GEM");
-  myApp.setOrganizationName("ZHAW");
+  Q_OBJECT
+  Q_INTERFACES(berry::IApplication)
 
-  myApp.setProperty(mitk::BaseApplication::PROP_APPLICATION, "ch.zhaw.gemapplication");
-  return myApp.run();
-}
+public:
+
+  QmitkExtApplication();
+
+  QVariant Start(berry::IApplicationContext* context) override;
+  void Stop() override;
+};
+
+#endif /*QMITKEXTAPPLICATION_H_*/

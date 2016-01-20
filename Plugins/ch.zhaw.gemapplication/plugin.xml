@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+    <extension id="ch.zhaw.gemapplication" point="org.blueberry.osgi.applications">
+        <application>
+            <run class="QmitkExtApplication"/>
+        </application>
+    </extension>
+
+    <extension id="workbench" point="org.blueberry.core.runtime.products">
+        <product name="MITK Workbench" application="ch.zhaw.gemapplication" />
+    </extension>
+
+    <extension point="org.blueberry.ui.perspectives">
+        <perspective
+                id="org.mitk.perspectives.gem"
+                name="Geometric Modeling"
+                class="GemPerspective"
+                icon="resources/icon.png">
+        </perspective>
+    </extension>
+</plugin>
