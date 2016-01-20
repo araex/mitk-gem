@@ -8,16 +8,7 @@
     </extension>
 
     <extension id="workbench" point="org.blueberry.core.runtime.products">
-        <product name="MITK Workbench" application="org.mitk.qt.extapplication" />
-    </extension>
-
-    <extension point="org.blueberry.ui.intro">
-        <intro id="org.mitk.qt.extapplicationintro"
-               class="QmitkMitkWorkbenchIntroPart"
-               role="editor"/>
-        <introProductBinding
-                productId="org.mitk.gui.qt.extapplication.workbench"
-                introId="org.mitk.qt.extapplicationintro"/>
+        <product name="MITK Workbench" application="ch.zhaw.gemapplication" />
     </extension>
 
     <extension point="org.blueberry.ui.perspectives">
@@ -27,22 +18,5 @@
                 class="GemPerspective"
                 icon="resources/icon.png">
         </perspective>
-    </extension>
-
-    <extension point="org.blueberry.ui.preferencePages">
-        <page
-                id="org.blueberry.ui.preferencePages.Style"
-                name="Themes"
-                category="org.mitk.GeneralPreferencePage"
-                class="berry::ExtensionFactory:stylePreferencePage">
-            <keywordreference id="org.blueberry.ui.style"/>
-        </page>
-        <page
-                id="org.blueberry.ui.preferencePages.Perspectives"
-                name="Perspectives"
-                category="org.mitk.GeneralPreferencePage"
-                class="berry::ExtensionFactory:perspectivesPreferencePage">
-            <keywordReference id="org.blueberry.ui.perspectives"/>
-        </page>
     </extension>
 </plugin>

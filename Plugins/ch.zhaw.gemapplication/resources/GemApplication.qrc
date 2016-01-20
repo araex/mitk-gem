@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/ch.zhaw.gemapplication">
+        <file>icon.png</file>
+    </qresource>
+</RCC>

@@ -25,16 +25,13 @@ void
 QmitkExtAppWorkbenchAdvisor::Initialize(berry::IWorkbenchConfigurer::Pointer configurer)
 {
   berry::QtWorkbenchAdvisor::Initialize(configurer);
-
   configurer->SetSaveAndRestore(true);
 }
 
 berry::WorkbenchWindowAdvisor*
-QmitkExtAppWorkbenchAdvisor::CreateWorkbenchWindowAdvisor(
-        berry::IWorkbenchWindowConfigurer::Pointer configurer)
+QmitkExtAppWorkbenchAdvisor::CreateWorkbenchWindowAdvisor(berry::IWorkbenchWindowConfigurer::Pointer configurer)
 {
-  QmitkExtWorkbenchWindowAdvisor* advisor = new
-    QmitkExtWorkbenchWindowAdvisor(this, configurer);
+  QmitkExtWorkbenchWindowAdvisor* advisor = new QmitkExtWorkbenchWindowAdvisor(this, configurer);
 
   // Exclude the help perspective from org.blueberry.ui.qt.help from
   // the normal perspective list.
@@ -46,13 +43,12 @@ QmitkExtAppWorkbenchAdvisor::CreateWorkbenchWindowAdvisor(
   // Exclude some views from the normal view list
   QList<QString> excludeViews;
   excludeViews.push_back("org.mitk.views.modules");
-  excludeViews.push_back( "org.blueberry.ui.internal.introview" );
-  excludeViews.push_back( "org.blueberry.ui.qt.help" );
   advisor->SetViewExcludeList(excludeViews);
-
-  advisor->SetWindowIcon(":/org.mitk.gui.qt.extapplication/icon.png");
+  advisor->SetWindowIcon(":/ch.zhaw.gemapplication/icon.png");
+  advisor->SetProductName("MITK-GEM v2016.2-alpha.3");
+  advisor->ShowVersionInfo(false);
+  advisor->ShowMitkVersionInfo(false);
   return advisor;
-  //return new QmitkExtWorkbenchWindowAdvisor(this, configurer);
 }
 
 QString QmitkExtAppWorkbenchAdvisor::GetInitialWindowPerspectiveId()

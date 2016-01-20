@@ -30,7 +30,7 @@ class QmitkExtAppWorkbenchAdvisor: public berry::QtWorkbenchAdvisor
 {
 public:
 
-  static const QString DEFAULT_PERSPECTIVE_ID; // = "org.mitk.extapp.defaultperspective"
+  static const QString DEFAULT_PERSPECTIVE_ID;
 
   void Initialize(berry::IWorkbenchConfigurer::Pointer configurer) override;
 

@@ -14,18 +14,15 @@ set(MOC_H_FILES
         )
 
 set(UI_FILES
-        src/internal/perspectives/QmitkWelcomeScreenViewControls.ui
         )
 
 set(CACHED_RESOURCE_FILES
+        resources/icon.png
         plugin.xml
-        resources/icon_research.xpm
-        resources/perspectives/eye.png
         )
 
 set(QRC_FILES
-        resources/QmitkExtApplication.qrc
-        resources/welcome/QmitkWelcomeScreenView.qrc
+        resources/GemApplication.qrc
         )
 
 set(CPP_FILES )
