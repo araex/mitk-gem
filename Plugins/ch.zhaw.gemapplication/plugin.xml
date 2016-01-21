@@ -14,7 +14,7 @@
     <extension point="org.blueberry.ui.perspectives">
         <perspective
                 id="org.mitk.perspectives.gem"
-                name="Geometric Modeling"
+                name="Generate Models"
                 class="GemPerspective"
                 icon="resources/icon.png">
         </perspective>
