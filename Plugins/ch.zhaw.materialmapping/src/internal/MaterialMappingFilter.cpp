@@ -39,6 +39,7 @@ void MaterialMappingFilter::GenerateData() {
     MITK_INFO("ch.zhaw.materialmapping") << "peel step: " << m_DoPeelStep;
     MITK_INFO("ch.zhaw.materialmapping") << "image extend: " << m_NumberOfExtendImageSteps;
     MITK_INFO("ch.zhaw.materialmapping") << "minimum element value: " << m_MinimumElementValue;
+    MITK_INFO("ch.zhaw.materialmapping") << "method: " << (m_Method == Method::Old ? "old" : "new");
 
     // Bug in mitk::Image::GetVtkImageData(), Origin is wrong
     // http://bugs.mitk.org/show_bug.cgi?id=5050
@@ -61,7 +62,18 @@ void MaterialMappingFilter::GenerateData() {
     auto voi = extractVOI(vtkImage, surface);
     inplaceApplyFunctorsToImage(voi);
 
-    auto stencil = createStencil(surface, voi);
+    VtkImage stencil;
+    switch (m_Method) {
+        case Method::Old: {
+            stencil = createStencilOld(surface, voi);
+            break;
+        }
+
+        case Method::New: {
+            stencil = createStencil(surface, voi);
+            break;
+        }
+    }
 
 
     MaterialMappingFilter::VtkImage mask;
@@ -78,7 +90,17 @@ void MaterialMappingFilter::GenerateData() {
     }
 
     for (auto i = 0u; i < m_NumberOfExtendImageSteps; ++i) {
-        inplaceExtendImage(voi, mask, true);
+        switch (m_Method) {
+            case Method::Old: {
+                inplaceExtendImageOld(voi, mask, true);
+                break;
+            }
+
+            case Method::New: {
+                inplaceExtendImage(voi, mask, true);
+                break;
+            }
+        }
     }
 
     if(m_VerboseOutput && m_NumberOfExtendImageSteps > 0){
@@ -172,10 +194,74 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUG
     return stencil->GetOutput();
 }
 
+#include "lib/intetrahedron.c"
+MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencilOld(const VtkUGrid _surMesh, const VtkImage _img) const {
+    auto inside = vtkSmartPointer<vtkImageData>::New();
+    int nt = _surMesh->GetNumberOfCells();
+    int *nxyz = _img->GetDimensions();
+    double *spa = _img->GetSpacing();
+    double *ori = _img->GetOrigin();
+    int *ext = _img->GetExtent();
+    triangle *tri = (triangle *) malloc(nt * sizeof(triangle));
+    point3 *pts = (point3 *) malloc(_surMesh->GetNumberOfPoints() * sizeof(point3));
+    double *x, *y, *z;
+    char *fig;
+
+    inside->CopyStructure(_img);
+    inside->AllocateScalars(VTK_UNSIGNED_CHAR,1);
+    unsigned char *p = (unsigned char *) (inside->GetScalarPointer());
+    for(int i = 0; i < inside->GetNumberOfPoints(); i++)
+        p[i] = 0;
+
+    for(int i = 0; i < _surMesh->GetNumberOfCells(); i++) {
+        tri[i].a = _surMesh->GetCell(i)->GetPointId(0)+1;
+        tri[i].b = _surMesh->GetCell(i)->GetPointId(1)+1;
+        tri[i].c = _surMesh->GetCell(i)->GetPointId(2)+1;
+    }
+    x = (double *) malloc(nxyz[0] * sizeof(double));
+    y = (double *) malloc(nxyz[1] * sizeof(double));
+    z = (double *) malloc(nxyz[2] * sizeof(double));
+    for(int i = 0; i < nxyz[0]; i++)
+        x[i] = ori[0] + (i+ext[0])*spa[0];
+    for(int i = 0; i < nxyz[1]; i++)
+        y[i] = ori[1] + (i+ext[2])*spa[1];
+    for(int i = 0; i < nxyz[2]; i++)
+        z[i] = ori[2] + (i+ext[4])*spa[2];
+
+    for(int i = 0; i < _surMesh->GetNumberOfPoints(); i++) {
+        double pt[3];
+        _surMesh->GetPoints()->GetPoint(i, pt);
+        pts[i].x = pt[0];
+        pts[i].y = pt[1];
+        pts[i].z = pt[2];
+    }
+    fig = (char *) malloc(nxyz[0]*nxyz[1]*nxyz[2]*sizeof(char));
+    for(int i = 0; i < nxyz[0]*nxyz[1]*nxyz[2]; i++)
+        fig[i] = 0;
+    intetrahedron(nt, nxyz[0], nxyz[1], nxyz[2], tri, pts, x, y, z, fig);
+    for(int i = 0; i < nxyz[0]; i++)
+        for(int j = 0; j < nxyz[1]; j++)
+            for(int k = 0; k < nxyz[2]; k++) {
+                p[i+nxyz[0]*(j+nxyz[1]*k)] = fig[j+nxyz[1]*(i+nxyz[0]*k)];
+            }
+    return inside;
+}
+
 MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const VtkImage _img, const VtkImage _mask) {
     // configure
     auto erodeFilter = vtkSmartPointer<vtkImageContinuousErode3D>::New();
-    erodeFilter->SetKernelSize(3, 3, 3);
+    switch (m_Method) {
+        case Method::Old: {
+            erodeFilter->SetKernelSize(3, 3, 1);
+            break;
+        }
+
+        case Method::New: {
+            erodeFilter->SetKernelSize(3, 3, 3);
+            break;
+        }
+    }
+
     auto xorLogic = vtkSmartPointer<vtkImageLogic>::New();
     xorLogic->SetOperationToXor();
     xorLogic->SetOutputTrueValue(1);
@@ -192,7 +278,18 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const Vt
     imgCopy->DeepCopy(_img);
     auto erodedMaskCopy = vtkSmartPointer<vtkImageData>::New();
     erodedMaskCopy->DeepCopy(erodeFilter->GetOutput());
-    inplaceExtendImage(imgCopy, erodedMaskCopy, true);
+
+    switch (m_Method) {
+        case Method::Old: {
+            inplaceExtendImageOld(imgCopy, erodedMaskCopy, true);
+            break;
+        }
+
+        case Method::New: {
+            inplaceExtendImage(imgCopy, erodedMaskCopy, true);
+            break;
+        }
+    }
 
     unsigned char *peelPoints = (unsigned char *) xorLogic->GetOutput()->GetScalarPointer();
     unsigned char *corePoints = (unsigned char *) erodeFilter->GetOutput()->GetScalarPointer();
@@ -263,8 +360,32 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
             maskPoints[i] = 1;
         }
     }
+}
 
+#include "lib/extendsurface3d.c"
+void MaterialMappingFilter::inplaceExtendImageOld(VtkImage _img, VtkImage _mask, bool _maxval) {
+    assert(_img->GetScalarType() == VTK_FLOAT && "Input image scalar type needs to be float!");
 
+    int *dim = _img->GetDimensions();
+    char *cx = (char *) malloc(dim[0]*dim[1]*dim[2]*sizeof(char));
+    float *Ex = (float *) malloc(dim[0]*dim[1]*dim[2]*sizeof(float));
+
+    extendsurface(dim[1],dim[0],dim[2],
+                  (float *) (_img->GetScalarPointer()),
+                  (char *) (_mask->GetScalarPointer()),Ex,cx);
+    float *E = (float *) (_img->GetScalarPointer());
+    unsigned char *c = (unsigned char *) (_mask->GetScalarPointer());
+    for(int i = 0; i < _mask->GetNumberOfPoints(); i++) {
+        if(_maxval) {
+            if(E[i] < Ex[i])
+                E[i] = Ex[i];
+        }
+        else
+            E[i] = Ex[i];
+        c[i] = cx[i];
+    }
+    free(cx);
+    free(Ex);
 }
 
 MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::interpolateToNodes(const VtkUGrid _mesh,
