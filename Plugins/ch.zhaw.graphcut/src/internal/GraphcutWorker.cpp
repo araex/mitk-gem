@@ -1,7 +1,7 @@
 #include <itkBinaryThresholdImageFilter.h>
 
 #include "GraphcutWorker.h"
-#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+#include "WorkbenchUtils.h"
 
 GraphcutWorker::GraphcutWorker()
         : id(WorkbenchUtils::getId())

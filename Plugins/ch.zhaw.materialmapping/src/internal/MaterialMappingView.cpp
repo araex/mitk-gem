@@ -14,7 +14,7 @@
 #include <vtkPointData.h>
 
 #include "MaterialMappingView.h"
-#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+#include "WorkbenchUtils.h"
 #include "GuiHelpers.h"
 #include "MaterialMappingFilter.h"
 #include "PowerLawWidget.h"

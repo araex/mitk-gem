@@ -24,7 +24,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include "ui_GraphcutViewControls.h"
 
 // Utils
-#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+#include "WorkbenchUtils.h"
 
 class GraphcutView : public QmitkAbstractView {
     Q_OBJECT

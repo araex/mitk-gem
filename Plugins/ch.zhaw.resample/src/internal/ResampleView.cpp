@@ -28,7 +28,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 //mitk image
 #include <mitkImage.h>
 
-#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+#include "WorkbenchUtils.h"
 
 const std::string ResampleView::VIEW_ID = "org.mitk.views.resampleview";
 

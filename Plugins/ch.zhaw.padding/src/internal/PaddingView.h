@@ -24,7 +24,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include "ui_PaddingViewControls.h"
 
-#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+#include "WorkbenchUtils.h"
 
 class PaddingView : public QmitkAbstractView {
   Q_OBJECT

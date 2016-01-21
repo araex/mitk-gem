@@ -7,7 +7,7 @@
 
 #include "VolumeMeshView.h"
 #include "SurfaceToUnstructuredGridFilter.h"
-#include "lib/WorkbenchUtils/WorkbenchUtils.h"
+#include "WorkbenchUtils.h"
 
 
 const std::string VolumeMeshView::VIEW_ID = "org.mitk.views.volumemesher";
