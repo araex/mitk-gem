@@ -7,6 +7,7 @@
 
 #include "BoneDensityFunctor.h"
 #include "CalibrationDataModel.h"
+#include "MaterialMappingFilter.h"
 
 /**
  * Utility functions to work with the gui components that are not self managed.
@@ -36,6 +37,9 @@ namespace gui {
      * Gathers all field data needed for the rho calculation and creates a functor with them
      */
     BoneDensityFunctor createDensityFunctor(Ui::MaterialMappingViewControls &_controls, CalibrationDataModel &_dataModel);
+
+    // get selected mapping method
+    MaterialMappingFilter::Method getSelectedMappingMethod(Ui::MaterialMappingViewControls &_controls);
 
     // XML (de-)serialization
     TiXmlElement* serializeDensityGroupStateToXml(Ui::MaterialMappingViewControls &_controls);

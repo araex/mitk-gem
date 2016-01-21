@@ -37,9 +37,18 @@
  */
 class MaterialMappingFilter : public mitk::UnstructuredGridToUnstructuredGridFilter {
 public:
+    enum class Method {
+        Old, // as originally published
+        New // modified and improved
+    };
+
     mitkClassMacro(MaterialMappingFilter, UnstructuredGridToUnstructuredGridFilter)
     itkFactorylessNewMacro(Self)
     itkCloneMacro(Self)
+
+    void SetMethod(Method _m){
+        m_Method = _m;
+    }
 
     void SetIntensityImage(mitk::Image::Pointer _p) {
         m_IntensityImage = _p;
@@ -81,14 +90,16 @@ protected:
     MaterialMappingFilter();
     virtual ~MaterialMappingFilter() { };
 
-    VtkUGrid extractSurface(const VtkUGrid);
-    VtkImage extractVOI(const VtkImage, const VtkUGrid);
-    VtkImage createStencil(const VtkUGrid, const VtkImage); // convert surface to inverted binary mask (=> 0 inside, 1 outside)
+    VtkUGrid extractSurface(const VtkUGrid) const;
+    VtkImage extractVOI(const VtkImage, const VtkUGrid) const;
+    VtkImage createStencil(const VtkUGrid, const VtkImage) const; // convert surface to inverted binary mask (=> 0 inside, 1 outside)
+    VtkImage createStencilOld(const VtkUGrid, const VtkImage) const;
     VtkImage createPeeledMask(const VtkImage _img, const VtkImage _mask);
     void inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxVal); // weighted average in neighborhood, performed in place
+    void inplaceExtendImageOld(VtkImage _img, VtkImage _mask, bool _maxVal);
     void inplaceApplyFunctorsToImage(VtkImage _img);
-    VtkDoubleArray interpolateToNodes(const VtkUGrid, const VtkImage, std::string _name, double _minElem); // "interpolateToNodes". evaluates both functors for each vertex of the mesh
-    VtkDoubleArray nodesToElements(const VtkUGrid, VtkDoubleArray _nodeData, std::string _name);
+    VtkDoubleArray interpolateToNodes(const VtkUGrid, const VtkImage, std::string _name, double _minElem) const; // "interpolateToNodes". evaluates both functors for each vertex of the mesh
+    VtkDoubleArray nodesToElements(const VtkUGrid, VtkDoubleArray _nodeData, std::string _name) const;
 
     mitk::Image::Pointer m_IntensityImage;
     BoneDensityFunctor m_BoneDensityFunctor;
@@ -97,6 +108,7 @@ protected:
     std::string m_VerboseOutputDirectory;
     float m_MinimumElementValue = 0.0;
     unsigned int m_NumberOfExtendImageSteps = 3;
+    Method m_Method;
 
     void writeMetaImageToVerboseOut(const std::string filename, vtkSmartPointer<vtkImageData> image);
 };
