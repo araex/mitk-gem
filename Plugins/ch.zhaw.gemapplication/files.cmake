@@ -1,4 +1,6 @@
-set(SRC_CPP_FILES)
+set(SRC_CPP_FILES
+        WorkbenchUtils.cpp
+        )
 
 set(INTERNAL_CPP_FILES
         QmitkExtApplication.cpp

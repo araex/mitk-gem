@@ -70,13 +70,13 @@ void PaddingView::padLeftButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
     switch (axis) {
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::SAGITTAL, false);
+        case WorkbenchUtils::Axis::AXIAL:
+            addPadding(WorkbenchUtils::Axis::SAGITTAL, false);
             return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::CORONAL, false);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::SAGITTAL, false);
+        case WorkbenchUtils::Axis::SAGITTAL:
+            addPadding(WorkbenchUtils::Axis::CORONAL, false);
+        case WorkbenchUtils::Axis::CORONAL:
+            addPadding(WorkbenchUtils::Axis::SAGITTAL, false);
             return;
     }
 }
@@ -85,13 +85,13 @@ void PaddingView::padRightButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
     switch (axis) {
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::SAGITTAL, true);
+        case WorkbenchUtils::Axis::AXIAL:
+            addPadding(WorkbenchUtils::Axis::SAGITTAL, true);
             return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::CORONAL, true);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::SAGITTAL, true);
+        case WorkbenchUtils::Axis::SAGITTAL:
+            addPadding(WorkbenchUtils::Axis::CORONAL, true);
+        case WorkbenchUtils::Axis::CORONAL:
+            addPadding(WorkbenchUtils::Axis::SAGITTAL, true);
             return;
     }
 
@@ -101,13 +101,13 @@ void PaddingView::padUpButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
     switch (axis) {
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::CORONAL, false);
+        case WorkbenchUtils::Axis::AXIAL:
+            addPadding(WorkbenchUtils::Axis::CORONAL, false);
             return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::AXIAL, true);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::AXIAL, true);
+        case WorkbenchUtils::Axis::SAGITTAL:
+            addPadding(WorkbenchUtils::Axis::AXIAL, true);
+        case WorkbenchUtils::Axis::CORONAL:
+            addPadding(WorkbenchUtils::Axis::AXIAL, true);
             return;
     }
 }
@@ -116,13 +116,13 @@ void PaddingView::padDownButtonPressed() {
     WorkbenchUtils::Axis axis = (WorkbenchUtils::Axis) m_Controls.axisComboBox->currentIndex();
 
     switch (axis) {
-        case WorkbenchUtils::AXIAL:
-            addPadding(WorkbenchUtils::CORONAL, true);
+        case WorkbenchUtils::Axis::AXIAL:
+            addPadding(WorkbenchUtils::Axis::CORONAL, true);
             return;
-        case WorkbenchUtils::SAGITTAL:
-            addPadding(WorkbenchUtils::AXIAL, false);
-        case WorkbenchUtils::CORONAL:
-            addPadding(WorkbenchUtils::AXIAL, false);
+        case WorkbenchUtils::Axis::SAGITTAL:
+            addPadding(WorkbenchUtils::Axis::AXIAL, false);
+        case WorkbenchUtils::Axis::CORONAL:
+            addPadding(WorkbenchUtils::Axis::AXIAL, false);
             return;
     }
 }
