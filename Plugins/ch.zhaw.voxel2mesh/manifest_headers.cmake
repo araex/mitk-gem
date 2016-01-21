@@ -1,5 +1,5 @@
-set(Plugin-Name "Voxel2mesh")
-set(Plugin-Version "0.1")
+set(Plugin-Name "Surface mesher")
+set(Plugin-Version "1.0")
 set(Plugin-Vendor "ZHAW")
-set(Plugin-ContactAddress "")
+set(Plugin-ContactAddress "https://simtk.org/home/mitk-gem")
 set(Require-Plugin org.mitk.gui.qt.common)
