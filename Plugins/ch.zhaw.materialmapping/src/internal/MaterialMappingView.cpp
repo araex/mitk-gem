@@ -112,6 +112,7 @@ void MaterialMappingView::startButtonClicked() {
 
         auto filter = MaterialMappingFilter::New();
         filter->SetInput(ugrid);
+        filter->SetMethod(gui::getSelectedMappingMethod(m_Controls));
         filter->SetIntensityImage(image);
         filter->SetDensityFunctor(gui::createDensityFunctor(m_Controls, m_CalibrationDataModel));
         filter->SetPowerLawFunctor(m_PowerLawWidgetManager->createFunctor());

@@ -106,7 +106,7 @@ QScrollArea{
         <x>0</x>
         <y>0</y>
         <width>678</width>
-        <height>1054</height>
+        <height>1100</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -1258,7 +1258,57 @@ QWidget {
               <property name="horizontalSpacing">
                <number>6</number>
               </property>
-              <item row="1" column="0">
+              <item row="5" column="0">
+               <widget class="QRadioButton" name="oldMethodRadioButton">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Perform peeling</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QCheckBox" name="uParamCheckBox">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>Minimum element data value for ρ. TODO: description</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Number of image extends. TODO: description</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
                <widget class="QSpinBox" name="eParamSpinBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1274,7 +1324,14 @@ QWidget {
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
+              <item row="5" column="1">
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>Current method (as published).</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
                <widget class="QDoubleSpinBox" name="fParamSpinBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -1302,43 +1359,20 @@ QWidget {
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>Number of image extends. TODO: description</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>Minimum element data value for ρ. TODO: description</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="uParamCheckBox">
+              <item row="6" column="0">
+               <widget class="QRadioButton" name="newMethodRadioButton">
                 <property name="text">
                  <string/>
                 </property>
                 <property name="checked">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_15">
+              <item row="6" column="1">
+               <widget class="QLabel" name="label_17">
                 <property name="text">
-                 <string>Perform peeling</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
+                 <string>Improved method. TODO: what has improved?</string>
                 </property>
                </widget>
               </item>

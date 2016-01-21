@@ -1,3 +1,4 @@
+#include <cassert>
 #include "GuiHelpers.h"
 
 BoneDensityFunctor gui::createDensityFunctor(Ui::MaterialMappingViewControls &_controls, CalibrationDataModel &_dataModel) {
@@ -24,6 +25,14 @@ BoneDensityFunctor gui::createDensityFunctor(Ui::MaterialMappingViewControls &_c
         }
     }
     return ret;
+}
+
+MaterialMappingFilter::Method gui::getSelectedMappingMethod(Ui::MaterialMappingViewControls &_controls) {
+    if(_controls.oldMethodRadioButton->isChecked()){
+        return MaterialMappingFilter::Method::Old;
+    }
+    assert(_controls.newMethodRadioButton->isChecked());
+    return MaterialMappingFilter::Method::New;
 }
 
 void gui::setNamedQSSField(QWidget *widget, const char *fieldName, bool bEnabled) {
