@@ -124,7 +124,7 @@ namespace itk {
 
         virtual ~ImageGraphCut3DFilter();
 
-        void GenerateData();
+        void GenerateData() override;
 
         void InitializeGraph(GraphType *, ImageContainer, ProgressReporter &progress);
 

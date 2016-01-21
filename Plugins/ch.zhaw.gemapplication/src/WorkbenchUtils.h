@@ -37,18 +37,18 @@ public:
     /*!
      * Axis enum as used by the MITK workbench
      */
-    enum Axis {
+    enum class Axis {
         AXIAL = 0,
         SAGITTAL = 1,
         CORONAL = 2,
         Axis_MAX_VALUE = CORONAL
     };
 
-    enum Interpolator {
-        INTERPOLATOR_LINEAR = 0,
-        INTERPOLATOR_NEAREST_NEIGHBOR = 1,
-        INTERPOLATOR_GAUSSIAN = 2,
-        INTERPOLATOR_BSPLINE = 3
+    enum class Interpolator {
+        LINEAR = 0,
+        NEAREST_NEIGHBOR = 1,
+        GAUSSIAN = 2,
+        BSPLINE = 3
     };
 
     /*!
@@ -59,13 +59,13 @@ public:
 
         // these names are hardcoded in the MITK workbench
         switch (axis) {
-            case 0:
+            case Axis::AXIAL:
                 renderWindowName = "stdmulti.widget1";
                 break;
-            case 1:
+            case Axis::SAGITTAL:
                 renderWindowName = "stdmulti.widget2";
                 break;
-            case 2:
+            case Axis::CORONAL:
                 renderWindowName = "stdmulti.widget3";
                 break;
             default:
@@ -193,7 +193,7 @@ public:
      * Resample an image
      */
     static mitk::Image::Pointer resampleImage(mitk::Image::Pointer image, unsigned int newDimensions[]){
-        return resampleImage(image, newDimensions, INTERPOLATOR_LINEAR);
+        return resampleImage(image, newDimensions, Interpolator::LINEAR);
     }
 
     static mitk::Image::Pointer resampleImage(mitk::Image::Pointer image, unsigned int newDimensions[], Interpolator interpolationMethod){
@@ -209,7 +209,7 @@ public:
     /*!
      * Conversion between MITK and ITK axis
      */
-    static unsigned int convertAxis(unsigned int axis){
+    static unsigned int convertAxis(Axis axis){
         /* ITK
             0: sagittal
             1: coronal
@@ -220,11 +220,11 @@ public:
             2: coronal
         */
         switch(axis){
-            case 0:
+            case Axis::AXIAL:
                 return 2;
-            case 1:
+            case Axis::SAGITTAL:
                 return 0;
-            case 2:
+            case Axis::CORONAL:
                 return 1;
         }
         return -1;
@@ -321,16 +321,16 @@ private:
         resampleFilter->SetOutputSpacing(outputSpacing);
         resampleFilter->SetSize(outputSize);
         switch(interpolType){
-            case INTERPOLATOR_LINEAR: // the default;
+            case Interpolator::LINEAR: // the default;
                 resampleFilter->SetInterpolator(LinearInterpolatorType::New());
                 break;
-            case INTERPOLATOR_NEAREST_NEIGHBOR:
+            case Interpolator::NEAREST_NEIGHBOR:
                 resampleFilter->SetInterpolator(NearestNeighborInterpolatorType::New());
                 break;
-            case INTERPOLATOR_GAUSSIAN:
+            case Interpolator::GAUSSIAN:
                 resampleFilter->SetInterpolator(GaussianInterpolatorType::New());
                 break;
-            case INTERPOLATOR_BSPLINE:
+            case Interpolator::BSPLINE:
                 resampleFilter->SetInterpolator(BSplineInterpolatorType::New());
                 break;
         }
