@@ -8,7 +8,9 @@
 #include <itkImage.h>
 #include <QList>
 
-class WorkbenchUtils {
+#include <ch_zhaw_gemapplication_Export.h>
+
+class GEM_APPLICATION_EXPORT WorkbenchUtils {
 public:
     enum class Axis {
         AXIAL = 0,
