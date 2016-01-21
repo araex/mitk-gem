@@ -1,4 +1,4 @@
-![MITK-GEM logo](https://github.com/araex/mitk-gem/blob/material-mapping/mitk_gem.png)
+![MITK-GEM logo](https://github.com/araex/mitk-gem/blob/master/mitk_gem.png)
 
 MITK - Generate Models (MITK-GEM) is a free open-source software pipeline to generate finite element models from image data. 
 It is built on top of the [Medical Imaging Interaction Toolkit (MITK)](http://mitk.org/wiki/MITK) Workbench.
@@ -42,12 +42,6 @@ Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.2 in order to buil
 - CMake 3.2+ http://www.cmake.org/download/
 
 # Build instructions 
-Current build status:
-
-Linux ![Build Linux](http://staff-brow-2.zhaw.ch:8111/app/rest/builds/buildType:(id:MitkGem_Build)/statusIcon)
-, OSX ![Build OSX](http://staff-brow-2.zhaw.ch:8111/app/rest/builds/buildType:(id:MitkGem_BuildOsX)/statusIcon)
-, Windows ![Build Windows](http://staff-brow-2.zhaw.ch:8111/app/rest/builds/buildType:(id:MitkGem_BuildWin)/statusIcon)
-
 ## Linux & OSX
 1. Download the source code `git clone https://github.com/araex/mitk-gem src`
 2. Create a new directory for the build `mkdir build`
