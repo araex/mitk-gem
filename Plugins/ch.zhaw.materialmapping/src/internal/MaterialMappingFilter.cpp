@@ -19,7 +19,9 @@
 
 #include "MaterialMappingFilter.h"
 
-MaterialMappingFilter::MaterialMappingFilter() {
+MaterialMappingFilter::MaterialMappingFilter()
+    : m_Method(Method::New)
+{
 }
 
 void MaterialMappingFilter::GenerateData() {

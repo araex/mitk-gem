@@ -37,9 +37,18 @@
  */
 class MaterialMappingFilter : public mitk::UnstructuredGridToUnstructuredGridFilter {
 public:
+    enum class Method {
+        Old, // as originally published
+        New // modified and improved
+    };
+
     mitkClassMacro(MaterialMappingFilter, UnstructuredGridToUnstructuredGridFilter)
     itkFactorylessNewMacro(Self)
     itkCloneMacro(Self)
+
+    void SetMethod(Method _m){
+        m_Method = _m;
+    }
 
     void SetIntensityImage(mitk::Image::Pointer _p) {
         m_IntensityImage = _p;
@@ -97,6 +106,7 @@ protected:
     std::string m_VerboseOutputDirectory;
     float m_MinimumElementValue = 0.0;
     unsigned int m_NumberOfExtendImageSteps = 3;
+    Method m_Method;
 
     void writeMetaImageToVerboseOut(const std::string filename, vtkSmartPointer<vtkImageData> image);
 };
