@@ -1,6 +1,25 @@
 #include "WorkbenchUtils.h"
 
-mitk::SliceNavigationController * WorkbenchUtils::getSliceNavigationControllerByAxis(Axis axis) {
+#include <mitkImageCast.h>
+#include <mitkBaseRenderer.h>
+#include <mitkExtractSliceFilter.h>
+#include <mitkImagePixelReadAccessor.h>
+#include <mitkNodePredicateProperty.h>
+#include <mitkImageAccessByItk.h>
+#include <mitkITKImageImport.h>
+#include <mitkUnstructuredGrid.h>
+
+#include <itkConstantPadImageFilter.h>
+#include <itkIdentityTransform.h>
+#include <itkLinearInterpolateImageFunction.h>
+#include <itkNearestNeighborInterpolateImageFunction.h>
+#include <itkGaussianInterpolateImageFunction.h>
+#include <itkBSplineInterpolateImageFunction.h>
+#include <itkResampleImageFilter.h>
+
+using namespace mitk;
+
+SliceNavigationController *WorkbenchUtils::getSliceNavigationControllerByAxis(Axis axis) {
     std::string renderWindowName;
 
     // these names are hardcoded in the MITK workbench
@@ -18,16 +37,17 @@ mitk::SliceNavigationController * WorkbenchUtils::getSliceNavigationControllerBy
             return NULL;
     }
 
-    return mitk::BaseRenderer::GetInstance(mitk::BaseRenderer::GetRenderWindowByName(renderWindowName))->GetSliceNavigationController();
+    return BaseRenderer::GetInstance(
+            BaseRenderer::GetRenderWindowByName(renderWindowName))->GetSliceNavigationController();
 }
 
 unsigned int WorkbenchUtils::getCurrentIndexByAxis(Axis axis) {
-    mitk::SliceNavigationController* snc = WorkbenchUtils::getSliceNavigationControllerByAxis(axis);
+    SliceNavigationController *snc = WorkbenchUtils::getSliceNavigationControllerByAxis(axis);
     return snc->GetSlice()->GetPos();
 }
 
-mitk::Image * WorkbenchUtils::getImageByDataIndex(QList <mitk::DataNode::Pointer> nodes, int index) {
-    return dynamic_cast<mitk::Image *>(nodes.at(index)->GetData());
+Image *WorkbenchUtils::getImageByDataIndex(QList <DataNode::Pointer> nodes, int index) {
+    return dynamic_cast<Image *>(nodes.at(index)->GetData());
 }
 
 unsigned int WorkbenchUtils::getId() {
@@ -35,27 +55,27 @@ unsigned int WorkbenchUtils::getId() {
     return idCounter++;
 }
 
-mitk::NodePredicateOr::Pointer WorkbenchUtils::createIsImageTypePredicate() {
-    mitk::NodePredicateDataType::Pointer isDiffusionImage = mitk::NodePredicateDataType::New("DiffusionImage");
-    mitk::NodePredicateDataType::Pointer isTensorImage = mitk::NodePredicateDataType::New("TensorImage");
-    mitk::NodePredicateDataType::Pointer isQBallImage = mitk::NodePredicateDataType::New("QBallImage");
-    mitk::NodePredicateOr::Pointer isImageTypePredicate = mitk::NodePredicateOr::New(isDiffusionImage, isTensorImage);
-    isImageTypePredicate = mitk::NodePredicateOr::New(isImageTypePredicate, isQBallImage);
-    isImageTypePredicate = mitk::NodePredicateOr::New(isImageTypePredicate, mitk::TNodePredicateDataType<mitk::Image>::New());
+NodePredicateOr::Pointer WorkbenchUtils::createIsImageTypePredicate() {
+    auto isDiffusionImage = NodePredicateDataType::New("DiffusionImage");
+    auto isTensorImage = NodePredicateDataType::New("TensorImage");
+    auto isQBallImage = NodePredicateDataType::New("QBallImage");
+    auto isImageTypePredicate = NodePredicateOr::New(isDiffusionImage, isTensorImage);
+    isImageTypePredicate = NodePredicateOr::New(isImageTypePredicate, isQBallImage);
+    isImageTypePredicate = NodePredicateOr::New(isImageTypePredicate, TNodePredicateDataType<Image>::New());
     return isImageTypePredicate;
 }
 
-mitk::NodePredicateAnd::Pointer WorkbenchUtils::createIsBinaryImageTypePredicate() {
-    mitk::NodePredicateProperty::Pointer isBinaryPredicate = mitk::NodePredicateProperty::New("binary", mitk::BoolProperty::New(true));
-    return mitk::NodePredicateAnd::New(createIsImageTypePredicate(), isBinaryPredicate);
+NodePredicateAnd::Pointer WorkbenchUtils::createIsBinaryImageTypePredicate() {
+    auto isBinaryPredicate = NodePredicateProperty::New("binary", BoolProperty::New(true));
+    return NodePredicateAnd::New(createIsImageTypePredicate(), isBinaryPredicate);
 }
 
-mitk::NodePredicateDataType::Pointer WorkbenchUtils::createIsUnstructuredGridTypePredicate() {
-    return mitk::NodePredicateDataType::New("UnstructuredGrid");
+NodePredicateDataType::Pointer WorkbenchUtils::createIsUnstructuredGridTypePredicate() {
+    return NodePredicateDataType::New("UnstructuredGrid");
 }
 
-mitk::NodePredicateDataType::Pointer WorkbenchUtils::createIsSurfaceTypePredicate() {
-    return mitk::NodePredicateDataType::New("Surface");
+NodePredicateDataType::Pointer WorkbenchUtils::createIsSurfaceTypePredicate() {
+    return NodePredicateDataType::New("Surface");
 }
 
 unsigned int WorkbenchUtils::convertToItkAxis(Axis axis) {
@@ -68,7 +88,7 @@ unsigned int WorkbenchUtils::convertToItkAxis(Axis axis) {
         1: sagittal
         2: coronal
     */
-    switch(axis){
+    switch (axis) {
         case Axis::AXIAL:
             return 2;
         case Axis::SAGITTAL:
@@ -79,44 +99,42 @@ unsigned int WorkbenchUtils::convertToItkAxis(Axis axis) {
     return -1;
 }
 
-mitk::Image::Pointer WorkbenchUtils::addPadding(mitk::Image::Pointer image, Axis axis, bool append, int numberOfSlices,
-                                                float paddingPixelValue) {
+Image::Pointer WorkbenchUtils::addPadding(Image::Pointer image, Axis axis, bool append, int numberOfSlices, float paddingPixelValue) {
     // AccessByItk is a precompiler macro that sets up the instantiations for all possible template combinations. This will directly
     // reflect in the compile time and required memory since functions for all permutations of PixelTypes and Dimensions will be created.
     // The amount of parameters is not limited. However, a return is not possible. So we work with an out parameter:
-    mitk::Image::Pointer returnImage = mitk::Image::New();
+    Image::Pointer returnImage = Image::New();
     AccessByItk_n(image.GetPointer(), addPaddingItk, (axis, append, numberOfSlices, paddingPixelValue, returnImage));
     return returnImage;
 }
 
-mitk::Image::Pointer WorkbenchUtils::resampleImage(mitk::Image::Pointer image, unsigned int *newDimensions) {
+Image::Pointer WorkbenchUtils::resampleImage(Image::Pointer image, unsigned int *newDimensions) {
     return resampleImage(image, newDimensions, Interpolator::LINEAR);
 }
 
-mitk::Image::Pointer WorkbenchUtils::resampleImage(mitk::Image::Pointer image, unsigned int *newDimensions,
-                                                   Interpolator interpolationMethod) {
+Image::Pointer WorkbenchUtils::resampleImage(Image::Pointer image, unsigned int *newDimensions, Interpolator interpolationMethod) {
     // AccessByItk is a precompiler macro that sets up the instantiations for all possible template combinations. This will directly
     // reflect in the compile time and required memory since functions for all permutations of PixelTypes and Dimensions will be created.
     // The amount of parameters is not limited. However, a return is not possible. So we work with an out parameter:
-    mitk::Image::Pointer returnImage = mitk::Image::New();
+    Image::Pointer returnImage = Image::New();
 
     AccessByItk_n(image.GetPointer(), resampleImageItk, (interpolationMethod, newDimensions, returnImage));
     return returnImage;
 }
 
-template <typename PixelType, unsigned int ImageDimension>
+template<typename PixelType, unsigned int ImageDimension>
 void WorkbenchUtils::addPaddingItk(itk::Image <PixelType, ImageDimension> *itkImage, Axis axis, bool append,
-                                   int numberOfSlices, float pixelValue, mitk::Image::Pointer outImage) {
+                                   int numberOfSlices, float pixelValue, Image::Pointer outImage) {
     // pixel type is templated. The input field for the value is set to float, so the user might enter some invalid values for the image type at hand.
     // since all primitive built-in types have well defined casting behaviour between each other, we'll just do a typecast. we will clip the entered
     // value at PixelTypes min/max to prevent an overflow. The possible loss of precision is ignored.
-    float lower = itk::NumericTraits< PixelType >::min();
-    float upper = itk::NumericTraits< PixelType >::max();
+    float lower = itk::NumericTraits<PixelType>::min();
+    float upper = itk::NumericTraits<PixelType>::max();
     float clippedPixelValue = std::max(lower, std::min(pixelValue, upper));
 
     PixelType paddingPixelValue = (PixelType) clippedPixelValue;
 
-    typedef itk::Image<PixelType, ImageDimension> ImageType;
+    typedef itk::Image <PixelType, ImageDimension> ImageType;
 
     // gather all data
     typename ImageType::SizeType lowerBound;
@@ -125,14 +143,14 @@ void WorkbenchUtils::addPaddingItk(itk::Image <PixelType, ImageDimension> *itkIm
     upperBound.Fill(0);
 
     unsigned int itkAxis = convertToItkAxis(axis);
-    if(append){
-        upperBound[itkAxis]=numberOfSlices ;
-    } else{
-        lowerBound[itkAxis]=numberOfSlices ;
+    if (append) {
+        upperBound[itkAxis] = numberOfSlices;
+    } else {
+        lowerBound[itkAxis] = numberOfSlices;
     }
 
     // setup the filter
-    typedef itk::ConstantPadImageFilter<ImageType, ImageType> PadFilterType;
+    typedef itk::ConstantPadImageFilter <ImageType, ImageType> PadFilterType;
     typename PadFilterType::Pointer padFilter = PadFilterType::New();
     padFilter->SetInput(itkImage);
     padFilter->SetConstant(paddingPixelValue);
@@ -149,13 +167,13 @@ void WorkbenchUtils::addPaddingItk(itk::Image <PixelType, ImageDimension> *itkIm
 
     // get the results and cast them back to mitk. return via out parameter.
     outImage->InitializeByItk(paddedImage.GetPointer());
-    mitk::CastToMitkImage(paddedImage, outImage);
+    CastToMitkImage(paddedImage, outImage);
 }
 
-template <typename PixelType, unsigned int ImageDimension>
+template<typename PixelType, unsigned int ImageDimension>
 void WorkbenchUtils::resampleImageItk(itk::Image <PixelType, ImageDimension> *itkImage, Interpolator interpolType,
-                                      unsigned int *newDimensions, mitk::Image::Pointer outImage) {
-    typedef itk::Image<PixelType, ImageDimension> ImageType;
+                                      unsigned int *newDimensions, Image::Pointer outImage) {
+    typedef itk::Image <PixelType, ImageDimension> ImageType;
 
     // get original image informations
     const typename ImageType::RegionType &inputRegion = itkImage->GetLargestPossibleRegion();
@@ -164,8 +182,8 @@ void WorkbenchUtils::resampleImageItk(itk::Image <PixelType, ImageDimension> *it
 
     // calculate spacing
     double outputSpacing[ImageDimension];
-    itk::Size<ImageDimension> outputSize;
-    for(unsigned int i=0; i<ImageDimension; ++i){
+    itk::Size <ImageDimension> outputSize;
+    for (unsigned int i = 0; i < ImageDimension; ++i) {
         outputSpacing[i] = inputSpacing[i] * (double) inputDimensions[i] / newDimensions[i];
         outputSize[i] = newDimensions[i];
     }
@@ -177,19 +195,19 @@ void WorkbenchUtils::resampleImageItk(itk::Image <PixelType, ImageDimension> *it
 
     // interpolator typedefs
     typedef double CoordinateType;
-    typedef itk::LinearInterpolateImageFunction<ImageType, CoordinateType> LinearInterpolatorType;
-    typedef itk::NearestNeighborInterpolateImageFunction<ImageType, CoordinateType> NearestNeighborInterpolatorType;
-    typedef itk::GaussianInterpolateImageFunction<ImageType, CoordinateType> GaussianInterpolatorType;
-    typedef itk::BSplineInterpolateImageFunction<ImageType, CoordinateType> BSplineInterpolatorType;
+    typedef itk::LinearInterpolateImageFunction <ImageType, CoordinateType> LinearInterpolatorType;
+    typedef itk::NearestNeighborInterpolateImageFunction <ImageType, CoordinateType> NearestNeighborInterpolatorType;
+    typedef itk::GaussianInterpolateImageFunction <ImageType, CoordinateType> GaussianInterpolatorType;
+    typedef itk::BSplineInterpolateImageFunction <ImageType, CoordinateType> BSplineInterpolatorType;
 
     // set up the filter
-    typedef itk::ResampleImageFilter<ImageType, ImageType> ResampleFilterType;
+    typedef itk::ResampleImageFilter <ImageType, ImageType> ResampleFilterType;
     typename ResampleFilterType::Pointer resampleFilter = ResampleFilterType::New();
     resampleFilter->SetTransform(transform);
     resampleFilter->SetOutputOrigin(itkImage->GetOrigin());
     resampleFilter->SetOutputSpacing(outputSpacing);
     resampleFilter->SetSize(outputSize);
-    switch(interpolType){
+    switch (interpolType) {
         case Interpolator::LINEAR: // the default;
             resampleFilter->SetInterpolator(LinearInterpolatorType::New());
             break;
@@ -208,5 +226,5 @@ void WorkbenchUtils::resampleImageItk(itk::Image <PixelType, ImageDimension> *it
 
     // get the results and cast them back to mitk. return via out parameter.
     outImage->InitializeByItk(resampleFilter->GetOutput());
-    mitk::CastToMitkImage(resampleFilter->GetOutput(), outImage);
+    CastToMitkImage(resampleFilter->GetOutput(), outImage);
 }

@@ -1,38 +1,15 @@
 #pragma once
 
-// MITK
 #include <mitkImage.h>
-#include <mitkImageCast.h>
-#include <mitkBaseRenderer.h>
 #include <mitkSliceNavigationController.h>
-#include <mitkExtractSliceFilter.h>
-#include <mitkImagePixelReadAccessor.h>
 #include <mitkNodePredicateOr.h>
 #include <mitkNodePredicateAnd.h>
 #include <mitkNodePredicateDataType.h>
-#include <mitkNodePredicateProperty.h>
-#include <mitkImageAccessByItk.h>
-#include <mitkITKImageImport.h>
-#include <mitkUnstructuredGrid.h>
-
-// ITK
 #include <itkImage.h>
-#include <itkConstantPadImageFilter.h>
-#include <itkIdentityTransform.h>
-#include <itkLinearInterpolateImageFunction.h>
-#include <itkNearestNeighborInterpolateImageFunction.h>
-#include <itkGaussianInterpolateImageFunction.h>
-#include <itkBSplineInterpolateImageFunction.h>
-#include <itkResampleImageFilter.h>
-
-// QT
 #include <QList>
 
 class WorkbenchUtils {
 public:
-    /*!
-     * Axis enum as used by the MITK workbench
-     */
     enum class Axis {
         AXIAL = 0,
         SAGITTAL = 1,
@@ -50,7 +27,7 @@ public:
     /*!
      * Returns the slice navigation controller used by the mitk render windows for the given axis
      */
-    static mitk::SliceNavigationController* getSliceNavigationControllerByAxis(Axis axis);
+    static mitk::SliceNavigationController *getSliceNavigationControllerByAxis(Axis axis);
 
     /*!
      * Returns the currently selected slice index for the given axis
@@ -62,7 +39,7 @@ public:
      * @param[in] nodes node selection as returned by the datastorage.
      * @param[in] index index in the given node selection. 0 by default.
      */
-    static mitk::Image* getImageByDataIndex(QList <mitk::DataNode::Pointer> nodes, int index = 0);
+    static mitk::Image *getImageByDataIndex(QList <mitk::DataNode::Pointer> nodes, int index = 0);
 
     /*!
      * Returns an incremental ID. Uses an unsigned int counter, so the returned values may overflow.
@@ -115,9 +92,11 @@ public:
     static unsigned int convertToItkAxis(Axis axis);
 
 private:
-    template <typename PixelType, unsigned int ImageDimension>
-    static void addPaddingItk(itk::Image<PixelType, ImageDimension>* itkImage, Axis axis, bool append, int numberOfSlices, float pixelValue, mitk::Image::Pointer outImage);
+    template<typename PixelType, unsigned int ImageDimension>
+    static void addPaddingItk(itk::Image <PixelType, ImageDimension> *itkImage, Axis axis, bool append,
+                              int numberOfSlices, float pixelValue, mitk::Image::Pointer outImage);
 
-    template <typename PixelType, unsigned int ImageDimension>
-    static void resampleImageItk(itk::Image<PixelType, ImageDimension>* itkImage, Interpolator interpolType, unsigned int newDimensions[], mitk::Image::Pointer outImage);
+    template<typename PixelType, unsigned int ImageDimension>
+    static void resampleImageItk(itk::Image <PixelType, ImageDimension> *itkImage, Interpolator interpolType,
+                                 unsigned int newDimensions[], mitk::Image::Pointer outImage);
 };
