@@ -95,7 +95,7 @@ void MaterialMappingFilter::GenerateData() {
     this->GetOutput()->SetVtkUnstructuredGrid(out);
 }
 
-MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkUGrid _volMesh) {
+MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkUGrid _volMesh) const {
     auto surfaceFilter = vtkSmartPointer<vtkUnstructuredGridGeometryFilter>::New();
     surfaceFilter->SetInputData(_volMesh);
     surfaceFilter->PassThroughCellIdsOn();
@@ -104,7 +104,7 @@ MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkU
     return surfaceFilter->GetOutput();
 }
 
-MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage _img, const VtkUGrid _surMesh) {
+MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage _img, const VtkUGrid _surMesh) const {
     auto voi = vtkSmartPointer<vtkExtractVOI>::New();
     auto spacing = _img->GetSpacing();
     auto origin = _img->GetOrigin();
@@ -141,7 +141,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage
     }
 }
 
-MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUGrid _surMesh, const VtkImage _img) {
+MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUGrid _surMesh, const VtkImage _img) const {
     // configure
     auto gridToPolyDataFilter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New();
 
@@ -268,7 +268,7 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
 MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::interpolateToNodes(const VtkUGrid _mesh,
                                                                                       const VtkImage _img,
                                                                                       std::string _name,
-                                                                                      double _minElem) {
+                                                                                      double _minElem) const {
     auto data = vtkSmartPointer<vtkDoubleArray>::New();
     data->SetNumberOfComponents(1);
     data->SetName(_name.c_str());
@@ -289,7 +289,7 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::interpolateToNodes(
 
 MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(const VtkUGrid _mesh,
                                                                              VtkDoubleArray _nodeData,
-                                                                             std::string _name) {
+                                                                             std::string _name) const {
     auto data = vtkSmartPointer<vtkDoubleArray>::New();
     data->SetNumberOfComponents(1);
     data->SetName(_name.c_str());
