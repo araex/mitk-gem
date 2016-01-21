@@ -28,12 +28,18 @@
  *  4. Extracts a volume of interest (VOI) defined by the axis aligned bounding box of the surface + padding
  *  5. Evaluates the given functors for each voxel in the VOI
  *  6. Get a stencil from the surface
- *  7. (configurable) peel step. TODO: description
- *  8. (configurable) image extends. TODO: description
+ *  7. (configurable) peel step.
+ *  8. (configurable) image extends.
  *  9. Interpolate functor results to mesh nodes (=points)
  * 10. Calculate element (=cell) values by averaging surrounding node values.
  * 11. Add point and cell data (both named "E") to the output mesh.
  * 12. Return mesh
+ *
+ * Note that 2 different mapping methods are available:
+ * - The "old" or current one. This is the approach discussed in the paper.
+ * - A newer one containing some improvements for more accurate results that have yet to be verified.
+ *
+ * The mapping is functionally equivalent to assignElasticModulus.cc 26.11.15 (v3).
  */
 class MaterialMappingFilter : public mitk::UnstructuredGridToUnstructuredGridFilter {
 public:

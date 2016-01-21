@@ -194,6 +194,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUG
     return stencil->GetOutput();
 }
 
+// uses some C code and unsafe function calls
 #include "lib/intetrahedron.c"
 MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencilOld(const VtkUGrid _surMesh, const VtkImage _img) const {
     auto inside = vtkSmartPointer<vtkImageData>::New();
@@ -304,7 +305,6 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const Vt
     return erodeFilter->GetOutput();
 }
 
-// as in assignElasticModulus.cc 26.11.15 (v3)
 void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bool _maxval) {
     assert(_img->GetScalarType() == VTK_FLOAT && "Input image scalar type needs to be float!");
 
@@ -362,6 +362,7 @@ void MaterialMappingFilter::inplaceExtendImage(VtkImage _img, VtkImage _mask, bo
     }
 }
 
+// uses some C code and unsafe function calls
 #include "lib/extendsurface3d.c"
 void MaterialMappingFilter::inplaceExtendImageOld(VtkImage _img, VtkImage _mask, bool _maxval) {
     assert(_img->GetScalarType() == VTK_FLOAT && "Input image scalar type needs to be float!");
