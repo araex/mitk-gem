@@ -135,7 +135,7 @@ if(NOT MITK_DIR)
 
   set(MITK_SOURCE_DIR "" CACHE PATH "MITK source code location. If empty, MITK will be cloned from MITK_GIT_REPOSITORY")
   set(MITK_GIT_REPOSITORY "https://github.com/araex/MITK" CACHE STRING "The git repository for cloning MITK")
-  set(MITK_GIT_TAG "4362de124a3488bff8a5bef14a4f3546d444c1cc" CACHE STRING "The git tag/hash to be used when cloning from MITK_GIT_REPOSITORY")
+  set(MITK_GIT_TAG "4e4bc9c44410f1c84506950d95e01edfe4ea4e21" CACHE STRING "The git tag/hash to be used when cloning from MITK_GIT_REPOSITORY")
   set(MITK_WHITELIST "VCLab")
   mark_as_advanced(MITK_SOURCE_DIR MITK_GIT_REPOSITORY MITK_GIT_TAG)
 
