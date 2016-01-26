@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QShortcut>
+#include <QtConcurrentRun>
 #include <mitkImage.h>
 #include <tinyxml.h>
 
@@ -21,6 +22,13 @@
 
 const std::string MaterialMappingView::VIEW_ID = "org.mitk.views.materialmapping";
 Ui::MaterialMappingViewControls *MaterialMappingView::controls = nullptr;
+
+MaterialMappingView::~MaterialMappingView() {
+    if(m_WorkerFuture.isRunning()){
+        QMessageBox::warning(0, "", "Material mapping is still processing data. Waiting for task to finish...");
+        m_WorkerFuture.waitForFinished();
+    }
+}
 
 void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
     m_Controls.setupUi(parent);
@@ -110,28 +118,36 @@ void MaterialMappingView::startButtonClicked() {
         mitk::Image::Pointer image = dynamic_cast<mitk::Image *>(imageNode->GetData());
         mitk::UnstructuredGrid::Pointer ugrid = dynamic_cast<mitk::UnstructuredGrid *>(ugridNode->GetData());
 
-        auto filter = MaterialMappingFilter::New();
-        filter->SetInput(ugrid);
-        filter->SetMethod(gui::getSelectedMappingMethod(m_Controls));
-        filter->SetIntensityImage(image);
-        filter->SetDensityFunctor(gui::createDensityFunctor(m_Controls, m_CalibrationDataModel));
-        filter->SetPowerLawFunctor(m_PowerLawWidgetManager->createFunctor());
-        filter->SetDoPeelStep(m_Controls.uParamCheckBox->isChecked());
-        filter->SetNumberOfExtendImageSteps(m_Controls.eParamSpinBox->value());
-        filter->SetMinElementValue(m_Controls.fParamSpinBox->value());
+        auto work = [this, image, ugrid]() {
+            m_Controls.scrollArea->setEnabled(false);
 
-        auto result = filter->GetOutput();
-        filter->Update();
+            auto filter = MaterialMappingFilter::New();
+            filter->SetInput(ugrid);
+            filter->SetMethod(gui::getSelectedMappingMethod(m_Controls));
+            filter->SetIntensityImage(image);
+            filter->SetDensityFunctor(gui::createDensityFunctor(m_Controls, m_CalibrationDataModel));
+            filter->SetPowerLawFunctor(m_PowerLawWidgetManager->createFunctor());
+            filter->SetDoPeelStep(m_Controls.uParamCheckBox->isChecked());
+            filter->SetNumberOfExtendImageSteps(m_Controls.eParamSpinBox->value());
+            filter->SetMinElementValue(m_Controls.fParamSpinBox->value());
 
-        mitk::DataNode::Pointer newNode = mitk::DataNode::New();
-        newNode->SetData(result);
+            auto result = filter->GetOutput();
+            filter->Update();
 
-        // set some node properties
-        newNode->SetProperty("name", mitk::StringProperty::New("material mapped mesh"));
-        newNode->SetProperty("layer", mitk::IntProperty::New(1));
+            mitk::DataNode::Pointer newNode = mitk::DataNode::New();
+            newNode->SetData(result);
 
-        // add result to the storage
-        this->GetDataStorage()->Add(newNode);
+            // set some node properties
+            newNode->SetProperty("name", mitk::StringProperty::New("material mapped mesh"));
+            newNode->SetProperty("layer", mitk::IntProperty::New(1));
+
+            // add result to the storage
+            this->GetDataStorage()->Add(newNode);
+
+            m_Controls.scrollArea->setEnabled(true);
+        };
+
+        m_WorkerFuture = QtConcurrent::run(work);
     }
 }
 

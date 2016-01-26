@@ -3,6 +3,7 @@
 #include <berryISelectionListener.h>
 
 #include <QmitkAbstractView.h>
+#include <QFuture>
 
 #include "ui_MaterialMappingViewControls.h"
 #include "CalibrationDataModel.h"
@@ -14,6 +15,8 @@ class MaterialMappingView : public QmitkAbstractView {
     Q_OBJECT
 
 public:
+    ~MaterialMappingView();
+
     static const std::string VIEW_ID;
     // enables building of the GUI unit testing
     static const bool TESTING = true;
@@ -39,4 +42,6 @@ protected:
 
     std::unique_ptr<Testing::Runner> m_TestRunner;
     std::unique_ptr<PowerLawWidgetManager> m_PowerLawWidgetManager;
+
+    QFuture<void> m_WorkerFuture;
 };

@@ -17,6 +17,8 @@
 #include <vtkImageConvolve.h>
 #include <vtkImageCast.h>
 
+#include <mitkProgressbar.h>
+
 #include "MaterialMappingFilter.h"
 
 MaterialMappingFilter::MaterialMappingFilter()
@@ -27,6 +29,8 @@ MaterialMappingFilter::MaterialMappingFilter()
 void MaterialMappingFilter::GenerateData() {
     mitk::UnstructuredGrid::Pointer inputGrid = const_cast<mitk::UnstructuredGrid *>(this->GetInput());
     if (inputGrid.IsNull() || m_IntensityImage == nullptr || m_IntensityImage.IsNull()) { return; }
+
+    mitk::ProgressBar::GetInstance()->AddStepsToDo(7);
 
     auto importedVtkImage = const_cast<vtkImageData *>(m_IntensityImage->GetVtkImageData());
     vtkSmartPointer <vtkUnstructuredGrid> vtkInputGrid = inputGrid->GetVtkUnstructuredGrid();
@@ -57,10 +61,12 @@ void MaterialMappingFilter::GenerateData() {
     imageCast->SetOutputScalarTypeToFloat();
     imageCast->Update();
     vtkImage = imageCast->GetOutput();
+    mitk::ProgressBar::GetInstance()->Progress();
 
     auto surface = extractSurface(vtkInputGrid);
     auto voi = extractVOI(vtkImage, surface);
     inplaceApplyFunctorsToImage(voi);
+    mitk::ProgressBar::GetInstance()->Progress();
 
     VtkImage stencil;
     switch (m_Method) {
@@ -74,6 +80,7 @@ void MaterialMappingFilter::GenerateData() {
             break;
         }
     }
+    mitk::ProgressBar::GetInstance()->Progress();
 
 
     MaterialMappingFilter::VtkImage mask;
@@ -82,6 +89,7 @@ void MaterialMappingFilter::GenerateData() {
     } else {
         mask = voi;
     }
+    mitk::ProgressBar::GetInstance()->Progress();
 
     if(m_VerboseOutput){
         writeMetaImageToVerboseOut("1_VOI_emorgan.mhd", voi);
@@ -102,6 +110,7 @@ void MaterialMappingFilter::GenerateData() {
             }
         }
     }
+    mitk::ProgressBar::GetInstance()->Progress();
 
     if(m_VerboseOutput && m_NumberOfExtendImageSteps > 0){
         writeMetaImageToVerboseOut("4_Peeled_mask_extended.mhd", mask);
@@ -110,6 +119,7 @@ void MaterialMappingFilter::GenerateData() {
 
     auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
     auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
+    mitk::ProgressBar::GetInstance()->Progress();
 
     // create ouput
     auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
@@ -117,6 +127,7 @@ void MaterialMappingFilter::GenerateData() {
     out->GetPointData()->AddArray(nodeDataE);
     out->GetCellData()->AddArray(elementDataE);
     this->GetOutput()->SetVtkUnstructuredGrid(out);
+    mitk::ProgressBar::GetInstance()->Progress();
 }
 
 MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkUGrid _volMesh) const {
