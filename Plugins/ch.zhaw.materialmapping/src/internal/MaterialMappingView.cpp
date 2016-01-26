@@ -147,7 +147,7 @@ void MaterialMappingView::startButtonClicked() {
             m_Controls.scrollArea->setEnabled(true);
         };
 
-        m_WorkerFuture = QtConcurrent::run(work);
+        m_WorkerFuture = QtConcurrent::run(static_cast<std::function<void()>>(work));
     }
 }
 
