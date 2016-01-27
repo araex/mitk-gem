@@ -15,8 +15,12 @@ public:
 
     static const std::string VIEW_ID;
 
+    signals:
+    void invalidMeshingResultDetected();
+
 protected slots:
     void generateButtonClicked();
+    void meshingFailed();
 
 protected:
     virtual void CreateQtPartControl(QWidget *parent) override;

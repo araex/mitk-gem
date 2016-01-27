@@ -48,6 +48,7 @@ void VolumeMeshView::CreateQtPartControl(QWidget *parent) {
 
     // signals
     connect(m_Controls.generateButton, SIGNAL(clicked()), this, SLOT(generateButtonClicked()));
+    connect(this, SIGNAL(invalidMeshingResultDetected()), this, SLOT(meshingFailed()));
 }
 
 void VolumeMeshView::generateButtonClicked() {
@@ -67,12 +68,17 @@ void VolumeMeshView::generateButtonClicked() {
             meshFilter->Update();
 
             mitk::DataNode::Pointer newNode = mitk::DataNode::New();
-            newNode->SetData(meshFilter->GetOutput());
-            newNode->SetProperty("name", mitk::StringProperty::New("tetrahedral mesh"));
-            newNode->SetProperty("layer", mitk::IntProperty::New(1));
+            auto mesh = meshFilter->GetOutput();
+            if(mesh->GetVtkUnstructuredGrid()->GetNumberOfPoints() == 0){
+                emit invalidMeshingResultDetected();
+            } else {
+                newNode->SetData(mesh);
+                newNode->SetProperty("name", mitk::StringProperty::New("tetrahedral mesh"));
+                newNode->SetProperty("layer", mitk::IntProperty::New(1));
 
-            // add result to the storage
-            this->GetDataStorage()->Add( newNode );
+                // add result to the storage
+                this->GetDataStorage()->Add( newNode );
+            }
 
             mitk::ProgressBar::GetInstance()->Progress(2);
             m_Controls.container->setEnabled(true);
@@ -80,5 +86,8 @@ void VolumeMeshView::generateButtonClicked() {
 
         m_WorkerFuture = QtConcurrent::run(static_cast<std::function<void()>>(work));
     }
+}
 
+void VolumeMeshView::meshingFailed() {
+    QMessageBox::warning(0, "", "Volume meshing failed. Make sure the input surface is closed.");
 }

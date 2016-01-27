@@ -17,7 +17,7 @@
 #include <vtkImageConvolve.h>
 #include <vtkImageCast.h>
 
-#include <mitkProgressbar.h>
+#include <mitkProgressBar.h>
 
 #include "MaterialMappingFilter.h"
 
