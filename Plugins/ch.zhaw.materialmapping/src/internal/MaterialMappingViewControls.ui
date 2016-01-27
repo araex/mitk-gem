@@ -1168,7 +1168,7 @@ QWidget {
               <item row="4" column="1">
                <widget class="QLabel" name="label_3">
                 <property name="text">
-                 <string>Minimum element data value for ρ. TODO: description</string>
+                 <string>Minimum element data value for ρ.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -1178,7 +1178,7 @@ QWidget {
               <item row="3" column="1">
                <widget class="QLabel" name="label">
                 <property name="text">
-                 <string>Number of image extends. TODO: description</string>
+                 <string>Number of image extends.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -1249,7 +1249,7 @@ QWidget {
               <item row="6" column="1">
                <widget class="QLabel" name="label_17">
                 <property name="text">
-                 <string>Improved method. TODO: what has improved?</string>
+                 <string>Improved method.</string>
                 </property>
                </widget>
               </item>
