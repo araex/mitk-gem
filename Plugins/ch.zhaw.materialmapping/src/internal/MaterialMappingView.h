@@ -31,6 +31,7 @@ protected slots:
     void createEMorganImage();
     void loadParametersButtonClicked();
     void saveParametersButtonClicked();
+    bool eventFilter(QObject *, QEvent *) override;
 
 protected:
     virtual void CreateQtPartControl(QWidget *parent) override;

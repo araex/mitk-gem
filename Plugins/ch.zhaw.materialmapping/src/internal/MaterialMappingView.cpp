@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QShortcut>
 #include <QtConcurrentRun>
+#include <QWidget>
 #include <mitkImage.h>
 #include <tinyxml.h>
 
@@ -91,6 +92,11 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
 
     m_Controls.unitSelectionComboBox->setCurrentIndex(0);
     unitSelectionChanged(0);
+
+    for(auto *widget : m_Controls.scrollAreaWidgetContents->findChildren<QWidget*>()){
+        widget->installEventFilter(this);
+        widget->setFocusPolicy(Qt::StrongFocus); // prevents wheel from setting the focus
+    }
 }
 
 void MaterialMappingView::deleteSelectedRows() {
@@ -301,4 +307,13 @@ void MaterialMappingView::loadParametersButtonClicked() {
     } else {
         MITK_INFO << "canceled file open dialog.";
     }
+}
+
+bool MaterialMappingView::eventFilter(QObject *_obj, QEvent *_ev) {
+    // ignores scroll wheel events on all spin boxes
+    if(_ev->type() == QEvent::Wheel && qobject_cast<QAbstractSpinBox*>(_obj)){
+        _ev->ignore();
+        return true;
+    }
+    return QObject::eventFilter(_obj, _ev);
 }
