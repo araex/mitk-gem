@@ -21,7 +21,7 @@ PowerLawWidget::PowerLawWidget() {
     m_Factor->setMaximumWidth(250);
 
     m_Exponent = new QDoubleSpinBox;
-    m_Exponent->setRange(MinValue, MaxValue);
+    m_Exponent->setRange(0.001, MaxValue);
     m_Exponent->setSingleStep(0.01);
     m_Exponent->setDecimals(3);
     m_Exponent->setValue(1.0);
