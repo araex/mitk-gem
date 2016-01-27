@@ -89,5 +89,5 @@ void VolumeMeshView::generateButtonClicked() {
 }
 
 void VolumeMeshView::meshingFailed() {
-    QMessageBox::warning(0, "", "Volume meshing failed. Make sure the input surface is closed.");
+    QMessageBox::warning(0, "Error", "Volume meshing failed. Make sure the input surface is closed. Check the <a href='http://araex.github.io/mitk-gem-site/#faq'>MITK-GEM FAQ</a> for more information.");
 }
