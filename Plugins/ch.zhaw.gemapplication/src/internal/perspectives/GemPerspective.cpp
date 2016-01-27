@@ -20,7 +20,7 @@ void GemPerspective::CreateInitialLayout(berry::IPageLayout::Pointer _layout)
     rightFolder->AddView("org.mitk.views.volumemesher");
     rightFolder->AddView("org.mitk.views.materialmapping");
 
-    auto bottomRightFolder = _layout->CreateFolder("bottomright", berry::IPageLayout::BOTTOM, 0.75f, "right");
+    auto bottomRightFolder = _layout->CreateFolder("bottomright", berry::IPageLayout::BOTTOM, 0.77f, "right");
     bottomRightFolder->AddView("org.mitk.views.imagecropper");
     bottomRightFolder->AddView("org.mitk.views.paddingview");
     bottomRightFolder->AddView("org.mitk.views.resampleview");

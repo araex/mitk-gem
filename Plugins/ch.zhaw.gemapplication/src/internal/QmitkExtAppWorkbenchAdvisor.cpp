@@ -53,7 +53,7 @@ QmitkExtAppWorkbenchAdvisor::CreateWorkbenchWindowAdvisor(berry::IWorkbenchWindo
 
   // general settings
   advisor->SetWindowIcon(":/ch.zhaw.gemapplication/icon.png");
-  advisor->SetProductName("MITK-GEM v2016.2-alpha.3");
+  advisor->SetProductName("MITK-GEM v2016.2-beta.1");
   advisor->ShowVersionInfo(false);
   advisor->ShowMitkVersionInfo(false);
   return advisor;
