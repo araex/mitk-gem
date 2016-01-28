@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <vtkDoubleArray.h>
 #include <vtkCellArray.h>
 #include <vtkPointData.h>
@@ -467,7 +469,7 @@ void MaterialMappingFilter::inplaceApplyFunctorsToImage(MaterialMappingFilter::V
     for (auto i = 0; i < _img->GetNumberOfPoints(); i++) {
         auto valCT = _img->GetPointData()->GetScalars()->GetTuple1(i);
         auto valDensity = m_BoneDensityFunctor(valCT);
-        auto valEMorgan = m_PowerLawFunctor(valDensity);
+        auto valEMorgan = m_PowerLawFunctor(std::max(valDensity, 0.0));
         _img->GetPointData()->GetScalars()->SetTuple1(i, valEMorgan);
     }
 }
