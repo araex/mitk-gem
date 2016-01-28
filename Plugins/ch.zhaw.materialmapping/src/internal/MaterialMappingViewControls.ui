@@ -1147,8 +1147,11 @@ QWidget {
               </item>
               <item row="2" column="1">
                <widget class="QLabel" name="label_15">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When selected, a layer of weak material (low bone density due to partial volume effects) is removed from the CT data, as long as there is a dense layer remaining for subsequent dilation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
-                 <string>Perform peeling</string>
+                 <string>Perform custom erosion.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -1157,6 +1160,9 @@ QWidget {
               </item>
               <item row="2" column="0">
                <widget class="QCheckBox" name="uParamCheckBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When selected, a layer of weak material (low bone density due to partial volume effects) is removed from the CT data, as long as there is a dense layer remaining for subsequent dilation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -1167,8 +1173,11 @@ QWidget {
               </item>
               <item row="4" column="1">
                <widget class="QLabel" name="label_3">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The minimum modulus E assigned to the output. All values smaller are clipped to this minimum.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
-                 <string>Minimum element data value for ρ.</string>
+                 <string>Minimum element data value for E.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -1177,8 +1186,11 @@ QWidget {
               </item>
               <item row="3" column="1">
                <widget class="QLabel" name="label">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom dilation iteratively extends the denser bone properties below the voxel layer with weak material outwards relative to the surface of the bone volume, effectively thickening the cortical shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
-                 <string>Number of image extends.</string>
+                 <string>Custom dilation iterations.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -1192,6 +1204,9 @@ QWidget {
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom dilation iteratively extends the denser bone properties below the voxel layer with weak material outwards relative to the surface of the bone volume, effectively thickening the cortical shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="minimum">
                  <number>1</number>
@@ -1227,6 +1242,9 @@ QWidget {
                   <width>80</width>
                   <height>16777215</height>
                  </size>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The minimum modulus E assigned to the output. All values smaller are clipped to this minimum.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="minimum">
                  <double>0.000000000000000</double>
