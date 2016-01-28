@@ -254,7 +254,7 @@ void MaterialMappingView::saveParametersButtonClicked() {
 
         TiXmlDocument doc;
         auto root = new TiXmlElement("MaterialMapping");
-        root->SetAttribute("Version", "2016.2");
+        root->SetAttribute("Version", WorkbenchUtils::getGemVersion());
         auto calibration = m_CalibrationDataModel.serializeToXml();
         auto bonedensity = gui::serializeDensityGroupStateToXml(m_Controls);
         auto powerlaws = m_PowerLawWidgetManager->serializeToXml();

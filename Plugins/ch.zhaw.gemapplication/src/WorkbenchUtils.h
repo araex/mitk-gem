@@ -26,6 +26,10 @@ public:
         BSPLINE = 3
     };
 
+    static std::string getGemMajorVersion();
+    static std::string getGemMinorVersion();
+    static std::string getGemVersion();
+
     /*!
      * Returns the slice navigation controller used by the mitk render windows for the given axis
      */

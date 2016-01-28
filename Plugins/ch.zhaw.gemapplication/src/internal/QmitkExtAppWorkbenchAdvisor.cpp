@@ -18,6 +18,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include "internal/QmitkExtApplicationPlugin.h"
 
 #include <QmitkExtWorkbenchWindowAdvisor.h>
+#include "WorkbenchUtils.h"
 
 const QString QmitkExtAppWorkbenchAdvisor::DEFAULT_PERSPECTIVE_ID = "org.mitk.perspectives.gem";
 
@@ -53,7 +54,8 @@ QmitkExtAppWorkbenchAdvisor::CreateWorkbenchWindowAdvisor(berry::IWorkbenchWindo
 
   // general settings
   advisor->SetWindowIcon(":/ch.zhaw.gemapplication/icon.png");
-  advisor->SetProductName("MITK-GEM v2016.2-beta.1");
+  auto titleString = "MITK-GEM " + WorkbenchUtils::getGemVersion();
+  advisor->SetProductName(titleString.c_str());
   advisor->ShowVersionInfo(false);
   advisor->ShowMitkVersionInfo(false);
   return advisor;

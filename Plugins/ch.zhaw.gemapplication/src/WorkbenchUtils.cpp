@@ -19,6 +19,18 @@
 
 using namespace mitk;
 
+std::string WorkbenchUtils::getGemMajorVersion(){
+    return "2016.2";
+}
+
+std::string WorkbenchUtils::getGemMinorVersion() {
+    return "-beta.1";
+}
+
+std::string WorkbenchUtils::getGemVersion() {
+    return getGemMajorVersion()+getGemMinorVersion();
+}
+
 SliceNavigationController *WorkbenchUtils::getSliceNavigationControllerByAxis(Axis axis) {
     std::string renderWindowName;
 
