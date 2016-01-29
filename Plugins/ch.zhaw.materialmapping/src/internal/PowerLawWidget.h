@@ -4,6 +4,7 @@
 #include <limits>
 #include <QWidget>
 #include <QDoubleSpinBox>
+#include <QEvent>
 
 #include "PowerLawFunctor.h"
 
@@ -12,6 +13,9 @@
  */
 class PowerLawWidget : public QWidget {
     Q_OBJECT
+
+public slots:
+        bool eventFilter(QObject *, QEvent *) override;
 
 public:
     static const double MinValue, MaxValue;

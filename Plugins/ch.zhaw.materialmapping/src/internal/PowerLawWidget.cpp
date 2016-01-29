@@ -88,6 +88,11 @@ PowerLawWidget::PowerLawWidget() {
     mainLayout->addWidget(formulaWidget);
     setLayout(mainLayout);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
+    for(auto *children : findChildren<QWidget*>()){
+        children->installEventFilter(this);
+        children->setFocusPolicy(Qt::StrongFocus); // prevents wheel from setting the focus
+    }
 }
 
 void PowerLawWidget::lockMin(bool _b) {
@@ -139,4 +144,13 @@ void PowerLawWidget::setExponent(double _d) {
 
 void PowerLawWidget::setOffset(double _d) {
     m_Offset->setValue(_d);
+}
+
+bool PowerLawWidget::eventFilter(QObject *_obj, QEvent *_ev) {
+    // ignores scroll wheel events on all spin boxes
+    if(_ev->type() == QEvent::Wheel && qobject_cast<QAbstractSpinBox*>(_obj)){
+        _ev->ignore();
+        return true;
+    }
+    return QObject::eventFilter(_obj, _ev);
 }
