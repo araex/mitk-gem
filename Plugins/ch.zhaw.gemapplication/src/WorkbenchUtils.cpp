@@ -8,6 +8,8 @@
 #include <mitkImageAccessByItk.h>
 #include <mitkITKImageImport.h>
 #include <mitkUnstructuredGrid.h>
+#include <mitkMapper.h>
+#include <mitkVtkMapper.h>
 
 #include <itkConstantPadImageFilter.h>
 #include <itkIdentityTransform.h>
@@ -16,6 +18,11 @@
 #include <itkGaussianInterpolateImageFunction.h>
 #include <itkBSplineInterpolateImageFunction.h>
 #include <itkResampleImageFilter.h>
+
+#include <vtkAssembly.h>
+#include <vtkCellData.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkProp3DCollection.h>
 
 using namespace mitk;
 
@@ -239,4 +246,57 @@ void WorkbenchUtils::resampleImageItk(itk::Image <PixelType, ImageDimension> *it
     // get the results and cast them back to mitk. return via out parameter.
     outImage->InitializeByItk(resampleFilter->GetOutput());
     CastToMitkImage(resampleFilter->GetOutput(), outImage);
+}
+
+vtkActor* WorkbenchUtils::getVtk3dActor(mitk::DataNode::Pointer _node){
+    auto renderer = mitk::BaseRenderer::GetInstance(mitk::BaseRenderer::GetRenderWindowByName("stdmulti.widget4"));
+    mitk::VtkMapper::Pointer mapper = dynamic_cast<mitk::VtkMapper*>(_node->GetMapper(mitk::BaseRenderer::Standard3D));
+    if (mapper.IsNull()) {
+        return nullptr;
+    }
+
+    auto assembly = dynamic_cast<vtkAssembly*>(mapper->GetVtkProp(renderer));
+    if(assembly){
+        vtkProp3DCollection* collection = assembly->GetParts();
+        collection->InitTraversal();
+        vtkProp3D* prop3d = 0;
+        do{
+            prop3d = collection->GetNextProp3D();
+            vtkActor* actor = dynamic_cast<vtkActor*>(prop3d);
+            if(actor){
+                return actor;
+            }
+        } while (prop3d != collection->GetLastProp3D());
+    }
+    else{
+        return dynamic_cast<vtkActor*>(mapper->GetVtkProp(renderer));
+    }
+
+    return nullptr;
+}
+
+mitk::TransferFunctionProperty::Pointer WorkbenchUtils::createColorTransferFunction(double min, double max){
+    auto tf = mitk::TransferFunction::New();
+    tf->SetMin(min);
+    tf->SetMax(max);
+
+    auto f = [min, max](double _v){
+        return (max - min) * _v + min;
+    };
+
+    // As discussed by K. Moreland in "Diverging Color Maps for Scientific Visualization"
+    // https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/ColorMapsExpanded.pdf
+    tf->AddRGBPoint(f(0.0), 59.0/255.0, 76.0/255.0, 192.0/255.0);
+    tf->AddRGBPoint(f(0.25), 141.0/255.0, 176.0/255.0, 254.0/255.0);
+    tf->AddRGBPoint(f(0.375), 184.0/255.0, 208.0/255.0, 249.0/255.0);
+    tf->AddRGBPoint(f(0.4375), 204.0/255.0, 217.0/255.0, 238.0/255.0);
+    tf->AddRGBPoint(f(0.46875), 213.0/255.0, 219.0/255.0, 230.0/255.0);
+    tf->AddRGBPoint(f(0.5), 221.0/255.0, 221.0/255.0, 221.0/255.0);
+    tf->AddRGBPoint(f(0.53125), 229.0/255.0, 216.0/255.0, 209.0/255.0);
+    tf->AddRGBPoint(f(0.5625), 236.0/255.0, 211.0/255.0, 197.0/255.0);
+    tf->AddRGBPoint(f(0.625), 245.0/255.0, 196.0/255.0, 173.0/255.0);
+    tf->AddRGBPoint(f(0.75), 244.0/255.0, 154.0/255.0, 123.0/255.0);
+    tf->AddRGBPoint(f(1.0), 180.0/255.0, 4.0/255.0, 38.0/255.0);
+
+    return mitk::TransferFunctionProperty::New(tf);
 }

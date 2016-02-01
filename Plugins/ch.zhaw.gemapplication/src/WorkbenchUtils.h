@@ -5,7 +5,10 @@
 #include <mitkNodePredicateOr.h>
 #include <mitkNodePredicateAnd.h>
 #include <mitkNodePredicateDataType.h>
+#include <mitkTransferFunctionProperty.h>
+#include <mitkUnstructuredGrid.h>
 #include <itkImage.h>
+#include <vtkActor.h>
 #include <QList>
 
 #include <ch_zhaw_gemapplication_Export.h>
@@ -96,6 +99,16 @@ public:
      * Conversion between MITK and ITK axis
      */
     static unsigned int convertToItkAxis(Axis axis);
+
+    /*!
+     * Gets the 3d vtkActor given a data node. nullptr if the data node has no 3d actor
+     */
+    static vtkActor* getVtk3dActor(mitk::DataNode::Pointer);
+
+    /*!
+     * Creates a default color transfer function property for a given value range
+     */
+    static mitk::TransferFunctionProperty::Pointer createColorTransferFunction(double min, double max);
 
 private:
     template<typename PixelType, unsigned int ImageDimension>
