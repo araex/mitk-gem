@@ -153,9 +153,9 @@ include(mitkFunctionGetVersion)
 # Set project specific options and variables (NOT available during superbuild)
 #-----------------------------------------------------------------------------
 
-set(${PROJECT_NAME}_VERSION_MAJOR "0")
-set(${PROJECT_NAME}_VERSION_MINOR "1")
-set(${PROJECT_NAME}_VERSION_PATCH "1")
+set(${PROJECT_NAME}_VERSION_MAJOR "2016")
+set(${PROJECT_NAME}_VERSION_MINOR "2")
+set(${PROJECT_NAME}_VERSION_PATCH "0")
 set(${PROJECT_NAME}_VERSION_STRING "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
 # Ask the user if a console window should be shown with the applications
@@ -355,14 +355,11 @@ add_subdirectory(Apps/MITK-GEM)
 # set MITK cpack variables
 include(mitkSetupCPack)
 
-# Customize CPack variables for this project
-include(CPackSetup)
-
-list(APPEND CPACK_CREATE_DESKTOP_LINKS "${MY_APP_NAME}")
-
 configure_file(${MITK_SOURCE_DIR}/MITKCPackOptions.cmake.in
                ${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake @ONLY)
-set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake")
+
+# Customize CPack variables for this project
+include(CPackSetup)
 
 # include CPack model once all variables are set
 include(CPack)
