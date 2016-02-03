@@ -255,17 +255,17 @@ bool UGVisualizationView::IsRenderable(mitk::DataNode::Pointer _node) {
 void UGVisualizationView::ActivateFieldData(mitk::DataNode::Pointer _node, QString _name) {
     auto actor = WorkbenchUtils::getVtk3dActor(_node);
     auto ugrid = dynamic_cast<mitk::UnstructuredGrid *>(_node->GetData());
-    auto cname = _name.toStdString().c_str();
+    auto name = _name.toStdString(); // was _name.toStdString().c_str(). But calling c_str() on a rvalue will leave a dangling pointer resulting in undefined behavior.
 
     vtkDataArray *data;
     switch(m_Controls.scalarModeComboBox->currentIndex()){
         case 0:
             actor->GetMapper()->SetScalarModeToUsePointFieldData();
-            data = ugrid->GetVtkUnstructuredGrid()->GetPointData()->GetArray(cname);
+            data = ugrid->GetVtkUnstructuredGrid()->GetPointData()->GetArray(name.c_str());
             break;
         case 1:
             actor->GetMapper()->SetScalarModeToUseCellFieldData();
-            data = ugrid->GetVtkUnstructuredGrid()->GetCellData()->GetArray(cname);
+            data = ugrid->GetVtkUnstructuredGrid()->GetCellData()->GetArray(name.c_str());
             break;
         default:
             QMessageBox::warning(NULL, "Error", "Invalid scalar mode selection.");
@@ -275,6 +275,6 @@ void UGVisualizationView::ActivateFieldData(mitk::DataNode::Pointer _node, QStri
     if(data){
         auto range = data->GetRange();
         _node->SetProperty("TransferFunction", WorkbenchUtils::createColorTransferFunction(range[0], range[1]));
-        actor->GetMapper()->SelectColorArray(cname);
+        actor->GetMapper()->SelectColorArray(name.c_str());
     }
 }
