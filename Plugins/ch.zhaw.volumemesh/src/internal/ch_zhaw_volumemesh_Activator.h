@@ -1,27 +1,19 @@
-/*===================================================================
+/**
+ *  MITK-GEM: Volume Mesher Plugin
+ *
+ *  Copyright (c) 2016, Zurich University of Applied Sciences, School of Engineering, T. Fitze, Y. Pauchard
+ *  Copyright (c) 2016, ETH Zurich, Institute for Biomechanics, B. Helgason
+ *  Copyright (c) 2016, University of Iceland, Mechanical Engineering and Computer Science, H. Pállson
+ *
+ *  Licensed under GNU General Public License 3.0 or later.
+ *  Some rights reserved.
+ */
 
-The Medical Imaging Interaction Toolkit (MITK)
-
-Copyright (c) German Cancer Research Center,
-Division of Medical and Biological Informatics.
-All rights reserved.
-
-This software is distributed WITHOUT ANY WARRANTY; without
-even the implied warranty of MERCHANTABILITY or FITNESS FOR
-A PARTICULAR PURPOSE.
-
-See LICENSE.txt or http://www.mitk.org for details.
-
-===================================================================*/
-
-
-#ifndef ch_zhaw_volumemesh_Activator_h
-#define ch_zhaw_volumemesh_Activator_h
+#pragma once
 
 #include <ctkPluginActivator.h>
 
 namespace mitk {
-
     class ch_zhaw_volumemesh_Activator :
             public QObject, public ctkPluginActivator {
         Q_OBJECT
@@ -29,15 +21,8 @@ namespace mitk {
         Q_PLUGIN_METADATA(IID "ch_zhaw_volumemesh")
 #endif
                 Q_INTERFACES(ctkPluginActivator)
-
     public:
-
         void start(ctkPluginContext *context);
-
         void stop(ctkPluginContext *context);
-
-    }; // ch_zhaw_volumemesh_Activator
-
+    };
 }
-
-#endif // ch_zhaw_volumemesh_Activator_h

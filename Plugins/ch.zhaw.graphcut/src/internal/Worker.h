@@ -1,9 +1,11 @@
 /**
-* Baseclass for workers
-*
-* TODO:
-* (-)
-*/
+ *  MITK-GEM: Graphcut Plugin
+ *
+ *  Copyright (c) 2016, Zurich University of Applied Sciences, School of Engineering, T. Fitze, Y. Pauchard
+ *
+ *  Licensed under GNU General Public License 3.0 or later.
+ *  Some rights reserved.
+ */
 
 #ifndef __Worker_h_
 #define __Worker_h_

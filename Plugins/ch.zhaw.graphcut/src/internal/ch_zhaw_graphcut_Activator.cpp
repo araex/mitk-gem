@@ -1,19 +1,11 @@
-/*===================================================================
-
-The Medical Imaging Interaction Toolkit (MITK)
-
-Copyright (c) German Cancer Research Center,
-Division of Medical and Biological Informatics.
-All rights reserved.
-
-This software is distributed WITHOUT ANY WARRANTY; without
-even the implied warranty of MERCHANTABILITY or FITNESS FOR
-A PARTICULAR PURPOSE.
-
-See LICENSE.txt or http://www.mitk.org for details.
-
-===================================================================*/
-
+/**
+ *  MITK-GEM: Graphcut Plugin
+ *
+ *  Copyright (c) 2016, Zurich University of Applied Sciences, School of Engineering, T. Fitze, Y. Pauchard
+ *
+ *  Licensed under GNU General Public License 3.0 or later.
+ *  Some rights reserved.
+ */
 
 #include "ch_zhaw_graphcut_Activator.h"
 

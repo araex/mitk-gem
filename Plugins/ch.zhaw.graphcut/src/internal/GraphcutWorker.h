@@ -1,9 +1,11 @@
 /**
-* Graphcut pipeline. Inherits from the WorkerBaseClass in order to work correctly with QThreads
-*
-* TODO:
-* (-)
-*/
+ *  MITK-GEM: Graphcut Plugin
+ *
+ *  Copyright (c) 2016, Zurich University of Applied Sciences, School of Engineering, T. Fitze, Y. Pauchard
+ *
+ *  Licensed under GNU General Public License 3.0 or later.
+ *  Some rights reserved.
+ */
 
 #ifndef __GraphcutWorker_h__
 #define __GraphcutWorker_h__

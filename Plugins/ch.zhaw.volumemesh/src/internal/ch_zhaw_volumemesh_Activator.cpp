@@ -1,28 +1,19 @@
-/*===================================================================
-
-The Medical Imaging Interaction Toolkit (MITK)
-
-Copyright (c) German Cancer Research Center,
-Division of Medical and Biological Informatics.
-All rights reserved.
-
-This software is distributed WITHOUT ANY WARRANTY; without
-even the implied warranty of MERCHANTABILITY or FITNESS FOR
-A PARTICULAR PURPOSE.
-
-See LICENSE.txt or http://www.mitk.org for details.
-
-===================================================================*/
-
+/**
+ *  MITK-GEM: Volume Mesher Plugin
+ *
+ *  Copyright (c) 2016, Zurich University of Applied Sciences, School of Engineering, T. Fitze, Y. Pauchard
+ *  Copyright (c) 2016, ETH Zurich, Institute for Biomechanics, B. Helgason
+ *  Copyright (c) 2016, University of Iceland, Mechanical Engineering and Computer Science, H. Pállson
+ *
+ *  Licensed under GNU General Public License 3.0 or later.
+ *  Some rights reserved.
+ */
 
 #include "ch_zhaw_volumemesh_Activator.h"
-
 #include <QtPlugin>
-
 #include "VolumeMeshView.h"
 
 namespace mitk {
-
     void ch_zhaw_volumemesh_Activator::start(ctkPluginContext *context) {
         BERRY_REGISTER_EXTENSION_CLASS(VolumeMeshView, context)
     }
@@ -30,7 +21,6 @@ namespace mitk {
     void ch_zhaw_volumemesh_Activator::stop(ctkPluginContext *context) {
         Q_UNUSED(context)
     }
-
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

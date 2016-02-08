@@ -1,20 +1,11 @@
-/* * *
- * Image GraphCut 3D Segmentation
- * Copyright (C) 2014 Visual Computing Lab (visualcomputinglab@dornbirn.zhaw.ch)
- * Institute of Applied Information Technology, Zurich University of Applied Sciences
+/**
+ *  Image GraphCut 3D Segmentation
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ *  Copyright (c) 2016, Zurich University of Applied Sciences, School of Engineering, T. Fitze, Y. Pauchard
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * See LICENSE.txt for details.
- * * */
+ *  Licensed under GNU General Public License 3.0 or later.
+ *  Some rights reserved.
+ */
 
 #ifndef __ImageGraphCut3DFilter_h_
 #define __ImageGraphCut3DFilter_h_
