@@ -89,7 +89,7 @@ void MaterialMappingFilter::GenerateData() {
     if (m_DoPeelStep) {
         mask = createPeeledMask(voi, stencil);
     } else {
-        mask = voi;
+        mask = stencil;
     }
     mitk::ProgressBar::GetInstance()->Progress();
 
