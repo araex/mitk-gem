@@ -1209,7 +1209,7 @@ QWidget {
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom dilation iteratively extends the denser bone properties below the voxel layer with weak material outwards relative to the surface of the bone volume, effectively thickening the cortical shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="minimum">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                 <property name="value">
                  <number>3</number>
