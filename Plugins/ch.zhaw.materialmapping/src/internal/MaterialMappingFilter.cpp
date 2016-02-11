@@ -75,8 +75,7 @@ void MaterialMappingFilter::GenerateData() {
     }
 
     auto surface = extractSurface(vtkInputGrid);
-//    auto voi = extractVOI(vtkImage, surface);
-    auto voi = vtkImage;
+    auto voi = extractVOI(vtkImage, surface);
 
     if(m_VerboseOutput){
         writeMetaImageToVerboseOut("03_ct_voi.mhd", vtkImage);
@@ -85,20 +84,14 @@ void MaterialMappingFilter::GenerateData() {
     inplaceApplyFunctorsToImage(voi);
     mitk::ProgressBar::GetInstance()->Progress();
 
+    // pad with 0 slices
     auto padder = vtkSmartPointer<vtkImageConstantPad>::New();
     auto extent = voi->GetExtent();
-
     auto border = static_cast<int>(m_NumberOfExtendImageSteps + 1);
     int paddedExtents[6];
     for(auto i = 0; i < 6; ++i) {
         paddedExtents[i] = extent[i] + border * (2 * (i%2) - 1);
     }
-//    paddedExtents[0] = extent[0];
-//    paddedExtents[1] = extent[1];
-//    paddedExtents[2] = extent[2];
-//    paddedExtents[3] = extent[3];
-//    paddedExtents[4] = extent[4] - 2;
-//    paddedExtents[5] = extent[5] + 2;
     padder->SetInputData(voi);
     padder->SetOutputWholeExtent(paddedExtents);
     padder->SetConstant(0);
@@ -153,16 +146,6 @@ void MaterialMappingFilter::GenerateData() {
         writeMetaImageToVerboseOut("07_peeled_mask_extended.mhd", mask);
         writeMetaImageToVerboseOut("08_e_voi_extended.mhd", voi);
     }
-
-//    if(m_VerboseOutput){
-//        for (auto i = 0; i < vtkImage->GetNumberOfPoints(); i++) {
-//            auto valCT = vtkImage->GetPointData()->GetScalars()->GetTuple1(i);
-//            auto valDensity = m_BoneDensityFunctor(valCT);
-//            auto valEMorgan = m_PowerLawFunctor(std::max(valDensity, 0.0));
-//            vtkImage->GetPointData()->GetScalars()->SetTuple1(i, valEMorgan);
-//        }
-//        writeMetaImageToVerboseOut("05_e_stack.mhd", vtkImage);
-//    }
 
     auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
     auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
