@@ -57,6 +57,10 @@ void MaterialMappingFilter::GenerateData() {
     vtkImage->ShallowCopy(importedVtkImage);
     vtkImage->SetOrigin(mitkOrigin[0], mitkOrigin[1], mitkOrigin[2]);
 
+    if(m_VerboseOutput){
+        writeMetaImageToVerboseOut("01_ct_input.mhd", vtkImage);
+    }
+
     // we would not gain anything by handling integer type scalars individually, so it's easier to work with floats from the beginning
     auto imageCast = vtkSmartPointer<vtkImageCast>::New();
     imageCast->SetInputData(vtkImage);
@@ -65,8 +69,17 @@ void MaterialMappingFilter::GenerateData() {
     vtkImage = imageCast->GetOutput();
     mitk::ProgressBar::GetInstance()->Progress();
 
+    if(m_VerboseOutput){
+        writeMetaImageToVerboseOut("02_ct_casted.mhd", vtkImage);
+    }
+
     auto surface = extractSurface(vtkInputGrid);
     auto voi = extractVOI(vtkImage, surface);
+
+    if(m_VerboseOutput){
+        writeMetaImageToVerboseOut("03_ct_voi.mhd", vtkImage);
+    }
+
     inplaceApplyFunctorsToImage(voi);
     mitk::ProgressBar::GetInstance()->Progress();
 
@@ -94,9 +107,9 @@ void MaterialMappingFilter::GenerateData() {
     mitk::ProgressBar::GetInstance()->Progress();
 
     if(m_VerboseOutput){
-        writeMetaImageToVerboseOut("1_VOI_emorgan.mhd", voi);
-        writeMetaImageToVerboseOut("2_Stencil.mhd", stencil);
-        writeMetaImageToVerboseOut("3_Peeled_mask.mhd", mask);
+        writeMetaImageToVerboseOut("04_e_voi.mhd", voi);
+        writeMetaImageToVerboseOut("05_Stencil.mhd", stencil);
+        writeMetaImageToVerboseOut("06_peeled_mask.mhd", mask);
     }
 
     for (auto i = 0u; i < m_NumberOfExtendImageSteps; ++i) {
@@ -115,8 +128,8 @@ void MaterialMappingFilter::GenerateData() {
     mitk::ProgressBar::GetInstance()->Progress();
 
     if(m_VerboseOutput && m_NumberOfExtendImageSteps > 0){
-        writeMetaImageToVerboseOut("4_Peeled_mask_extended.mhd", mask);
-        writeMetaImageToVerboseOut("5_VOI_emorgan_extended", voi);
+        writeMetaImageToVerboseOut("07_peeled_mask_extended.mhd", mask);
+        writeMetaImageToVerboseOut("08_e_voi_extended", voi);
     }
 
     auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
