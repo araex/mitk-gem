@@ -43,7 +43,7 @@ for i in range(len(A)):
                 elemn4 = A[i][24:32]
                 line1_flag = True
                 elems.append([elemn1, elemn2, elemn3, elemn4])
-    elif A[i][0:5] == '*NODE':
+    if A[i][0:5] == '*NODE':
         node_flag = True
         elem_flag = False
     elif A[i][0:8] == '*ELEMENT':
