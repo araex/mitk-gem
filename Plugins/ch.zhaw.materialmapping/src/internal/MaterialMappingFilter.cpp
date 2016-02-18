@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <limits>
 
 #include <vtkDoubleArray.h>
 #include <vtkCellArray.h>
@@ -462,33 +463,47 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
 
     for (auto i = 0; i < _mesh->GetNumberOfCells(); ++i) {
         auto cellpoints = _mesh->GetCell(i)->GetPoints();
-        double centroid[3] = {0, 0, 0};
-
-        // TODO:
-//        auto tetra = static_cast<vtkTetra*>(_mesh->GetCell(i));
-//        tetra->GetParametricCenter(centroid);
-
         auto numberOfNodes = cellpoints->GetNumberOfPoints();
-        for (auto j = 0;
-             j < numberOfNodes; ++j) { // TODO: original comment "4 corners of a tetrahedra", but this is actually 10?
+
+        // get centroid
+        double centroid[3] = {0, 0, 0};
+        for (auto j = 0; j < numberOfNodes; ++j) {
             auto cellpoint = cellpoints->GetPoint(j);
             for (auto k = 0; k < 3; ++k) {
                 centroid[k] = (centroid[k] * j + cellpoint[k]) / (j + 1);
             }
         }
 
-        double value = 0, denom = 0;
-        for (auto j = 0; j < numberOfNodes; ++j) { // TODO: original comment "Ten nodes of a quadratic tetrahedra"
+        // calculate nodal weight = squared distance to centroid
+        double minDistance = std::numeric_limits<double>::max();;
+        double squaredDistances[numberOfNodes];
+        for (auto j = 0; j < numberOfNodes; ++j) {
             auto cellpoint = cellpoints->GetPoint(j);
-            double weight = 0;
+            double squaredDistance = 0;
             for (auto k = 0; k < 3; ++k) {
-                weight += pow(cellpoint[k] - centroid[k], 2);
+                squaredDistance += pow(cellpoint[k] - centroid[k], 2);
             }
-            weight = 1.0 / sqrt(weight);
-            denom += weight;
-            value += weight * _nodeData->GetTuple1(_mesh->GetCell(i)->GetPointId(j));
+            squaredDistance = sqrt(squaredDistance);
+            squaredDistances[j] = squaredDistance;
+
+            // if a node aligns with the centroid, we set it's weight to the next closest one
+            if(squaredDistance == 0)
+                squaredDistance = 1;
+
+            if(squaredDistance < minDistance)
+                minDistance = squaredDistance;
         }
-        data->InsertTuple1(i, value / denom);
+
+        // invert weight and normalize
+        double value = 0, denom = 0;
+        for(auto j = 0; j < numberOfNodes; ++j){
+            // normalize the weight so the node closest to the centroid has a weight of 1.0
+            auto normalizedWeight = minDistance / squaredDistances[j];
+            denom += normalizedWeight;
+            value += normalizedWeight * _nodeData->GetTuple1(_mesh->GetCell(i)->GetPointId(j));
+        }
+        auto weightedValue = value / denom;
+        data->InsertTuple1(i, weightedValue);
     }
 
     return data;
