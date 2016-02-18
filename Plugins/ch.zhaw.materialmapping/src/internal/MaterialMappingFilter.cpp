@@ -180,7 +180,7 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::extractVOI(const VtkImage
         return x < a ? a : (x > b ? b : x);
     };
 
-    auto border = static_cast<int>(m_NumberOfExtendImageSteps);
+    auto border = static_cast<int>(m_NumberOfExtendImageSteps + 1);
 
     int voiExt[6];
     for (auto i = 0; i < 2; ++i) {
