@@ -165,6 +165,7 @@ MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkU
     surfaceFilter->SetInputData(_volMesh);
     surfaceFilter->PassThroughCellIdsOn();
     surfaceFilter->PassThroughPointIdsOn();
+    surfaceFilter->MergingOff();
     surfaceFilter->Update();
     return surfaceFilter->GetOutput();
 }
