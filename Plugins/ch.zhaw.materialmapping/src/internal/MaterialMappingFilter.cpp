@@ -98,17 +98,7 @@ void MaterialMappingFilter::GenerateData() {
     voi = padder->GetOutput();
 
     VtkImage stencil;
-    switch (m_Method) {
-        case Method::Old: {
-            stencil = createStencilOld(surface, voi);
-            break;
-        }
-
-        case Method::New: {
-            stencil = createStencil(surface, voi);
-            break;
-        }
-    }
+    stencil = createStencil(surface, voi);
     mitk::ProgressBar::GetInstance()->Progress();
 
 
@@ -233,60 +223,6 @@ MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencil(const VtkUG
     stencil->SetStencilConnection(polyDataToStencilFilter->GetOutputPort());
     stencil->Update();
     return stencil->GetOutput();
-}
-
-// uses some C code and unsafe function calls
-#include "lib/intetrahedron.c"
-MaterialMappingFilter::VtkImage MaterialMappingFilter::createStencilOld(const VtkUGrid _surMesh, const VtkImage _img) const {
-    auto inside = vtkSmartPointer<vtkImageData>::New();
-    int nt = _surMesh->GetNumberOfCells();
-    int *nxyz = _img->GetDimensions();
-    double *spa = _img->GetSpacing();
-    double *ori = _img->GetOrigin();
-    int *ext = _img->GetExtent();
-    triangle *tri = (triangle *) malloc(nt * sizeof(triangle));
-    point3 *pts = (point3 *) malloc(_surMesh->GetNumberOfPoints() * sizeof(point3));
-    double *x, *y, *z;
-    char *fig;
-
-    inside->CopyStructure(_img);
-    inside->AllocateScalars(VTK_UNSIGNED_CHAR,1);
-    unsigned char *p = (unsigned char *) (inside->GetScalarPointer());
-    for(int i = 0; i < inside->GetNumberOfPoints(); i++)
-        p[i] = 0;
-
-    for(int i = 0; i < _surMesh->GetNumberOfCells(); i++) {
-        tri[i].a = _surMesh->GetCell(i)->GetPointId(0)+1;
-        tri[i].b = _surMesh->GetCell(i)->GetPointId(1)+1;
-        tri[i].c = _surMesh->GetCell(i)->GetPointId(2)+1;
-    }
-    x = (double *) malloc(nxyz[0] * sizeof(double));
-    y = (double *) malloc(nxyz[1] * sizeof(double));
-    z = (double *) malloc(nxyz[2] * sizeof(double));
-    for(int i = 0; i < nxyz[0]; i++)
-        x[i] = ori[0] + (i+ext[0])*spa[0];
-    for(int i = 0; i < nxyz[1]; i++)
-        y[i] = ori[1] + (i+ext[2])*spa[1];
-    for(int i = 0; i < nxyz[2]; i++)
-        z[i] = ori[2] + (i+ext[4])*spa[2];
-
-    for(int i = 0; i < _surMesh->GetNumberOfPoints(); i++) {
-        double pt[3];
-        _surMesh->GetPoints()->GetPoint(i, pt);
-        pts[i].x = pt[0];
-        pts[i].y = pt[1];
-        pts[i].z = pt[2];
-    }
-    fig = (char *) malloc(nxyz[0]*nxyz[1]*nxyz[2]*sizeof(char));
-    for(int i = 0; i < nxyz[0]*nxyz[1]*nxyz[2]; i++)
-        fig[i] = 0;
-    intetrahedron(nt, nxyz[0], nxyz[1], nxyz[2], tri, pts, x, y, z, fig);
-    for(int i = 0; i < nxyz[0]; i++)
-        for(int j = 0; j < nxyz[1]; j++)
-            for(int k = 0; k < nxyz[2]; k++) {
-                p[i+nxyz[0]*(j+nxyz[1]*k)] = fig[j+nxyz[1]*(i+nxyz[0]*k)];
-            }
-    return inside;
 }
 
 MaterialMappingFilter::VtkImage MaterialMappingFilter::createPeeledMask(const VtkImage _img, const VtkImage _mask) {
