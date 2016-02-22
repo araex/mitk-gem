@@ -8,12 +8,10 @@
 #include <vtkImageInterpolator.h>
 #include <vtkTetra.h>
 #include <vtkMetaImageWriter.h>
-
 #include <vtkUnstructuredGridGeometryFilter.h>
 #include <vtkExtractVOI.h>
 #include <vtkDataSetSurfaceFilter.h>
 #include <vtkPolyDataToImageStencil.h>
-
 #include <vtkImageContinuousErode3D.h>
 #include <vtkImageLogic.h>
 #include <vtkImageMathematics.h>
@@ -140,13 +138,13 @@ void MaterialMappingFilter::GenerateData() {
                 break;
             }
         }
+
+        if(m_VerboseOutput){
+            writeMetaImageToVerboseOut("07_peeled_mask_extended_" + std::to_string(i) + ".mhd", mask);
+            writeMetaImageToVerboseOut("08_e_voi_extended_" + std::to_string(i) + ".mhd", voi);
+        }
     }
     mitk::ProgressBar::GetInstance()->Progress();
-
-    if(m_VerboseOutput && m_NumberOfExtendImageSteps > 0){
-        writeMetaImageToVerboseOut("07_peeled_mask_extended.mhd", mask);
-        writeMetaImageToVerboseOut("08_e_voi_extended.mhd", voi);
-    }
 
     auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
     auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
@@ -412,24 +410,25 @@ void MaterialMappingFilter::inplaceExtendImageOld(VtkImage _img, VtkImage _mask,
 
     int *dim = _img->GetDimensions();
     char *cx = (char *) malloc(dim[0]*dim[1]*dim[2]*sizeof(char));
-    float *Ex = (float *) malloc(dim[0]*dim[1]*dim[2]*sizeof(float));
+    float *ct_stack_ext_ptr = (float *) malloc(dim[0]*dim[1]*dim[2]*sizeof(float));
 
     extendsurface(dim[1],dim[0],dim[2],
                   (float *) (_img->GetScalarPointer()),
-                  (char *) (_mask->GetScalarPointer()),Ex,cx);
-    float *E = (float *) (_img->GetScalarPointer());
+                  (char *) (_mask->GetScalarPointer()),ct_stack_ext_ptr,cx);
+    float *ct_stack_ptr = (float *) (_img->GetScalarPointer());
     unsigned char *c = (unsigned char *) (_mask->GetScalarPointer());
+
     for(int i = 0; i < _mask->GetNumberOfPoints(); i++) {
         if(_maxval) {
-            if(E[i] < Ex[i])
-                E[i] = Ex[i];
+            if(ct_stack_ptr[i] < ct_stack_ext_ptr[i])
+                ct_stack_ptr[i] = ct_stack_ext_ptr[i];
         }
         else
-            E[i] = Ex[i];
+            ct_stack_ptr[i] = ct_stack_ext_ptr[i];
         c[i] = cx[i];
     }
     free(cx);
-    free(Ex);
+    free(ct_stack_ext_ptr);
 }
 
 MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::interpolateToNodes(const VtkUGrid _mesh,
