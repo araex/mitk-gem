@@ -31,7 +31,7 @@ std::string WorkbenchUtils::getGemMajorVersion(){
 }
 
 std::string WorkbenchUtils::getGemMinorVersion() {
-    return "-beta.2";
+    return ".0";
 }
 
 std::string WorkbenchUtils::getGemVersion() {
