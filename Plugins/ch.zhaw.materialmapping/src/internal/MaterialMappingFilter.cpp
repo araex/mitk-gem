@@ -474,8 +474,8 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
         }
 
         // calculate nodal weight = squared distance to centroid
-        double minDistance = std::numeric_limits<double>::max();;
-        double squaredDistances[numberOfNodes];
+        double minDistance = std::numeric_limits<double>::max();
+        std::vector<double> squaredDistances(numberOfNodes);
         for (auto j = 0; j < numberOfNodes; ++j) {
             auto cellpoint = cellpoints->GetPoint(j);
             double squaredDistance = 0;
@@ -483,7 +483,7 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
                 squaredDistance += pow(cellpoint[k] - centroid[k], 2);
             }
             squaredDistance = sqrt(squaredDistance);
-            squaredDistances[j] = squaredDistance;
+            squaredDistances.at(j) = squaredDistance;
 
             // if a node aligns with the centroid, we set it's weight to the next closest one
             if(squaredDistance == 0)
@@ -497,7 +497,7 @@ MaterialMappingFilter::VtkDoubleArray MaterialMappingFilter::nodesToElements(con
         double value = 0, denom = 0;
         for(auto j = 0; j < numberOfNodes; ++j){
             // normalize the weight so the node closest to the centroid has a weight of 1.0
-            auto normalizedWeight = minDistance / squaredDistances[j];
+            auto normalizedWeight = minDistance / squaredDistances.at(j);
             denom += normalizedWeight;
             value += normalizedWeight * _nodeData->GetTuple1(_mesh->GetCell(i)->GetPointId(j));
         }
