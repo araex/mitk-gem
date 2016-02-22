@@ -136,7 +136,6 @@ void MaterialMappingView::startButtonClicked() {
             filter->SetDoPeelStep(m_Controls.uParamCheckBox->isChecked());
             filter->SetNumberOfExtendImageSteps(m_Controls.eParamSpinBox->value());
             filter->SetMinElementValue(m_Controls.fParamSpinBox->value());
-            filter->SetIntermediateResultOutputDirectory("/Users/fitz/tmp/testrun_ben/output");
 
             auto result = filter->GetOutput();
             filter->Update();
