@@ -1,5 +1,5 @@
-set(Plugin-Name "UG Visualization")
-set(Plugin-Version "0.1")
+set(Plugin-Name "UGrid Visualization")
+set(Plugin-Version "1.0")
 set(Plugin-Vendor "ZHAW")
 set(Plugin-ContactAddress "https://simtk.org/home/mitk-gem")
-set(Require-Plugin org.mitk.gui.qt.common.legacy ch.zhaw.gemapplication)
+set(Require-Plugin org.mitk.gui.qt.common ch.zhaw.gemapplication org.mitk.gui.qt.common.legacy)

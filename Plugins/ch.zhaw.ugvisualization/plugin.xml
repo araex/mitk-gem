@@ -3,7 +3,7 @@
 <plugin>
   <extension point="org.blueberry.ui.views">
     <view id="ch.zhaw.ugvisualization"
-          name="UG Visualization"
+          name="UGrid Visualization"
           class="UGVisualizationView"
           icon="resources/icon.png" />
   </extension>
