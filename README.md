@@ -18,7 +18,7 @@ If you'd like to build MITK-GEM from source, follow the instructions below.
 
 # Dependencies
 - CMake >=3.2 cmake-gui is recommended.
-- QT 4.8 (OSX), QT 5 (Windows & Linux)
+- QT 5.4 or 5.5
 
 # Prerequisites
 ## Ubuntu
@@ -33,12 +33,12 @@ Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.2 in order to buil
 
 ## Mac OSX
 - Apple Xcode https://developer.apple.com/xcode/ with activated command line tools. To do so, open Xcode, go to Preferences -> Downloads -> Components -> Command Line Tools.
-- QT 4.8 http://download.qt-project.org/archive/qt/
+- QT 5.4 or 5.5 http://download.qt-project.org/archive/qt/
 - CMake 3.2+ http://www.cmake.org/download/
 
 ## Windows
 - MSVC 2012v4 or MSVC 2013 (e.g. Visual Studio 2013 Community Edition). ** MSVC 2015 IS NOT SUPPORTED**
-- Qt 5.0 - 5.4 ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build.
+- Qt 5.4 or 5.5 ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build.
 - CMake 3.2+ http://www.cmake.org/download/
 
 # Build instructions 
