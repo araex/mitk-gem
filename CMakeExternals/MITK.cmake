@@ -14,14 +14,13 @@ if(NOT MITK_DIR)
 
   option(MITK_USE_SUPERBUILD "Use superbuild for MITK" ON)
   option(MITK_USE_BLUEBERRY "Build the BlueBerry platform in MITK" ON)
-  option(MITK_BUILD_TUTORIAL "Build the MITK tutorial" OFF)
+  option(MITK_BUILD_EXAMPLES "Build the MITK examples" OFF)
   option(MITK_BUILD_ALL_PLUGINS "Build all MITK plugins" ON)
   option(MITK_BUILD_TESTING "Build the MITK unit tests" OFF)
-  option(MITK_USE_ACVD "Use Approximated Centroidal Vornoi Diagrams" ON)
+    option(MITK_USE_ACVD "Use Approximated Centroidal Vornoi Diagrams" ON)
   option(MITK_USE_CTK "Use CTK in MITK" ${MITK_USE_BLUEBERRY})
   option(MITK_USE_DCMTK "Use DCMTK in MITK" ON)
   option(MITK_USE_QT "Use Nokia's Qt library in MITK" ON)
-  option(MITK_USE_Boost "Use the Boost library in MITK" OFF)
   option(MITK_USE_OpenCV "Use Intel's OpenCV library" OFF)
   option(MITK_USE_Python "Enable Python wrapping in MITK" OFF)
 
@@ -48,45 +47,33 @@ if(NOT MITK_DIR)
   set(mitk_cmake_boolean_args
     MITK_USE_SUPERBUILD
     MITK_USE_BLUEBERRY
-    MITK_BUILD_TUTORIAL
+    MITK_BUILD_EXAMPLES
     MITK_BUILD_ALL_PLUGINS
     MITK_USE_ACVD
     MITK_USE_CTK
     MITK_USE_DCMTK
     MITK_USE_QT
-    MITK_USE_Boost
     MITK_USE_OpenCV
     MITK_USE_Python
    )
 
-  set(DESIRED_QT_VERSION 5)
-
   if(MITK_USE_QT)
     # Look for Qt at the superbuild level, to catch missing Qt libs early
-    if(APPLE)
-	  set(DESIRED_QT_VERSION 4)
-      find_package(Qt4 4.7 REQUIRED)
-	else()
-	  find_package(Qt5
-	    5.0.0
-	    COMPONENTS
+	  find_package(Qt5 5.0.0 COMPONENTS
 		  Concurrent
 		  OpenGL
 		  PrintSupport
 		  Script
 		  Sql
 		  Svg
-		  WebKitWidgets
+      Widgets
+		  WebEngine
 		  Xml
 		  XmlPatterns
 		  UiTools
-		REQUIRED)
-	endif()
+      Help
+		  REQUIRED)
   endif()
-
-  set(additional_mitk_cmakevars
-    -DDESIRED_QT_VERSION:STRING=${DESIRED_QT_VERSION}
-  )
 
   # Configure the set of default pixel types
   set(MITK_ACCESSBYITK_INTEGRAL_PIXEL_TYPES
@@ -125,17 +112,15 @@ if(NOT MITK_DIR)
     endif()
   endforeach()
 
-  if(MITK_USE_Boost)
-    set(MITK_BOOST_ROOT "${BOOST_ROOT}" CACHE PATH "Path to Boost directory")
-    mark_as_advanced(MITK_BOOST_ROOT)
-    if(MITK_BOOST_ROOT)
-      list(APPEND additional_mitk_cmakevars "-DBOOST_ROOT:PATH=${MITK_BOOST_ROOT}")
-    endif()
+  set(MITK_BOOST_ROOT "${BOOST_ROOT}" CACHE PATH "Path to Boost directory")
+  mark_as_advanced(MITK_BOOST_ROOT)
+  if(MITK_BOOST_ROOT)
+    list(APPEND additional_mitk_cmakevars "-DBOOST_ROOT:PATH=${MITK_BOOST_ROOT}")
   endif()
 
   set(MITK_SOURCE_DIR "" CACHE PATH "MITK source code location. If empty, MITK will be cloned from MITK_GIT_REPOSITORY")
   set(MITK_GIT_REPOSITORY "https://github.com/araex/MITK" CACHE STRING "The git repository for cloning MITK")
-  set(MITK_GIT_TAG "61926059469f941ef5613c6694a9590eea99b770" CACHE STRING "The git tag/hash to be used when cloning from MITK_GIT_REPOSITORY")
+  set(MITK_GIT_TAG "4f621af31d4af6a7c9751a4d34e923b940719f2a" CACHE STRING "The git tag/hash to be used when cloning from MITK_GIT_REPOSITORY")
   set(MITK_WHITELIST "VCLab")
   mark_as_advanced(MITK_SOURCE_DIR MITK_GIT_REPOSITORY MITK_GIT_TAG)
 
@@ -257,5 +242,4 @@ else()
       message(FATAL_ERROR "Qt qmake does not match:\n   ${MY_PROJECT_NAME}: ${my_qmake_executable}\n  MITK: ${MITK_QMAKE_EXECUTABLE}")
     endif()
   endif()
-
 endif()

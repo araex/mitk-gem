@@ -202,7 +202,7 @@ void WorkbenchUtils::resampleImageItk(itk::Image <PixelType, ImageDimension> *it
     // calculate spacing
     double outputSpacing[ImageDimension];
     itk::Size <ImageDimension> outputSize;
-    for (unsigned int i = 0; i < ImageDimension; ++i) {
+    for (auto i = 0; i < ImageDimension; ++i) {
         outputSpacing[i] = inputSpacing[i] * (double) inputDimensions[i] / newDimensions[i];
         outputSize[i] = newDimensions[i];
     }

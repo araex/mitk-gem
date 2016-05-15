@@ -126,7 +126,7 @@ endif()
 # Prerequesites
 #-----------------------------------------------------------------------------
 
-find_package(MITK 2015.05.2 REQUIRED)
+find_package(MITK 2016.03.0 REQUIRED)
 
 if(COMMAND mitkFunctionCheckMitkCompatibility)
   mitkFunctionCheckMitkCompatibility(VERSIONS MITK_VERSION_PLUGIN_SYSTEM 1 REQUIRED)
@@ -355,11 +355,14 @@ add_subdirectory(Apps/MITK-GEM)
 # set MITK cpack variables
 include(mitkSetupCPack)
 
-configure_file(${MITK_SOURCE_DIR}/MITKCPackOptions.cmake.in
-               ${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake @ONLY)
-
 # Customize CPack variables for this project
 include(CPackSetup)
+
+list(APPEND CPACK_CREATE_DESKTOP_LINKS "${MY_APP_NAME}")
+
+configure_file(${MITK_SOURCE_DIR}/MITKCPackOptions.cmake.in
+               ${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake @ONLY)
+set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake")
 
 # include CPack model once all variables are set
 include(CPack)

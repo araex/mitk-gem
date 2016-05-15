@@ -21,5 +21,5 @@ mitkFunctionCreateBlueBerryApplication(
 )
 mitk_use_modules(TARGET ${MY_APP_NAME}
   MODULES MitkAppUtil
-  PACKAGES Qt4|QtGui Qt5|Widgets
+  PACKAGES Qt5|Widgets
 )
