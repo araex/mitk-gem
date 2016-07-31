@@ -18,7 +18,7 @@ If you'd like to build MITK-GEM from source, follow the instructions below.
 
 # Dependencies
 - CMake >=3.2 cmake-gui is recommended.
-- QT 5.4 or 5.5
+- QT 5.4 or 5.5. ** QT 5.6 is not supported! **
 
 # Prerequisites
 ## Ubuntu
@@ -26,20 +26,21 @@ If you use the latest Ubuntu release (>= 14.04 LTS), you can install all the dep
 `sudo apt-get install git build-essential cmake-gui qt-sdk libxt-dev libtiff4-dev libwrap0-dev`
 
 ### Ubuntu 12.04 LTS
-Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.2 in order to build MITK. A manual update is required.
+Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.4 in order to build MITK-GEM. A manual update is required.
 
 1. Install dependencies: `sudo apt-get install git build-essential qt-sdk libxt-dev libtiff4-dev libwrap0-dev`
-2. Install CMake 3.2+ http://www.cmake.org/download/ 
+2. Install [CMake 3.2 or later](http://www.cmake.org/download/)
 
 ## Mac OSX
-- Apple Xcode https://developer.apple.com/xcode/ with activated command line tools. To do so, open Xcode, go to Preferences -> Downloads -> Components -> Command Line Tools.
-- QT 5.4 or 5.5 http://download.qt-project.org/archive/qt/
-- CMake 3.2+ http://www.cmake.org/download/
+- Apple Xcode https://developer.apple.com/xcode/ with activated command line tools. To do so, open Xcode, go to Preferences -> Downloads -> Components -> Command Line Tools. 
+- Most recent version of the Xcode command line tools `xcode-select --install`.
+- [QT 5.5](http://download.qt.io/archive/qt/5.5/)
+- [CMake 3.2 or later](http://www.cmake.org/download/)
 
 ## Windows
 - MSVC 2012v4 or MSVC 2013 (e.g. Visual Studio 2013 Community Edition). ** MSVC 2015 IS NOT SUPPORTED**
-- Qt 5.4 or 5.5 ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build.
-- CMake 3.2+ http://www.cmake.org/download/
+- [QT 5.5 msvc2013](http://download.qt.io/archive/qt/5.5/) ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build.
+- [CMake 3.2 or later](http://www.cmake.org/download/)
 
 # Build instructions 
 ## Linux & OSX
