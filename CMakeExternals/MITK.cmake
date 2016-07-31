@@ -61,17 +61,18 @@ if(NOT MITK_DIR)
     # Look for Qt at the superbuild level, to catch missing Qt libs early
 	  find_package(Qt5 5.0.0 COMPONENTS
 		  Concurrent
+          LinguistTools
 		  OpenGL
 		  PrintSupport
 		  Script
 		  Sql
 		  Svg
-      Widgets
+          Widgets
 		  WebEngine
 		  Xml
 		  XmlPatterns
 		  UiTools
-      Help
+          Help
 		  REQUIRED)
   endif()
 
