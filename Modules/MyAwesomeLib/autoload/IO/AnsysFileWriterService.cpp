@@ -6,7 +6,7 @@
 AnsysFileWriterService::AnsysFileWriterService(void)
         : mitk::AbstractFileWriter(mitk::UnstructuredGrid::GetStaticNameOfClass(),
                                    GemIOMimeTypes::ANSYS_MIMETYPE(),
-                                   "ANSYS unstructured grid writer")
+                                   "ANSYSugrid")
 {
     RegisterService();
 }
@@ -25,7 +25,7 @@ AnsysFileWriterService::~AnsysFileWriterService()
 void AnsysFileWriterService::Write()
 {
     // TODO
-    MITK_WARN("ch.eth.gemio") << "Write ugrid ";
+    MITK_INFO("ANSYSFileWriterService") << "Write ugrid.";
 }
 
 AnsysFileWriterService* AnsysFileWriterService::Clone() const

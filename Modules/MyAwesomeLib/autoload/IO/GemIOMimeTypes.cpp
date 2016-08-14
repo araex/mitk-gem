@@ -13,16 +13,16 @@ std::vector<mitk::CustomMimeType *> GemIOMimeTypes::Get() {
 
 mitk::CustomMimeType GemIOMimeTypes::ANSYS_MIMETYPE(void)
 {
-    static std::string name(mitk::IOMimeTypes::DEFAULT_BASE_NAME() + ANSYS_MIMETYPE_NAME());
+    static std::string name(ANSYS_MIMETYPE_NAME());
     mitk::CustomMimeType mimeType(name);
     mimeType.SetComment("ANSYS unstructured grid data");
     mimeType.SetCategory("Unstructured Grid");
-    // mimeType.AddExtension("inp");
+    mimeType.AddExtension("inp");
     return mimeType;
 }
 
 std::string GemIOMimeTypes::ANSYS_MIMETYPE_NAME() {
     // create a unique and sensible name for this mime type
-    static std::string name(mitk::IOMimeTypes::DEFAULT_BASE_NAME() + ".gem.ugrid.ansys");
+    static std::string name(mitk::IOMimeTypes::DEFAULT_BASE_NAME() + ".gem.ugridansys");
     return name;
 }

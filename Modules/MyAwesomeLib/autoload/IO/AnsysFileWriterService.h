@@ -14,4 +14,6 @@ public:
 private:
     AnsysFileWriterService(const AnsysFileWriterService &other);
     virtual AnsysFileWriterService* Clone() const override;
+
+    us::ServiceRegistration<mitk::IFileWriter> m_ServiceReg;
 };
