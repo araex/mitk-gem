@@ -330,7 +330,7 @@ endif()
 # The CMake code in this section *must* be in the top-level CMakeLists.txt file
 
 macro(GetMyTargetLibraries all_target_libraries varname)
-  set(re_ctkplugin "^ch_zhaw_[a-zA-Z0-9_]+$")
+  set(re_ctkplugin "^ch_[a-zA-Z0-9_]+$")
   set(_tmp_list)
   list(APPEND _tmp_list ${all_target_libraries})
   ctkMacroListFilter(_tmp_list re_ctkplugin OUTPUT_VARIABLE ${varname})
