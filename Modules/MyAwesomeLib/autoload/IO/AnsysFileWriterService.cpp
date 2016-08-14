@@ -1,11 +1,11 @@
 #include "AnsysFileWriterService.h"
 #include <mitkUnstructuredGrid.h>
 #include <mitkCustomMimeType.h>
-#include <mitkIOMimeTypes.h>
+#include <GemIOMimeTypes.h>
 
 AnsysFileWriterService::AnsysFileWriterService(void)
         : mitk::AbstractFileWriter(mitk::UnstructuredGrid::GetStaticNameOfClass(),
-                                   GetMimeType(),
+                                   GemIOMimeTypes::ANSYS_MIMETYPE(),
                                    "ANSYS unstructured grid writer")
 {
     RegisterService();
@@ -31,14 +31,4 @@ void AnsysFileWriterService::Write()
 AnsysFileWriterService* AnsysFileWriterService::Clone() const
 {
     return new AnsysFileWriterService(*this);
-}
-
-mitk::CustomMimeType AnsysFileWriterService::GetMimeType(void)
-{
-    static std::string name(mitk::IOMimeTypes::DEFAULT_BASE_NAME() + ".mitk-gem.ansys_ugrid");
-    mitk::CustomMimeType mimeType(name);
-    mimeType.SetComment("ANSYS unstructured grid data");
-    mimeType.SetCategory("Unstructured Grid");
-    mimeType.AddExtension("kfile");
-    return mimeType;
 }

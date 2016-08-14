@@ -14,6 +14,4 @@ public:
 private:
     AnsysFileWriterService(const AnsysFileWriterService &other);
     virtual AnsysFileWriterService* Clone() const override;
-
-    static mitk::CustomMimeType GetMimeType(void);
 };

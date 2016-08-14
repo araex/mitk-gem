@@ -7,7 +7,6 @@ set(INTERNAL_CPP_FILES
         QmitkExtApplicationPlugin.cpp
         QmitkExtAppWorkbenchAdvisor.cpp
         perspectives/GemPerspective.cpp
-        IO/AnsysFileWriterService.cpp
         )
 
 set(MOC_H_FILES

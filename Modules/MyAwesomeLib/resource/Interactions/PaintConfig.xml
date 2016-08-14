@@ -1,0 +1,10 @@
+<config>
+  <event_variant class="MousePressEvent" name="MousePressEvent_Left_Ctrl">
+    <attribute name="EventButton" value="LeftMouseButton" />
+    <attribute name="Modifiers" value="ctrl" />
+  </event_variant>
+  <event_variant class="MouseMoveEvent" name="MouseMoveEvent_Left_Ctrl">
+    <attribute name="ButtonState" value="LeftMouseButton" />
+    <attribute name="Modifiers" value="ctrl" />
+  </event_variant>
+</config>

@@ -1,5 +1,0 @@
-set(Plugin-Name "GEM Input / Ouput Extension")
-set(Plugin-Version "0.1")
-set(Plugin-Vendor "ETH")
-set(Plugin-ContactAddress "https://simtk.org/projects/mitk-gem")
-set(Require-Plugin org.mitk.gui.qt.common ch.zhaw.gemapplication)
