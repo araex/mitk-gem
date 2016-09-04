@@ -1,5 +1,5 @@
 set(module_dirs
-  MyAwesomeLib
+  GemCore
 )
 
 foreach(module_dir ${module_dirs})

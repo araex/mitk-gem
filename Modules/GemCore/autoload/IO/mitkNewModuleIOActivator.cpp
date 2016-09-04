@@ -3,11 +3,9 @@
 
 #include "GemIOMimeTypes.h"
 #include <AnsysFileWriterService.h>
+#include <AsciiUgridFileWriterService.h>
 
 namespace mitk {
-    /**
-    \brief Registers services for example module.
-    */
     class NewModuleIOActivator : public us::ModuleActivator {
     public:
 
@@ -24,6 +22,7 @@ namespace mitk {
             }
 
             m_spAnsysFileWriterInstance = std::unique_ptr<AnsysFileWriterService>(new AnsysFileWriterService());
+            m_spAsciiUgridFileWriterInstance = std::unique_ptr<AsciiUgridFileWriterService>(new AsciiUgridFileWriterService());
         }
 
         void Unload(us::ModuleContext *) override {
@@ -32,11 +31,12 @@ namespace mitk {
             }
 
             m_spAnsysFileWriterInstance.reset();
-
+            m_spAsciiUgridFileWriterInstance.reset();
         }
 
     private:
         std::unique_ptr <AnsysFileWriterService> m_spAnsysFileWriterInstance;
+        std::unique_ptr <AsciiUgridFileWriterService> m_spAsciiUgridFileWriterInstance;
 
         std::vector<mitk::CustomMimeType *> m_MimeTypes;
 

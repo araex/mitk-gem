@@ -1,8 +1,7 @@
 set(CPP_FILES
+        AsciiUgridFileWriterService.cpp
         AnsysFileWriterService.cpp
-        AnsysFileWriterService.h
         GemIOMimeTypes.cpp
-        GemIOMimeTypes.h
         mitkNewModuleIOActivator.cpp
 )
 

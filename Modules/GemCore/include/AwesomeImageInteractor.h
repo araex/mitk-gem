@@ -20,13 +20,13 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <mitkDataInteractor.h>
 #include <itkIndex.h>
 
-#include <MyAwesomeLibExports.h>
+#include <GemCoreExports.h>
 
 // See AwesomeImageFilter.h for details on typical class declarations
 // in MITK. The actual functionality of this class is commented in its
 // implementation file.
 
-class MyAwesomeLib_EXPORT AwesomeImageInteractor final : public mitk::DataInteractor
+class GemCore_EXPORT AwesomeImageInteractor final : public mitk::DataInteractor
 {
 public:
   mitkClassMacro(AwesomeImageInteractor, DataInteractor)

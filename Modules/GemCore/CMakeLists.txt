@@ -1,4 +1,4 @@
-mitk_create_module(MyAwesomeLib
+mitk_create_module(GemCore
   DEPENDS PUBLIC MitkCore
 )
 
