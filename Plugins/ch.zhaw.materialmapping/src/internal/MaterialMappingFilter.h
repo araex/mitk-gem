@@ -97,6 +97,16 @@ public:
 		m_VerboseOutputDirectory = _d;
 	}
 
+    void SetPointArrayName(std::string _s)
+    {
+        m_PointArrayName = _s;
+    }
+
+    void SetCellArrayName(std::string _s)
+    {
+        m_CellArrayName = _s;
+    }
+
 	virtual void GenerateData() override;
 
 protected:
@@ -126,6 +136,8 @@ protected:
 	PowerLawFunctor m_PowerLawFunctor;
 	bool m_DoPeelStep = true, m_VerboseOutput;
 	std::string m_VerboseOutputDirectory;
+    std::string m_PointArrayName;
+    std::string m_CellArrayName;
 	float m_MinimumElementValue = 0.0;
 	unsigned int m_NumberOfExtendImageSteps = 3;
 	Method m_Method;

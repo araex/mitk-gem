@@ -24,7 +24,9 @@
 #include "MaterialMappingFilter.h"
 
 MaterialMappingFilter::MaterialMappingFilter()
-	: m_Method(Method::New)
+        : m_Method(Method::New),
+          m_PointArrayName("E"),
+          m_CellArrayName("E")
 {
 }
 
@@ -153,17 +155,25 @@ void MaterialMappingFilter::GenerateData()
 	}
 	mitk::ProgressBar::GetInstance()->Progress();
 
-	auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, "E", m_MinimumElementValue);
-	auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, "E");
-	mitk::ProgressBar::GetInstance()->Progress();
+    // create ouput
+    auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
+    out->DeepCopy(vtkInputGrid);
 
-	// create ouput
-	auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
-	out->DeepCopy(vtkInputGrid);
-	out->GetPointData()->AddArray(nodeDataE);
-	out->GetCellData()->AddArray(elementDataE);
+    if(m_PointArrayName != "")
+    {
+        auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, m_PointArrayName, m_MinimumElementValue);
+        out->GetPointData()->AddArray(nodeDataE);
+    }
+    mitk::ProgressBar::GetInstance()->Progress();
+
+    if(m_CellArrayName != "")
+    {
+        auto elementDataE = nodesToElements(vtkInputGrid, nodeDataE, m_CellArrayName);
+        out->GetCellData()->AddArray(elementDataE);
+    }
+    mitk::ProgressBar::GetInstance()->Progress();
+
 	this->GetOutput()->SetVtkUnstructuredGrid(out);
-	mitk::ProgressBar::GetInstance()->Progress();
 }
 
 MaterialMappingFilter::VtkUGrid MaterialMappingFilter::extractSurface(const VtkUGrid _volMesh) const

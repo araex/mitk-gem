@@ -6,32 +6,94 @@
 #include <vtkUnstructuredGrid.h>
 #include <vtkPointData.h>
 #include <boost/format.hpp>
+#include <vtkType.h>
+
+#include "GemIOResources.h"
 
 namespace
 {
+    template<class TValue, TArray>
+    std::function<TValue(vtkIdType)> createArrayAccessFunctor(TArray *p, TValue defaultValue)
+    {
+        if (p != nullptr)
+        {
+            return [p](vtkIdType id) -> TValue
+            { return p->GetTuple1(id); };
+        }
+        else
+        {
+            return [defaultValue](vtkIdType) -> TValue
+            { return defaultValue; };;
+        }
+    };
+
+    template<class TArray>
+    std::function<vtkIdType(vtkIdType)> createIDFunctor(TArray *p)
+    {
+        if (p != nullptr)
+        {
+            return [p](vtkIdType)
+            { return p->GetTuple1(id); };
+        }
+        else
+        {
+            return [](vtkIdType i)
+            { return i + 1; };
+        }
+    }
+
     void serialize(std::ofstream &rFile, vtkUnstructuredGrid &rGrid)
     {
-        auto pPointIDArray = rGrid.GetPointData()->GetArray("vtkOriginalPointIds");
-        auto uiNumberOfPoints = rGrid.GetNumberOfPoints();
+        // vtkCellData
+        auto getPointID = createIDFunctor(rGrid.GetPointData()->GetArray("vtkOriginalPointIds"));
+        auto getPointC = createArrayAccessFunctor(rGrid.GetPointData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_C));
+        auto getPointD = createArrayAccessFunctor(rGrid.GetPointData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_D));
 
-        for(auto i = 0; i<uiNumberOfPoints; i++)
+        auto getCellID = createIDFunctor(rGrid.GetCellData()->GetArray("vtkOriginalCellIds"));
+        auto getCellA = createArrayAccessFunctor(rGrid.GetCellData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_A));
+        auto getCellB = createArrayAccessFunctor(rGrid.GetCellData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_B));
+        auto getCellE = createArrayAccessFunctor(rGrid.GetCellData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_E));
+
+        auto uiNumberOfPoints = rGrid.GetNumberOfPoints();
+        auto uiNumberOfCells = rGrid.GetNumberOfCells();
+
+        rFile << "#COMMENT Structure: node_number, x, y, z, TC, TD" << std::endl;
+        rFile << "#COMMENT The TA – TE are the Young´s moduli at the nodes for method D and D respectively."
+              << std::endl;
+        rFile << "#BEGIN NODES" << std::endl;
+        for (auto i = 0; i < uiNumberOfPoints; i++)
         {
             const auto point = rGrid.GetPoint(i);
-            uint32_t uiPointID;
-            if(pPointIDArray != nullptr)
-            {
-                uiPointID = pPointIDArray->GetTuple1(i);
-            }
-            else
-            {
-                uiPointID = i + 1;
-            }
 
-            rFile << uiPointID << " "
+            rFile << getPointID(i) << ", "
                   << boost::format("%12.4f") % point[0] << ", "
                   << boost::format("%12.4f") % point[1] << ", "
-                  << boost::format("%12.4f") % point[2] << ", ";
+                  << boost::format("%12.4f") % point[2] << ", "
+                  << boost::format("%12.4f") % getPointC(i) << ", "
+                  << boost::format("%12.4f") % getPointD(i) << std::endl;
         }
+        rFile << "#END NODES" << std::endl;
+
+        rFile << "#COMMENT Structure: elem_nr, n1, n2, n3, , , , , n10, EA, EB, EE" << std::endl;
+        rFile << "#COMMENT The EA, EB, EE are the Young´s moduli at the elements for method A, B and E respectively."
+              << std::endl;
+        rFile << "#BEGIN ELEMENTS" << std::endl;
+        for (auto i = 0; i < uiNumberOfCells; i++)
+        {
+            const auto cell = rGrid.GetCell(i);
+
+            rFile << getCellID(i) << ", ";
+            for (auto j = 0; j < cell.GetNumberOfPoints())
+            {
+                auto pointId = c.GetPointId(j); // +1 ??
+                rFile << c.GetPointId(j) << ", ";
+            }
+
+            rFile << boost::format("%12.4f") % getCellA(i) << ", "
+                  << boost::format("%12.4f") % getCellB(i) << ", "
+                  << boost::format("%12.4f") % getCellE(i) << std::endl;
+        }
+        rFile << "#END ELEMENTS" << std::endl;
     }
 }
 
@@ -60,23 +122,23 @@ void AsciiUgridFileWriterService::Write()
     MITK_INFO << "Writing AsciiUgrid.";
 
     using InputType = mitk::UnstructuredGrid;
-    InputType::ConstPointer input = dynamic_cast<const InputType*>(this->GetInput());
+    InputType::ConstPointer input = dynamic_cast<const InputType *>(this->GetInput());
     if (input.IsNull())
     {
-        MITK_ERROR <<"Input is NULL!";
+        MITK_ERROR << "Input is NULL!";
         return;
     }
     if (this->GetOutputLocation().empty())
     {
-        MITK_ERROR << "Filename has not been set!" ;
-        return ;
+        MITK_ERROR << "Filename has not been set!";
+        return;
     }
 
     std::string ext = itksys::SystemTools::GetFilenameLastExtension(this->GetOutputLocation());
     ext = itksys::SystemTools::LowerCase(ext);
 
     // default extension is .txt
-    if(ext == "")
+    if (ext == "")
     {
         ext = ".txt";
         this->SetOutputLocation(this->GetOutputLocation() + ext);
@@ -86,9 +148,10 @@ void AsciiUgridFileWriterService::Write()
     {
         std::ofstream file(this->GetOutputLocation());
 
-        if ( file.is_open() )
+        if (file.is_open())
         {
-            serialize(file, *const_cast<InputType&>(*input).GetVtkUnstructuredGrid()); // For whatever reason GetVtkUnstructuredGrid is not const...
+            serialize(file,
+                      *const_cast<InputType &>(*input).GetVtkUnstructuredGrid()); // For whatever reason GetVtkUnstructuredGrid is not const...
         }
         else
         {
@@ -108,7 +171,7 @@ void AsciiUgridFileWriterService::Write()
     }
 }
 
-AsciiUgridFileWriterService* AsciiUgridFileWriterService::Clone() const
+AsciiUgridFileWriterService *AsciiUgridFileWriterService::Clone() const
 {
     return new AsciiUgridFileWriterService(*this);
 }

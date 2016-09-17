@@ -1,0 +1,8 @@
+#pragma once
+
+// VTK cell / point data array names used to store material mapping data
+#define GEM_DATA_ARRAY_NAME_MATMAP_METHOD_A "GEM_METHOD_A"
+#define GEM_DATA_ARRAY_NAME_MATMAP_METHOD_B "GEM_METHOD_B"
+#define GEM_DATA_ARRAY_NAME_MATMAP_METHOD_C "GEM_METHOD_C"
+#define GEM_DATA_ARRAY_NAME_MATMAP_METHOD_D "GEM_METHOD_D"
+#define GEM_DATA_ARRAY_NAME_MATMAP_METHOD_E "GEM_METHOD_E"
