@@ -1,5 +1,9 @@
 #include "MaterialMappingHelper.h"
 
+#include <vtkCellData.h>
+#include <vtkDoubleArray.h>
+#include <vtkPointData.h>
+
 #include "GemIOResources.h"
 #include "MaterialMappingFilter.h"
 
@@ -16,19 +20,19 @@ namespace MaterialMappingHelper
      */
     mitk::UnstructuredGrid::Pointer Compute(mitk::UnstructuredGrid::Pointer spMesh,
                                             mitk::Image::Pointer spIntensityImage,
-                                            MaterialMappingFilter::MappingMethod eMethod,
+                                            MaterialMappingFilter::Method eMethod,
                                             BoneDensityFunctor densityFunctor,
                                             PowerLawFunctor powerLawFunctor,
                                             float fMinE)
     {
-        MaterialMappingFilter filter;
+        auto filter = MaterialMappingFilter::New();
 
         // B & C
         filter->SetInput(spMesh);
         filter->SetIntensityImage(spIntensityImage);
         filter->SetMethod(eMethod);
-        filter->SetDensityFunctor(densityFunctor);
-        filter->SetPowerLawFunctor(powerLawFunctor);
+        filter->SetDensityFunctor(std::move(densityFunctor));
+        filter->SetPowerLawFunctor(std::move(powerLawFunctor));
         filter->SetDoPeelStep(true);
         filter->SetNumberOfExtendImageSteps(3);
         filter->SetMinElementValue(fMinE);
@@ -48,16 +52,16 @@ namespace MaterialMappingHelper
         // Copy D
         auto dataD = vtkSmartPointer<vtkDoubleArray>::New();
         dataD->SetNumberOfComponents(1);
-        dataD->DeepCopy(spMeshResult.GetPointData().GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_C));
-        dataD->SetName(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_D.c_str());
-        spMeshResult->GetPointData()->AddArray(dataD);
+        dataD->DeepCopy(spMeshResult->GetVtkUnstructuredGrid()->GetPointData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_C));
+        dataD->SetName(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_D);
+        spMeshResult->GetVtkUnstructuredGrid()->GetPointData()->AddArray(dataD);
 
         // Copy E
         auto dataE = vtkSmartPointer<vtkDoubleArray>::New();
         dataE->SetNumberOfComponents(1);
-        dataE->DeepCopy(spMeshResult.GetCellData().GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_A));
-        dataE->SetName(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_E.c_str());
-        spMeshResult->GetCellData()->AddArray(dataD);
+        dataE->DeepCopy(spMeshResult->GetVtkUnstructuredGrid()->GetCellData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_A));
+        dataE->SetName(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_E);
+        spMeshResult->GetVtkUnstructuredGrid()->GetCellData()->AddArray(dataD);
 
         return spMeshResult;
     }

@@ -24,9 +24,9 @@
 #include "MaterialMappingFilter.h"
 
 MaterialMappingFilter::MaterialMappingFilter()
-        : m_Method(Method::New),
-          m_PointArrayName("E"),
-          m_CellArrayName("E")
+        : m_PointArrayName("E"),
+          m_CellArrayName("E"),
+		  m_Method(Method::New)
 {
 }
 
@@ -159,11 +159,12 @@ void MaterialMappingFilter::GenerateData()
     auto out = vtkSmartPointer<vtkUnstructuredGrid>::New();
     out->DeepCopy(vtkInputGrid);
 
-    if(m_PointArrayName != "")
-    {
-        auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, m_PointArrayName, m_MinimumElementValue);
-        out->GetPointData()->AddArray(nodeDataE);
-    }
+	auto nodeDataE = interpolateToNodes(vtkInputGrid, voi, m_PointArrayName, m_MinimumElementValue);
+	if(m_PointArrayName != "")
+	{
+		out->GetPointData()->AddArray(nodeDataE);
+	}
+
     mitk::ProgressBar::GetInstance()->Progress();
 
     if(m_CellArrayName != "")

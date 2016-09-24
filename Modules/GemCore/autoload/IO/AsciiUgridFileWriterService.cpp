@@ -7,22 +7,25 @@
 #include <vtkPointData.h>
 #include <boost/format.hpp>
 #include <vtkType.h>
+#include <vtkCellData.h>
+#include <vtkCell.h>
 
 #include "GemIOResources.h"
 
 namespace
 {
-    template<class TValue, TArray>
-    std::function<TValue(vtkIdType)> createArrayAccessFunctor(TArray *p, TValue defaultValue)
+    template<class TValue = float, class TArray>
+    std::function<TValue(vtkIdType)> createArrayAccessFunctor(TArray *p, TValue defaultValue = 0)
     {
         if (p != nullptr)
         {
-            return [p](vtkIdType id) -> TValue
+            return [p](vtkIdType id)
             { return p->GetTuple1(id); };
         }
         else
         {
-            return [defaultValue](vtkIdType) -> TValue
+            MITK_INFO("AsciiUgridFileWriterService") << "No Array found. Using default value " << defaultValue;
+            return [defaultValue](vtkIdType)
             { return defaultValue; };;
         }
     };
@@ -32,11 +35,12 @@ namespace
     {
         if (p != nullptr)
         {
-            return [p](vtkIdType)
+            return [p](vtkIdType id)
             { return p->GetTuple1(id); };
         }
         else
         {
+            MITK_INFO("AsciiUgridFileWriterService") << "No VTK IDs found.";
             return [](vtkIdType i)
             { return i + 1; };
         }
@@ -78,15 +82,15 @@ namespace
         rFile << "#COMMENT The EA, EB, EE are the Young´s moduli at the elements for method A, B and E respectively."
               << std::endl;
         rFile << "#BEGIN ELEMENTS" << std::endl;
-        for (auto i = 0; i < uiNumberOfCells; i++)
+        for (auto i = 0; i < uiNumberOfCells; ++i)
         {
-            const auto cell = rGrid.GetCell(i);
+            const auto pCell = rGrid.GetCell(i);
 
             rFile << getCellID(i) << ", ";
-            for (auto j = 0; j < cell.GetNumberOfPoints())
+            for (auto j = 0; j < pCell->GetNumberOfPoints(); ++j)
             {
-                auto pointId = c.GetPointId(j); // +1 ??
-                rFile << c.GetPointId(j) << ", ";
+                auto pointId = pCell->GetPointId(j); // +1 ??
+                rFile << pointId << ", ";
             }
 
             rFile << boost::format("%12.4f") % getCellA(i) << ", "
