@@ -16,6 +16,7 @@
 #include <vtkPointData.h>
 
 #include "MaterialMappingView.h"
+#include "MaterialMappingHelper.h"
 #include "WorkbenchUtils.h"
 #include "GuiHelpers.h"
 #include "MaterialMappingFilter.h"
@@ -127,18 +128,24 @@ void MaterialMappingView::startButtonClicked() {
         auto work = [this, image, ugrid]() {
             m_Controls.scrollArea->setEnabled(false);
 
-            auto filter = MaterialMappingFilter::New();
-            filter->SetInput(ugrid);
-            filter->SetMethod(gui::getSelectedMappingMethod(m_Controls));
-            filter->SetIntensityImage(image);
-            filter->SetDensityFunctor(gui::createDensityFunctor(m_Controls, m_CalibrationDataModel));
-            filter->SetPowerLawFunctor(m_PowerLawWidgetManager->createFunctor());
-            filter->SetDoPeelStep(m_Controls.uParamCheckBox->isChecked());
-            filter->SetNumberOfExtendImageSteps(m_Controls.eParamSpinBox->value());
-            filter->SetMinElementValue(m_Controls.fParamSpinBox->value());
+//            auto filter = MaterialMappingFilter::New();
+//            filter->SetInput(ugrid);
+//            filter->SetMethod(gui::getSelectedMappingMethod(m_Controls));
+//            filter->SetIntensityImage(image);
+//            filter->SetDensityFunctor(gui::createDensityFunctor(m_Controls, m_CalibrationDataModel));
+//            filter->SetPowerLawFunctor(m_PowerLawWidgetManager->createFunctor());
+//            filter->SetDoPeelStep(m_Controls.uParamCheckBox->isChecked());
+//            filter->SetNumberOfExtendImageSteps(m_Controls.eParamSpinBox->value());
+//            filter->SetMinElementValue(m_Controls.fParamSpinBox->value());
+//            auto result = filter->GetOutput();
+//            filter->Update();
 
-            auto result = filter->GetOutput();
-            filter->Update();
+            auto result = MaterialMappingHelper::Compute(ugrid,
+                                                         image,
+                                                         gui::getSelectedMappingMethod(m_Controls),
+                                                         gui::createDensityFunctor(m_Controls, m_CalibrationDataModel),
+                                                         m_PowerLawWidgetManager->createFunctor(),
+                                                         m_Controls.fParamSpinBox->value());
 
             mitk::DataNode::Pointer newNode = mitk::DataNode::New();
             newNode->SetData(result);

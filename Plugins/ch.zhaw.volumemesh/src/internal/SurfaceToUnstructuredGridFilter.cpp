@@ -43,7 +43,6 @@ void SurfaceToUnstructuredGridFilter::tetgenMesh(vtkSmartPointer <vtkPolyData> s
     vtkSmartPointer <vtkPoints> nodes = vtkSmartPointer<vtkPoints>::New();
     vtkSmartPointer <vtkIdList> corners = vtkSmartPointer<vtkIdList>::New();
     tetgenio inputmesh, outputmesh;
-    tetgenbehavior options;
     double A(0.0), cp[3][3];
 
     inputmesh.numberofpoints = surface->GetNumberOfPoints();
@@ -77,6 +76,15 @@ void SurfaceToUnstructuredGridFilter::tetgenMesh(vtkSmartPointer <vtkPolyData> s
         m_Options.maxvolume = pow(2 * A, 1.5) * pow(3, -1.75); // TODO: for now we represent this as a binary switch in the GUI, maybe we'll add some additional options later on
     }
 
+    bool bQuadraticTetrahedrons = true;
+    uint32_t uiVTKCellType = VTK_TETRA;
+    uint32_t uiNodesPerCell = 4;
+    if(bQuadraticTetrahedrons)
+    {
+        m_Options.order = 2;
+        uiVTKCellType = VTK_QUADRATIC_TETRA;
+        uiNodesPerCell = 10;
+    }
 
     tetrahedralize(&m_Options, &inputmesh, &outputmesh);
 
@@ -85,12 +93,12 @@ void SurfaceToUnstructuredGridFilter::tetgenMesh(vtkSmartPointer <vtkPolyData> s
         nodes->InsertPoint(i, outputmesh.pointlist + 3 * i);
     }
     mesh->Allocate();
-    corners->SetNumberOfIds(4);
+    corners->SetNumberOfIds(uiNodesPerCell);
     for (int i = 0; i < outputmesh.numberoftetrahedra; i++) {
-        for (int j = 0; j < 4; j++) {
-            corners->SetId(j, outputmesh.tetrahedronlist[4 * i + j]);
+        for (int j = 0; j < uiNodesPerCell; j++) {
+            corners->SetId(j, outputmesh.tetrahedronlist[uiNodesPerCell * i + j]);
         }
-        mesh->InsertNextCell(VTK_TETRA, corners);
+        mesh->InsertNextCell(uiVTKCellType, corners);
     }
     mesh->SetPoints(nodes);
 }

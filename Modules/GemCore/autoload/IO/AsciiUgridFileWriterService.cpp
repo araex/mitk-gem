@@ -9,8 +9,14 @@
 #include <vtkType.h>
 #include <vtkCellData.h>
 #include <vtkCell.h>
+#include <vtkCellTypes.h>
+#include <vtkUnstructuredGridBase.h>
+#include <vtkSmartPointer.h>
+#include <vtkUnstructuredGridGeometryFilter.h>
 
 #include "GemIOResources.h"
+
+using VtkUGrid = vtkSmartPointer<vtkUnstructuredGridBase>;
 
 namespace
 {
@@ -46,6 +52,46 @@ namespace
         }
     }
 
+    VtkUGrid extractSurface(const VtkUGrid _volMesh)
+    {
+        auto surfaceFilter = vtkSmartPointer<vtkUnstructuredGridGeometryFilter>::New();
+        surfaceFilter->SetInputData(_volMesh);
+        surfaceFilter->PassThroughCellIdsOn();
+        surfaceFilter->PassThroughPointIdsOn();
+        surfaceFilter->MergingOff();
+        surfaceFilter->Update();
+        return surfaceFilter->GetOutput();
+    }
+
+    void extractAndSerializeSurface(std::ofstream &rFile, VtkUGrid spMesh)
+    {
+        auto spSurface = extractSurface(spMesh);
+
+        auto pPointIDs = spSurface->GetPointData()->GetArray("vtkOriginalPointIds");
+        auto pCellIDs = spSurface->GetCellData()->GetArray("vtkOriginalCellIds");
+
+        auto uiNumberOfPoints = spSurface->GetNumberOfPoints();
+        auto uiNumberOfCells = spSurface->GetNumberOfCells();
+
+        MITK_INFO("AsciiUgridFileWriterService") << "Writing Surface: " << uiNumberOfPoints << " nodes, " << uiNumberOfCells << "cells. ";
+
+        rFile << "#BEGIN SURFACE" << std::endl;
+        rFile << "#COMMENT Structure: element_number, n1, n2, n3" << std::endl;
+        for(auto i = 0; i < uiNumberOfCells; ++i)
+        {
+            const auto pCell = spSurface->GetCell(i);
+
+            rFile << pCellIDs->GetTuple1(i) << ", ";
+            for (auto j = 0; j < pCell->GetNumberOfPoints(); ++j)
+            {
+                auto pointId = pPointIDs->GetTuple1(pCell->GetPointId(j));
+                rFile << pointId << ", ";
+            }
+            rFile << std::endl;
+        }
+        rFile << "#END SURFACE" << std::endl;
+    }
+
     void serialize(std::ofstream &rFile, vtkUnstructuredGrid &rGrid)
     {
         // vtkCellData
@@ -61,8 +107,10 @@ namespace
         auto uiNumberOfPoints = rGrid.GetNumberOfPoints();
         auto uiNumberOfCells = rGrid.GetNumberOfCells();
 
-        rFile << "#COMMENT Structure: node_number, x, y, z, TC, TD" << std::endl;
-        rFile << "#COMMENT The TA – TE are the Young´s moduli at the nodes for method D and D respectively."
+        MITK_INFO("AsciiUgridFileWriterService") << "Writing mesh: " << uiNumberOfPoints << " nodes, " << uiNumberOfCells << "cells. ";
+
+        rFile << "#COMMENT Structure: node_number, x, y, z, TC" << std::endl;
+        rFile << "#COMMENT TC is the Young´s moduli at the nodes for method C."
               << std::endl;
         rFile << "#BEGIN NODES" << std::endl;
         for (auto i = 0; i < uiNumberOfPoints; i++)
@@ -73,15 +121,31 @@ namespace
                   << boost::format("%12.4f") % point[0] << ", "
                   << boost::format("%12.4f") % point[1] << ", "
                   << boost::format("%12.4f") % point[2] << ", "
-                  << boost::format("%12.4f") % getPointC(i) << ", "
-                  << boost::format("%12.4f") % getPointD(i) << std::endl;
+                  << boost::format("%12.4f") % getPointC(i) << std::endl;
         }
         rFile << "#END NODES" << std::endl;
 
-        rFile << "#COMMENT Structure: elem_nr, n1, n2, n3, , , , , n10, EA, EB, EE" << std::endl;
-        rFile << "#COMMENT The EA, EB, EE are the Young´s moduli at the elements for method A, B and E respectively."
+        vtkSmartPointer<vtkCellTypes> cellTypes = vtkCellTypes::New();
+        rGrid.GetCellTypes(cellTypes);
+        uint32_t uiPointsPerCell = 0;
+        if(cellTypes->IsType(VTK_TETRA))
+        {
+            uiPointsPerCell = 4;
+            MITK_INFO("AsciiUgridFileWriterService") << "Cell Type: VTK_TETRA";
+        }
+        else if(cellTypes->IsType(VTK_QUADRATIC_TETRA))
+        {
+            uiPointsPerCell = 10;
+            MITK_INFO("AsciiUgridFileWriterService") << "Cell Type: VTK_QUADRATIC_TETRA";
+        }
+        else
+        {
+            MITK_WARN("AsciiUgridFileWriterService") << "Unknown cell type";
+        }
+        rFile << "#COMMENT Structure: elem_nr, n1, ... , n" << uiPointsPerCell << ", EA, EB" << std::endl;
+        rFile << "#COMMENT EA, EB are the Young´s moduli at the elements for method A and B respectively."
               << std::endl;
-        rFile << "#BEGIN ELEMENTS" << std::endl;
+        rFile << "#BEGIN ELEMENTS "<< uiPointsPerCell << std::endl;
         for (auto i = 0; i < uiNumberOfCells; ++i)
         {
             const auto pCell = rGrid.GetCell(i);
@@ -94,10 +158,11 @@ namespace
             }
 
             rFile << boost::format("%12.4f") % getCellA(i) << ", "
-                  << boost::format("%12.4f") % getCellB(i) << ", "
-                  << boost::format("%12.4f") % getCellE(i) << std::endl;
+                  << boost::format("%12.4f") % getCellB(i) << std::endl;
         }
-        rFile << "#END ELEMENTS" << std::endl;
+        rFile << "#END ELEMENTS " << uiPointsPerCell << std::endl;
+
+        extractAndSerializeSurface(rFile, &rGrid);
     }
 }
 
