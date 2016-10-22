@@ -13,6 +13,55 @@
 #include <vtkCell.h>
 #include <vtkTriangle.h>
 #include "lib/tetgen1.5.0/tetgen.h"
+#include <map>
+#include <array>
+
+using namespace std;
+
+namespace
+{
+    void tetraToQuad(const vtkSmartPointer<vtkUnstructuredGrid> &tetra,
+                     vtkSmartPointer<vtkUnstructuredGrid> &quad)
+    {
+        int pairs[][2] = {{0,1},{1,2},{0,2},{0,3},{1,3},{2,3}};
+        vtkIdType nodenum = tetra->GetNumberOfPoints();
+        map<array<vtkIdType,2>,vtkIdType> edges;
+        quad->Allocate(tetra->GetNumberOfCells());
+        for(int i = 0; i < tetra->GetNumberOfCells(); i++) {
+            vtkIdType ntetpts, *tetpts, quadpts[10];
+            tetra->GetCellPoints(i, ntetpts, tetpts);
+            for(int j = 0; j < ntetpts; j++) {
+                quadpts[j] = tetpts[j];
+            }
+            for(int j = 0; j < 6; j++) {
+                array<vtkIdType,2> pair = {tetpts[pairs[j][0]], tetpts[pairs[j][1]]};
+                if(pair[0] > pair[1])
+                    pair = {pair[1],pair[0]};
+                auto ins = edges.insert({pair, nodenum});
+                if(ins.second)
+                    quadpts[j+4] = nodenum++;
+                else
+                    quadpts[j+4] = ins.first->second;
+            }
+            quad->InsertNextCell(VTK_QUADRATIC_TETRA, 10, quadpts);
+        }
+        auto pts = vtkSmartPointer<vtkPoints>::New();
+        pts->SetNumberOfPoints(tetra->GetNumberOfPoints() + edges.size());
+        for(auto i = 0; i < tetra->GetNumberOfPoints(); i++) {
+            double p[3];
+            tetra->GetPoint(i, p);
+            pts->SetPoint(i, p);
+        }
+        for(auto i = edges.begin(); i != edges.end(); ++i) {
+            double p1[3], p2[3];
+            tetra->GetPoint((i->first)[0], p1);
+            tetra->GetPoint((i->first)[1], p2);
+            pts->SetPoint(i->second, (p1[0]+p2[0])/2, (p1[1]+p2[1])/2,
+                          (p1[2]+p2[2])/2);
+        }
+        quad->SetPoints(pts);
+    }
+}
 
 SurfaceToUnstructuredGridFilter::SurfaceToUnstructuredGridFilter() { }
 
@@ -76,15 +125,8 @@ void SurfaceToUnstructuredGridFilter::tetgenMesh(vtkSmartPointer <vtkPolyData> s
         m_Options.maxvolume = pow(2 * A, 1.5) * pow(3, -1.75); // TODO: for now we represent this as a binary switch in the GUI, maybe we'll add some additional options later on
     }
 
-    bool bQuadraticTetrahedrons = true;
     uint32_t uiVTKCellType = VTK_TETRA;
     uint32_t uiNodesPerCell = 4;
-    if(bQuadraticTetrahedrons)
-    {
-        m_Options.order = 2;
-        uiVTKCellType = VTK_QUADRATIC_TETRA;
-        uiNodesPerCell = 10;
-    }
 
     tetrahedralize(&m_Options, &inputmesh, &outputmesh);
 
@@ -92,13 +134,17 @@ void SurfaceToUnstructuredGridFilter::tetgenMesh(vtkSmartPointer <vtkPolyData> s
     for (int i = 0; i < outputmesh.numberofpoints; i++) {
         nodes->InsertPoint(i, outputmesh.pointlist + 3 * i);
     }
-    mesh->Allocate();
+
+    auto meshTetra = vtkSmartPointer<vtkUnstructuredGrid>::New();
+    meshTetra->Allocate();
     corners->SetNumberOfIds(uiNodesPerCell);
-    for (int i = 0; i < outputmesh.numberoftetrahedra; i++) {
-        for (int j = 0; j < uiNodesPerCell; j++) {
+    for (auto i = 0; i < outputmesh.numberoftetrahedra; i++) {
+        for (uint32_t j = 0; j < uiNodesPerCell; j++) {
             corners->SetId(j, outputmesh.tetrahedronlist[uiNodesPerCell * i + j]);
         }
-        mesh->InsertNextCell(uiVTKCellType, corners);
+        meshTetra->InsertNextCell(uiVTKCellType, corners);
     }
-    mesh->SetPoints(nodes);
+    meshTetra->SetPoints(nodes);
+
+    tetraToQuad(meshTetra, mesh);
 }

@@ -21,7 +21,7 @@ namespace mitk {
                 context->RegisterService(*mimeTypeIter, props);
             }
 
-            m_spAnsysFileWriterInstance = std::unique_ptr<AnsysFileWriterService>(new AnsysFileWriterService());
+            // m_spAnsysFileWriterInstance = std::unique_ptr<AnsysFileWriterService>(new AnsysFileWriterService());
             m_spAsciiUgridFileWriterInstance = std::unique_ptr<AsciiUgridFileWriterService>(new AsciiUgridFileWriterService());
         }
 
@@ -30,12 +30,12 @@ namespace mitk {
                 delete m_MimeTypes.at(loop);
             }
 
-            m_spAnsysFileWriterInstance.reset();
+            // m_spAnsysFileWriterInstance.reset();
             m_spAsciiUgridFileWriterInstance.reset();
         }
 
     private:
-        std::unique_ptr <AnsysFileWriterService> m_spAnsysFileWriterInstance;
+       // std::unique_ptr <AnsysFileWriterService> m_spAnsysFileWriterInstance;
         std::unique_ptr <AsciiUgridFileWriterService> m_spAsciiUgridFileWriterInstance;
 
         std::vector<mitk::CustomMimeType *> m_MimeTypes;

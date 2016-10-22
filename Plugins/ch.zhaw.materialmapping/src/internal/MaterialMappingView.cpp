@@ -75,6 +75,14 @@ void MaterialMappingView::CreateQtPartControl(QWidget *parent) {
         m_Controls.testingGroup->hide();
     }
 
+    // hide custom erosion parameter
+    m_Controls.uParamCheckBox->hide();
+    m_Controls.label_15->hide();
+
+    // hide custom dilation
+    m_Controls.eParamSpinBox->hide();
+    m_Controls.label->hide();
+
     // delete key on table
     QShortcut *shortcut = new QShortcut(QKeySequence(QKeySequence::Delete), table);
     connect(shortcut, SIGNAL(activated()), this, SLOT(deleteSelectedRows()));

@@ -13,6 +13,7 @@
 #include <vtkUnstructuredGridBase.h>
 #include <vtkSmartPointer.h>
 #include <vtkUnstructuredGridGeometryFilter.h>
+#include <vtkIdTypeArray.h>
 
 #include "GemIOResources.h"
 
@@ -56,9 +57,11 @@ namespace
     {
         auto surfaceFilter = vtkSmartPointer<vtkUnstructuredGridGeometryFilter>::New();
         surfaceFilter->SetInputData(_volMesh);
+        surfaceFilter->MergingOff();
         surfaceFilter->PassThroughCellIdsOn();
         surfaceFilter->PassThroughPointIdsOn();
-        surfaceFilter->MergingOff();
+        surfaceFilter->SetOriginalCellIdsName("vtkOriginalCellIds");
+        surfaceFilter->SetOriginalPointIdsName("vtkOriginalPointIds");
         surfaceFilter->Update();
         return surfaceFilter->GetOutput();
     }
@@ -67,8 +70,8 @@ namespace
     {
         auto spSurface = extractSurface(spMesh);
 
-        auto pPointIDs = spSurface->GetPointData()->GetArray("vtkOriginalPointIds");
-        auto pCellIDs = spSurface->GetCellData()->GetArray("vtkOriginalCellIds");
+        vtkIdTypeArray* pPointIDs = vtkIdTypeArray::SafeDownCast(spSurface->GetPointData()->GetArray("vtkOriginalPointIds"));
+        vtkIdTypeArray* pCellIDs = vtkIdTypeArray::SafeDownCast(spSurface->GetCellData()->GetArray("vtkOriginalCellIds"));
 
         auto uiNumberOfPoints = spSurface->GetNumberOfPoints();
         auto uiNumberOfCells = spSurface->GetNumberOfCells();
@@ -76,16 +79,17 @@ namespace
         MITK_INFO("AsciiUgridFileWriterService") << "Writing Surface: " << uiNumberOfPoints << " nodes, " << uiNumberOfCells << "cells. ";
 
         rFile << "#BEGIN SURFACE" << std::endl;
-        rFile << "#COMMENT Structure: element_number, n1, n2, n3" << std::endl;
+        rFile << "#COMMENT Structure: element_number, n1, n2, n3, n4, n5, n6" << std::endl;
         for(auto i = 0; i < uiNumberOfCells; ++i)
         {
             const auto pCell = spSurface->GetCell(i);
 
-            rFile << pCellIDs->GetTuple1(i) << ", ";
-            for (auto j = 0; j < pCell->GetNumberOfPoints(); ++j)
+            rFile << pCellIDs->GetValue(i) << ", ";
+            int32_t iNumberOfPoints = pCell->GetNumberOfPoints();
+            for (auto j = 0; j < iNumberOfPoints; ++j)
             {
-                auto pointId = pPointIDs->GetTuple1(pCell->GetPointId(j));
-                rFile << pointId << ", ";
+                auto pointId = pPointIDs->GetValue(pCell->GetPointId(j));
+                rFile << pointId << (j == iNumberOfPoints-1 ? "" : ", ");
             }
             rFile << std::endl;
         }
@@ -227,7 +231,7 @@ void AsciiUgridFileWriterService::Write()
             mitkThrow() << "Could not open file " << this->GetOutputLocation() << " for writing.";
         }
 
-        MITK_INFO << "Example Data Structure has been written";
+        MITK_INFO << "Mesh exported";
     }
 
     catch (mitk::Exception e)
