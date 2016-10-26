@@ -61,7 +61,7 @@ namespace MaterialMappingHelper
         dataE->SetNumberOfComponents(1);
         dataE->DeepCopy(spMeshResult->GetVtkUnstructuredGrid()->GetCellData()->GetArray(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_A));
         dataE->SetName(GEM_DATA_ARRAY_NAME_MATMAP_METHOD_E);
-        spMeshResult->GetVtkUnstructuredGrid()->GetCellData()->AddArray(dataD);
+        spMeshResult->GetVtkUnstructuredGrid()->GetCellData()->AddArray(dataE);
 
         return spMeshResult;
     }
