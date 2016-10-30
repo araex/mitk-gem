@@ -21,7 +21,7 @@ using VtkUGrid = vtkSmartPointer<vtkUnstructuredGridBase>;
 
 namespace
 {
-    template<class TValue = float, class TArray>
+    template<class TValue = double, class TArray>
     std::function<TValue(vtkIdType)> createArrayAccessFunctor(TArray *p, TValue defaultValue = 0)
     {
         if (p != nullptr)
@@ -40,10 +40,11 @@ namespace
     template<class TArray>
     std::function<vtkIdType(vtkIdType)> createIDFunctor(TArray *p)
     {
-        if (p != nullptr)
+		vtkIdTypeArray* pIDs = vtkIdTypeArray::SafeDownCast(p);
+		if (pIDs != nullptr)
         {
-            return [p](vtkIdType id)
-            { return p->GetTuple1(id); };
+			return [pIDs](vtkIdType id)
+			{ return pIDs->GetValue(id); };
         }
         else
         {
