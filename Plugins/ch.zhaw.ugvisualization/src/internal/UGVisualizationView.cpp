@@ -197,7 +197,7 @@ void UGVisualizationView::RenderingCheckboxClicked(bool) {
         m_SelectedNode->SetProperty("outline polygons", mitk::BoolProperty::New(true));
         m_SelectedNode->AddProperty("material.specularCoefficient", mitk::FloatProperty::New(0.0), renderer, true);
 
-        FieldDataSelectionChanged(0);
+        FieldDataSelectionChanged(1);
     } else if(!isChecked && hasMapper){
         m_SelectedNode->SetMapper(mitk::BaseRenderer::Standard2D, nullptr);
         m_SelectedNode->SetMapper(mitk::BaseRenderer::Standard3D, nullptr);
@@ -253,19 +253,22 @@ bool UGVisualizationView::IsRenderable(mitk::DataNode::Pointer _node) {
 }
 
 void UGVisualizationView::ActivateFieldData(mitk::DataNode::Pointer _node, QString _name) {
-    auto actor = WorkbenchUtils::getVtk3dActor(_node);
+    vtkActor *actor = WorkbenchUtils::getVtk3dActor(_node);
     auto ugrid = dynamic_cast<mitk::UnstructuredGrid *>(_node->GetData());
     auto name = _name.toStdString(); // was _name.toStdString().c_str(). But calling c_str() on a rvalue will leave a dangling pointer resulting in undefined behavior.
 
+    vtkFieldData *fieldData;
     vtkDataArray *data;
     switch(m_Controls.scalarModeComboBox->currentIndex()){
         case 0:
             actor->GetMapper()->SetScalarModeToUsePointFieldData();
-            data = ugrid->GetVtkUnstructuredGrid()->GetPointData()->GetArray(name.c_str());
+            fieldData = ugrid->GetVtkUnstructuredGrid()->GetPointData();
+            data = fieldData->GetArray(name.c_str());
             break;
         case 1:
             actor->GetMapper()->SetScalarModeToUseCellFieldData();
-            data = ugrid->GetVtkUnstructuredGrid()->GetCellData()->GetArray(name.c_str());
+            fieldData = ugrid->GetVtkUnstructuredGrid()->GetCellData();
+            data = fieldData->GetArray(name.c_str());
             break;
         default:
             QMessageBox::warning(NULL, "Error", "Invalid scalar mode selection.");
@@ -273,8 +276,21 @@ void UGVisualizationView::ActivateFieldData(mitk::DataNode::Pointer _node, QStri
     }
 
     if(data){
-        auto range = data->GetRange();
-        _node->SetProperty("TransferFunction", WorkbenchUtils::createColorTransferFunction(range[0], range[1]));
+        double min = std::numeric_limits<double>::max();
+        double max = std::numeric_limits<double>::min();
+        vtkFieldData::Iterator it(fieldData);
+        vtkDataArray *array;
+        for(array = it.Begin(); !it.End(); array=it.Next()){
+            if(data){
+                auto range = array->GetRange();
+                min = std::min(min, range[0]);
+                max = std::max(max, range[1]);
+            }
+        }
+
+        _node->SetProperty("TransferFunction", WorkbenchUtils::createColorTransferFunction(min, max));
+        // actor->GetMapper()->ClearColorArrays();
+        actor->GetMapper()->Modified();
         actor->GetMapper()->SelectColorArray(name.c_str());
     }
 }
