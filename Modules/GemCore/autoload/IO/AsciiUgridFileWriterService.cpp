@@ -85,11 +85,11 @@ namespace
         {
             const auto pCell = spSurface->GetCell(i);
 
-            rFile << pCellIDs->GetValue(i) << ", ";
+            rFile << pCellIDs->GetValue(i) + 1 << ", ";
             int32_t iNumberOfPoints = pCell->GetNumberOfPoints();
             for (auto j = 0; j < iNumberOfPoints; ++j)
             {
-                auto pointId = pPointIDs->GetValue(pCell->GetPointId(j));
+                auto pointId = pPointIDs->GetValue(pCell->GetPointId(j)) + 1;
                 rFile << pointId << (j == iNumberOfPoints-1 ? "" : ", ");
             }
             rFile << std::endl;
@@ -113,11 +113,9 @@ namespace
         auto uiNumberOfCells = rGrid.GetNumberOfCells();
 
         MITK_INFO("AsciiUgridFileWriterService") << "Writing mesh: " << uiNumberOfPoints << " nodes, " << uiNumberOfCells << "cells. ";
-
-        rFile << "#COMMENT Structure: node_number, x, y, z, TC" << std::endl;
-        rFile << "#COMMENT TC is the Young´s moduli at the nodes for method C."
-              << std::endl;
         rFile << "#BEGIN NODES" << std::endl;
+        rFile << "#COMMENT Structure: node_number, x, y, z, TC" << std::endl;
+        rFile << "#COMMENT TC is the Young´s moduli at the nodes for method C." << std::endl;
         for (auto i = 0; i < uiNumberOfPoints; i++)
         {
             const auto point = rGrid.GetPoint(i);
@@ -147,10 +145,10 @@ namespace
         {
             MITK_WARN("AsciiUgridFileWriterService") << "Unknown cell type";
         }
-        rFile << "#COMMENT Structure: elem_nr, n1, ... , n" << uiPointsPerCell << ", EA, EB" << std::endl;
-        rFile << "#COMMENT EA, EB are the Young´s moduli at the elements for method A and B respectively."
-              << std::endl;
+
         rFile << "#BEGIN ELEMENTS "<< uiPointsPerCell << std::endl;
+        rFile << "#COMMENT Structure: elem_nr, n1, ... , n" << uiPointsPerCell << ", EA, EB" << std::endl;
+        rFile << "#COMMENT EA, EB are the Young´s moduli at the elements for method A and B respectively." << std::endl;
         for (auto i = 0; i < uiNumberOfCells; ++i)
         {
             const auto pCell = rGrid.GetCell(i);
@@ -158,7 +156,7 @@ namespace
             rFile << getCellID(i) << ", ";
             for (auto j = 0; j < pCell->GetNumberOfPoints(); ++j)
             {
-                auto pointId = pCell->GetPointId(j); // +1 ??
+                auto pointId = pCell->GetPointId(j) + 1;
                 rFile << pointId << ", ";
             }
 

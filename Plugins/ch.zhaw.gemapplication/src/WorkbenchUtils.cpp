@@ -27,7 +27,7 @@
 using namespace mitk;
 
 std::string WorkbenchUtils::getGemMajorVersion(){
-    return "2016.10";
+    return "2016.11";
 }
 
 std::string WorkbenchUtils::getGemMinorVersion() {
