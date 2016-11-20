@@ -1,0 +1,17 @@
+<!-- This is a very simple state machine consisting of a single state and
+     two transitions to itself. These transitions are triggered by pessing
+     the left mouse button while holding the CTRL key and by moving the
+     mouse under the same condition.
+
+     The actual button/key combinations, or event variants, are specified
+     in PaintConfig.xml. -->
+<statemachine>
+  <state name="start" startstate="true">
+    <transition event_class="MousePressEvent" event_variant="MousePressEvent_Left_Ctrl" target="start">
+      <action name="paint" />
+    </transition>
+    <transition event_class="MouseMoveEvent" event_variant="MouseMoveEvent_Left_Ctrl" target="start">
+      <action name="paint" />
+    </transition>
+  </state>
+</statemachine>

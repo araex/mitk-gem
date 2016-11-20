@@ -9,6 +9,7 @@ set(INTERNAL_CPP_FILES
   CalibrationDataModel.cpp
   GuiHelpers.cpp
   MaterialMappingFilter.cpp
+  MaterialMappingHelper.cpp
   MaterialMappingView.cpp
   PowerLawFunctor.cpp
   PowerLawParameters.cpp

@@ -126,7 +126,7 @@ endif()
 # Prerequesites
 #-----------------------------------------------------------------------------
 
-find_package(MITK 2015.05.2 REQUIRED)
+find_package(MITK 2016.03.0 REQUIRED)
 
 if(COMMAND mitkFunctionCheckMitkCompatibility)
   mitkFunctionCheckMitkCompatibility(VERSIONS MITK_VERSION_PLUGIN_SYSTEM 1 REQUIRED)
@@ -321,7 +321,7 @@ if(_modules_conf_files)
   file(REMOVE ${_modules_conf_files})
 endif()
 
-# add_subdirectory(Modules)
+add_subdirectory(Modules)
 
 #-----------------------------------------------------------------------------
 # CTK plugins
@@ -330,7 +330,7 @@ endif()
 # The CMake code in this section *must* be in the top-level CMakeLists.txt file
 
 macro(GetMyTargetLibraries all_target_libraries varname)
-  set(re_ctkplugin "^ch_zhaw_[a-zA-Z0-9_]+$")
+  set(re_ctkplugin "^ch_[a-zA-Z0-9_]+$")
   set(_tmp_list)
   list(APPEND _tmp_list ${all_target_libraries})
   ctkMacroListFilter(_tmp_list re_ctkplugin OUTPUT_VARIABLE ${varname})
@@ -355,11 +355,14 @@ add_subdirectory(Apps/MITK-GEM)
 # set MITK cpack variables
 include(mitkSetupCPack)
 
-configure_file(${MITK_SOURCE_DIR}/MITKCPackOptions.cmake.in
-               ${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake @ONLY)
-
 # Customize CPack variables for this project
 include(CPackSetup)
+
+list(APPEND CPACK_CREATE_DESKTOP_LINKS "${MY_APP_NAME}")
+
+configure_file(${MITK_SOURCE_DIR}/MITKCPackOptions.cmake.in
+               ${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake @ONLY)
+set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}CPackOptions.cmake")
 
 # include CPack model once all variables are set
 include(CPack)

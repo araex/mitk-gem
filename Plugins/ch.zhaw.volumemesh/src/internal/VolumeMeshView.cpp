@@ -76,6 +76,7 @@ void VolumeMeshView::generateButtonClicked() {
             auto meshFilter = SurfaceToUnstructuredGridFilter::New();
             meshFilter->SetInput(surface);
             meshFilter->SetTetgenOptions(m_TetgenOptionGrid.getOptionsFromGui());
+            // order
             meshFilter->Update();
 
             mitk::DataNode::Pointer newNode = mitk::DataNode::New();

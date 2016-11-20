@@ -7,6 +7,7 @@ set(enabled_modules
   CppMicroServices
   DataTypesExt
   DICOMReader
+  DicomRT
   DicomUI
   GraphAlgorithms
   ImageDenoising
@@ -26,6 +27,7 @@ set(enabled_modules
   Remeshing
   RigidRegistration
   RigidRegistrationUI
+  RTUI
   SceneSerialization
   SceneSerializationBase
   Segmentation
