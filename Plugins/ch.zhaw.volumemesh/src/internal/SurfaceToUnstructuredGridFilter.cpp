@@ -12,7 +12,7 @@
 #include "SurfaceToUnstructuredGridFilter.h"
 #include <vtkCell.h>
 #include <vtkTriangle.h>
-#include "lib/tetgen1.5.0/tetgen.h"
+#include "tetgen.h"
 #include <map>
 #include <array>
 

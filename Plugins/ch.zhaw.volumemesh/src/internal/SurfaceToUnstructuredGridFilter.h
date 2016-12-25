@@ -19,7 +19,7 @@
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 
-#include "lib/tetgen1.5.0/tetgen.h"
+#include "tetgen.h"
 
 class SurfaceToUnstructuredGridFilter : public mitk::UnstructuredGridSource {
 public:
