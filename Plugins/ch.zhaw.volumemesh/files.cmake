@@ -2,11 +2,6 @@ set(SRC_CPP_FILES
 
 )
 
-set(LIB_CPP_FILES
-  tetgen1.5.0/predicates.cxx
-  tetgen1.5.0/tetgen.cxx
-)
-
 set(INTERNAL_CPP_FILES
   ch_zhaw_volumemesh_Activator.cpp
   SurfaceToUnstructuredGridFilter.cpp
@@ -21,7 +16,7 @@ set(UI_FILES
 
 set(MOC_H_FILES
   src/internal/ch_zhaw_volumemesh_Activator.h
-  src/internal/TetgenOptionGrid.h
+        src/internal/TetgenOptionGrid.h
   src/internal/VolumeMeshView.h
 )
 
@@ -50,6 +45,3 @@ foreach(file ${INTERNAL_CPP_FILES})
   set(CPP_FILES ${CPP_FILES} src/internal/${file})
 endforeach(file ${INTERNAL_CPP_FILES})
 
-foreach(file ${LIB_CPP_FILES})
-  set(CPP_FILES ${CPP_FILES} src/internal/lib/${file})
-endforeach(file ${LIB_CPP_FILES})

@@ -14,7 +14,7 @@
 #include <QWidget>
 #include <QGridLayout>
 
-#include "lib/tetgen1.5.0/tetgen.h"
+#include "tetgen.h"
 #include "TetgenOptionRow.h"
 
 class TetgenOptionGrid : public QWidget {

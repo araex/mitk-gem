@@ -1,5 +1,5 @@
 /**
- *  MITK-GEM: Volume Mesher Plugin
+ *  MITK-GEM: Volume Tetgen Plugin
  *
  *  Copyright (c) 2016, Zurich University of Applied Sciences, School of Engineering, T. Fitze, Y. Pauchard
  *  Copyright (c) 2016, ETH Zurich, Institute for Biomechanics, B. Helgason
