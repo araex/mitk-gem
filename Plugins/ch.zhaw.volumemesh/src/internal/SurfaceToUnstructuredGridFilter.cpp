@@ -15,6 +15,7 @@
 #include "tetgen.h"
 #include <map>
 #include <array>
+#include "MesherCGAL.h"
 
 using namespace std;
 
@@ -65,8 +66,9 @@ namespace
 
 SurfaceToUnstructuredGridFilter::SurfaceToUnstructuredGridFilter() { }
 
-void SurfaceToUnstructuredGridFilter::SetInput(const mitk::Surface *_surface) {
+void SurfaceToUnstructuredGridFilter::SetInput(const mitk::Surface *_surface, EMesher eMesher) {
     this->ProcessObject::SetNthInput(0, const_cast<mitk::Surface *>(_surface));
+    m_eMesher = eMesher;
 }
 
 void SurfaceToUnstructuredGridFilter::SetTetgenOptions(tetgenbehavior _o) {
@@ -83,7 +85,19 @@ void SurfaceToUnstructuredGridFilter::GenerateOutputInformation() {
 
 void SurfaceToUnstructuredGridFilter::GenerateData() {
     auto vtkMesh = vtkSmartPointer<vtkUnstructuredGrid>::New();
-    tetgenMesh(GetInput()->GetVtkPolyData(), vtkMesh);
+
+    switch(m_eMesher)
+    {
+        case eM_Tetgen:
+            tetgenMesh(GetInput()->GetVtkPolyData(), vtkMesh);
+            break;
+        case eM_CGAL:
+            MesherCGAL mesher;
+            mesher.SetInput(GetInput()->GetVtkPolyData());
+            mesher.SetOutput(vtkMesh);
+            mesher.Compute();
+            break;
+    }
     GetOutput()->SetVtkUnstructuredGrid(vtkMesh);
 }
 

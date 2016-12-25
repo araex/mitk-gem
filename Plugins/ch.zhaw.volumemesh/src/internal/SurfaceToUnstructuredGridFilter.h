@@ -23,13 +23,18 @@
 
 class SurfaceToUnstructuredGridFilter : public mitk::UnstructuredGridSource {
 public:
+    enum EMesher
+    {
+        eM_Tetgen,
+        eM_CGAL
+    };
     mitkClassMacro(SurfaceToUnstructuredGridFilter, mitk::UnstructuredGridSource);
     itkFactorylessNewMacro(Self);
     itkCloneMacro(Self);
 
     using itk::ProcessObject::SetInput;
 
-    virtual void SetInput(const mitk::Surface *);
+    virtual void SetInput(const mitk::Surface *, EMesher);
 
     virtual void SetTetgenOptions(tetgenbehavior);
 
@@ -45,5 +50,6 @@ protected:
 private:
     void tetgenMesh(vtkSmartPointer <vtkPolyData> _surface, vtkSmartPointer <vtkUnstructuredGrid> _mesh);
 
+    EMesher m_eMesher;
     tetgenbehavior m_Options;
 };

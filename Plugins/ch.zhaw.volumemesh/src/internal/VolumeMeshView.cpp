@@ -68,14 +68,19 @@ void VolumeMeshView::generateButtonClicked() {
     if (surfaceNode) {
         mitk::Surface::Pointer surface = dynamic_cast<mitk::Surface *>(surfaceNode->GetData());
 
-        auto work = [surface, this](){
+        SurfaceToUnstructuredGridFilter::EMesher eMesher = m_Controls.radioTetgen->isChecked() ? SurfaceToUnstructuredGridFilter::eM_Tetgen : SurfaceToUnstructuredGridFilter::eM_CGAL;
+
+        auto work = [eMesher, surface, this](){
             m_Controls.container->setEnabled(false);
             mitk::ProgressBar::GetInstance()->AddStepsToDo(3);
             mitk::ProgressBar::GetInstance()->Progress();
 
             auto meshFilter = SurfaceToUnstructuredGridFilter::New();
-            meshFilter->SetInput(surface);
-            meshFilter->SetTetgenOptions(m_TetgenOptionGrid.getOptionsFromGui());
+            meshFilter->SetInput(surface, eMesher);
+            if(eMesher == SurfaceToUnstructuredGridFilter::eM_Tetgen)
+            {
+                meshFilter->SetTetgenOptions(m_TetgenOptionGrid.getOptionsFromGui());
+            }
             // order
             meshFilter->Update();
 
