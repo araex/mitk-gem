@@ -9,10 +9,12 @@
  *  Some rights reserved.
  */
 
+#include "IMesher.h"
+#include "SurfaceToUnstructuredGridFilter.h"
 #include <mitkSurface.h>
 #include <mitkUnstructuredGrid.h>
-#include "SurfaceToUnstructuredGridFilter.h"
-#include "IMesher.h"
+#include <vtkPolyData.h>
+#include <vtkUnstructuredGrid.h>
 
 void SurfaceToUnstructuredGridFilter::SetInput(const mitk::Surface *_surface, std::shared_ptr <gem::IMesher> spMesher)
 {

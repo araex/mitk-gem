@@ -23,6 +23,7 @@ typedef CGAL::Mesh_complex_3_in_triangulation_3 <Tr> C3t3;
 // Criteria
 typedef CGAL::Mesh_criteria_3 <Tr> Mesh_criteria;
 // To avoid verbose function and named parameters call
+
 using namespace gem;
 using namespace CGAL::parameters;
 using namespace std;

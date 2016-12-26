@@ -1,5 +1,4 @@
 #include "IMesher.h"
-
 #include <vtkUnstructuredGrid.h>
 
 using namespace gem;

@@ -70,6 +70,6 @@ MITK-GEM is released under the GPLv3 license. However, the plugins are individua
 - Surface Mesher: BSD 3-Clause License
 - Resample Plugin: BSD 3-Clause License
 - Padding Plugin: BSD 3-Clause License
-- GraphCut3D: GPLv3 because of the used library [maxflow](https://pub.ist.ac.at/~vnk/software.html).
-- Volume Mesher: GPLv3 beaucse of the used library [tetgen](http://wias-berlin.de/software/tetgen/).
+- GraphCut3D: GPLv3 because of [maxflow](https://pub.ist.ac.at/~vnk/software.html).
+- Volume Mesher: GPLv3 because of [tetgen](http://wias-berlin.de/software/tetgen/).
 

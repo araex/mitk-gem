@@ -13,8 +13,6 @@
 
 #include <mitkUnstructuredGridSource.h>
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
-#include <vtkUnstructuredGrid.h>
 
 namespace gem
 {

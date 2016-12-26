@@ -1,14 +1,13 @@
 #include "MesherTetgen.h"
-
-#include <map>
 #include <array>
+#include <map>
 #include <vtkCell.h>
-#include <vtkTriangle.h>
 #include <vtkPolyData.h>
+#include <vtkTriangle.h>
 #include <vtkUnstructuredGrid.h>
 
-using namespace std;
 using namespace gem;
+using namespace std;
 
 namespace
 {
