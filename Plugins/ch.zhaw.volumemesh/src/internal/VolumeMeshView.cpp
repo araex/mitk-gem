@@ -16,10 +16,13 @@
 #include <mitkGridRepresentationProperty.h>
 #include <QtConcurrentRun>
 #include <mitkProgressBar.h>
+#include <mitkSurface.h>
 
 #include "VolumeMeshView.h"
 #include "SurfaceToUnstructuredGridFilter.h"
 #include "WorkbenchUtils.h"
+#include "MesherCGAL.h"
+#include "MesherTetgen.h"
 
 
 const std::string VolumeMeshView::VIEW_ID = "org.mitk.views.volumemesher";
@@ -68,20 +71,23 @@ void VolumeMeshView::generateButtonClicked() {
     if (surfaceNode) {
         mitk::Surface::Pointer surface = dynamic_cast<mitk::Surface *>(surfaceNode->GetData());
 
-        SurfaceToUnstructuredGridFilter::EMesher eMesher = m_Controls.radioTetgen->isChecked() ? SurfaceToUnstructuredGridFilter::eM_Tetgen : SurfaceToUnstructuredGridFilter::eM_CGAL;
+        std::shared_ptr<gem::IMesher> spMesher;
+        if(m_Controls.radioTetgen->isChecked())
+        {
+            spMesher = std::make_shared<gem::MesherTetgen>(m_TetgenOptionGrid.getOptionsFromGui());
+        }
+        else
+        {
+            spMesher = std::make_shared<gem::MesherCGAL>();
+        }
 
-        auto work = [eMesher, surface, this](){
+        auto work = [spMesher, surface, this](){
             m_Controls.container->setEnabled(false);
             mitk::ProgressBar::GetInstance()->AddStepsToDo(3);
             mitk::ProgressBar::GetInstance()->Progress();
 
             auto meshFilter = SurfaceToUnstructuredGridFilter::New();
-            meshFilter->SetInput(surface, eMesher);
-            if(eMesher == SurfaceToUnstructuredGridFilter::eM_Tetgen)
-            {
-                meshFilter->SetTetgenOptions(m_TetgenOptionGrid.getOptionsFromGui());
-            }
-            // order
+            meshFilter->SetInput(surface, spMesher);
             meshFilter->Update();
 
             mitk::DataNode::Pointer newNode = mitk::DataNode::New();

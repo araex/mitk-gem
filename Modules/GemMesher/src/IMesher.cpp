@@ -2,6 +2,8 @@
 
 #include <vtkUnstructuredGrid.h>
 
+using namespace gem;
+
 void IMesher::Compute()
 {
     if(m_spUGrid == nullptr)

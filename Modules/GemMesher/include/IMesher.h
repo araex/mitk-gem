@@ -5,27 +5,36 @@
 class vtkPolyData;
 class vtkUnstructuredGrid;
 
-class IMesher
+namespace gem
 {
-public:
-    void SetInput(vtkSmartPointer<vtkPolyData> spSurface) {m_spSurface = spSurface;};
-    void SetOutput(vtkSmartPointer<vtkUnstructuredGrid> spUGrid) {m_spUGrid = spUGrid;};
-    vtkSmartPointer<vtkUnstructuredGrid> GetOutput(void) const { return m_spUGrid; };
+    /*!
+     * Interface for algorithms to calculate a volume mesh given a surface using vtk data types.
+     * @author Thomas Fitze
+     */
+    class IMesher
+    {
+    public:
+        //! Sets the input surface to be meshed
+        void SetInput(vtkSmartPointer<vtkPolyData> spSurface) {m_spSurface = spSurface;};
 
-    void Compute();
+        //! Sets the output mesh
+        void SetOutput(vtkSmartPointer<vtkUnstructuredGrid> spUGrid) {m_spUGrid = spUGrid;};
 
-protected:
-    virtual void compute() = 0;
-    vtkSmartPointer<vtkPolyData>            m_spSurface;    //!< Input Surface
-    vtkSmartPointer<vtkUnstructuredGrid>    m_spUGrid;      //!< Output
-};
+        //! Returns the output mesh
+        vtkSmartPointer<vtkUnstructuredGrid> GetOutput(void) const { return m_spUGrid; };
 
-template<class Mesher>
-void CreateVolumeMeshFromSurface(vtkSmartPointer<vtkPolyData> spSurface, vtkSmartPointer<vtkUnstructuredGrid> spUGrid)
-{
-    static_assert(std::is_base_of<IMesher, Mesher>::value, "Mesher needs to implement interface IMesher");
-    Mesher mesher;
-    mesher.SetInput(spSurface);
-    mesher.SetOutput(spUGrid);
-    mesher.Compute();
+        /*!
+         * Computes the volume mesh
+         *
+         * @precondition   Input surface is set
+         */
+        void Compute();
+
+    protected:
+        //! Mesher specific compute implementation
+        virtual void compute() = 0;
+
+        vtkSmartPointer<vtkPolyData>            m_spSurface;    //!< Input Surface
+        vtkSmartPointer<vtkUnstructuredGrid>    m_spUGrid;      //!< Output
+    };
 }

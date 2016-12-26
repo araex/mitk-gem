@@ -2,8 +2,15 @@
 
 #include "IMesher.h"
 
-class MesherCGAL : public IMesher
+namespace gem
 {
-protected:
-    virtual void compute(void) override;
-};
+    /*!
+     * Implementation of a volume mesher using CGAL
+     * @author Thomas Fitze
+     */
+    class MesherCGAL : public IMesher
+    {
+    protected:
+        virtual void compute(void) override;
+    };
+}
