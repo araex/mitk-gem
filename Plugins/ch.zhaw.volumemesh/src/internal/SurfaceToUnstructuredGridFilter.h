@@ -11,39 +11,52 @@
 
 #pragma once
 
-#include <mitkSurface.h>
-#include <mitkUnstructuredGrid.h>
+#include <memory>
 #include <mitkUnstructuredGridSource.h>
-
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
-#include <vtkUnstructuredGrid.h>
 
-#include "lib/tetgen1.5.0/tetgen.h"
+namespace gem
+{
+    class IMesher;
+}
 
-class SurfaceToUnstructuredGridFilter : public mitk::UnstructuredGridSource {
+namespace mitk
+{
+    class Surface;
+}
+
+/*!
+ * mitk Filter to volume mesh a mitk::Surface
+ *
+ * @author  Thomas Fitze
+ */
+class SurfaceToUnstructuredGridFilter : public mitk::UnstructuredGridSource
+{
 public:
+    //! MITK Filter Interface
+    //! @{
     mitkClassMacro(SurfaceToUnstructuredGridFilter, mitk::UnstructuredGridSource);
     itkFactorylessNewMacro(Self);
     itkCloneMacro(Self);
 
     using itk::ProcessObject::SetInput;
 
-    virtual void SetInput(const mitk::Surface *);
-
-    virtual void SetTetgenOptions(tetgenbehavior);
+    /*!
+     * Sets the input of the filter
+     * @param pSurface  Surface to be meshed
+     * @param spMesher  Mesher instance to be used
+     */
+    virtual void SetInput(const mitk::Surface *pSurface, std::shared_ptr <gem::IMesher> spMesher);
 
     virtual const mitk::Surface *GetInput();
-
     virtual void GenerateOutputInformation() override;
-
     virtual void GenerateData() override;
+    //! @}
 
 protected:
-    SurfaceToUnstructuredGridFilter();
+    //! Construction only via MITK smartpointer. SurfaceToUnstructuredGridFilter::New()
+    SurfaceToUnstructuredGridFilter() = default;
 
 private:
-    void tetgenMesh(vtkSmartPointer <vtkPolyData> _surface, vtkSmartPointer <vtkUnstructuredGrid> _mesh);
-
-    tetgenbehavior m_Options;
+    std::shared_ptr <gem::IMesher> m_spMesher;   //!< Mesher instance
 };

@@ -11,11 +11,10 @@
 
 #pragma once
 
-#include <QWidget>
-#include <QGridLayout>
-
-#include "lib/tetgen1.5.0/tetgen.h"
+#include "tetgen.h"
 #include "TetgenOptionRow.h"
+#include <QGridLayout>
+#include <QWidget>
 
 class TetgenOptionGrid : public QWidget {
     Q_OBJECT
