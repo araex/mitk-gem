@@ -1,5 +1,6 @@
 #include "MesherTetgen.h"
 #include <array>
+#include <cstdint>
 #include <map>
 #include <vtkCell.h>
 #include <vtkPolyData.h>

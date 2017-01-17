@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GemMesherExports.h>
 #include <vtkSmartPointer.h>
 
 class vtkPolyData;
@@ -11,7 +12,7 @@ namespace gem
      * Interface for algorithms to calculate a volume mesh given a surface using vtk data types.
      * @author Thomas Fitze
      */
-    class IMesher
+    class GemMesher_EXPORT IMesher
     {
     public:
         //! Sets the input surface to be meshed

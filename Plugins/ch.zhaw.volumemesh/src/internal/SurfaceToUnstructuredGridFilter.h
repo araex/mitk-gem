@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <memory>
 #include <mitkUnstructuredGridSource.h>
 #include <vtkSmartPointer.h>
 

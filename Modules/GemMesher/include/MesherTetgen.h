@@ -9,7 +9,7 @@ namespace gem
      * Implementation of a volume mesher using tetgen
      * @author Thomas Fitze
      */
-    class MesherTetgen : public IMesher
+    class GemMesher_EXPORT MesherTetgen : public IMesher
     {
     public:
         /*!
