@@ -6,7 +6,7 @@ std::vector<mitk::CustomMimeType *> GemIOMimeTypes::Get() {
     std::vector <mitk::CustomMimeType *> mimeTypes;
 
     // order matters here (descending rank for mime types)
-    mimeTypes.push_back(ANSYS_MIMETYPE().Clone());
+	mimeTypes.push_back(ASCIIUGRID_MIMETYPE().Clone());
 
     return mimeTypes;
 }

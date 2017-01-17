@@ -2,6 +2,7 @@
 #include <usModuleContext.h>
 
 #include "GemIOMimeTypes.h"
+#include <mitkLogMacros.h>
 #include <AnsysFileWriterService.h>
 #include <AsciiUgridFileWriterService.h>
 
@@ -15,11 +16,13 @@ namespace mitk {
             us::ServiceProperties props;
             props[us::ServiceConstants::SERVICE_RANKING()] = 10;
 
+			MITK_INFO("GemIO") << "Registering GEM IO Mimetypes...";
             m_MimeTypes = GemIOMimeTypes::Get();
             for (std::vector<mitk::CustomMimeType *>::const_iterator mimeTypeIter = m_MimeTypes.begin(),
                          iterEnd = m_MimeTypes.end(); mimeTypeIter != iterEnd; ++mimeTypeIter) {
                 context->RegisterService(*mimeTypeIter, props);
-            }
+				MITK_INFO("GemIO") << "  " << (*mimeTypeIter)->GetComment();
+			}
 
             // m_spAnsysFileWriterInstance = std::unique_ptr<AnsysFileWriterService>(new AnsysFileWriterService());
             m_spAsciiUgridFileWriterInstance = std::unique_ptr<AsciiUgridFileWriterService>(new AsciiUgridFileWriterService());
