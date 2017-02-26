@@ -117,13 +117,13 @@ namespace itk {
 
         void GenerateData() override;
 
-        void InitializeGraph(GraphType *, ImageContainer, ProgressReporter &progress);
+        void InitializeGraph(GraphType *, const ImageContainer, ProgressReporter &progress);
 
         void CutGraph(GraphType *, ImageContainer, ProgressReporter &progress);
 
         // convert masks to >0 indices
         template<typename TIndexImage>
-        std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const);
+        std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const) const;
 
         // convert 3d itk indices to a continously numbered indices
         unsigned int ConvertIndexToVertexDescriptor(const itk::Index<3>, typename InputImageType::RegionType);
