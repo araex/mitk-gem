@@ -26,6 +26,7 @@
 
 // Graph
 #include "MaxFlowGraphKolmogorov.hxx"
+#include "MaxFlowGridCut.hxx"
 
 namespace itk {
     template<typename TInput, typename TForeground, typename TBackground, typename TOutput>
@@ -109,7 +110,7 @@ namespace itk {
         typedef itk::Vector<typename InputImageType::PixelType, 1> ListSampleMeasurementVectorType;
         typedef itk::Statistics::ListSample<ListSampleMeasurementVectorType> SampleType;
         typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
-        typedef MaxFlowGraphKolmogorov GraphType;
+        typedef MaxFlowGridCut GraphType;
 
         ImageGraphCut3DFilter();
 

@@ -142,22 +142,32 @@ namespace itk {
                 assert(weight >= 0);
 
                 // Add the edge to the graph
-                unsigned int nodeIndex1 = ConvertIndexToVertexDescriptor(iterator.GetIndex(center), images.inputRegion);
-                unsigned int nodeIndex2 = ConvertIndexToVertexDescriptor(iterator.GetIndex(neighbors[i]), images.inputRegion);
+				itk::Index<3> nodeIndex1 = iterator.GetIndex(center);
+				itk::Index<3> nodeIndex2 = iterator.GetIndex(neighbors[i]);
 
                 //Determine which direction is used
                 if (m_BoundaryDirectionType == BrightDark) {
                     if (centerPixel > neighborPixel)
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, 1.0);
+                        graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
+													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
+													weight, 1.0);
                     else
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, 1.0, weight);
+						graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
+													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
+													1.0, weight);
                 } else if (m_BoundaryDirectionType == DarkBright) {
                     if (centerPixel > neighborPixel)
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, 1.0, weight);
+						graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
+													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
+													1.0, weight);
                     else
-                        graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, 1.0);
+						graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
+													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
+													weight, 1.0);
                 } else {
-                    graph->addBidirectionalEdge(nodeIndex1, nodeIndex2, weight, weight);
+					graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
+												nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
+												weight, weight);
                 }
             }
             progress.CompletedPixel();
@@ -165,12 +175,12 @@ namespace itk {
 
         // set the terminal connection capacity to max float
         for (unsigned int i = 0; i < sources.size(); i++) {
-            unsigned int sourceIndex = ConvertIndexToVertexDescriptor(sources[i], images.inputRegion);
-            graph->addTerminalEdges(sourceIndex, std::numeric_limits<float>::max(), 0);
+			itk::Index<3> sourceIndex = sources[i];
+            graph->addTerminalEdges(sourceIndex[0], sourceIndex[1], sourceIndex[2], std::numeric_limits<float>::max(), 0);
         }
         for (unsigned int i = 0; i < sinks.size(); i++) {
-            unsigned int sinkIndex = ConvertIndexToVertexDescriptor(sinks[i], images.inputRegion);
-            graph->addTerminalEdges(sinkIndex, 0, std::numeric_limits<float>::max());
+			itk::Index<3> sinkIndex = sinks[i];
+			graph->addTerminalEdges(sinkIndex[0], sinkIndex[1], sinkIndex[2], 0, std::numeric_limits<float>::max());
         }
     }
 
@@ -184,8 +194,8 @@ namespace itk {
 
         int sourceGroup = graph->groupOfSource();
         while (!outputImageIterator.IsAtEnd()) {
-            unsigned int voxelIndex = ConvertIndexToVertexDescriptor(outputImageIterator.GetIndex(), images.outputRegion);
-            if (graph->groupOf(voxelIndex) == sourceGroup) {
+			itk::Index<3> voxelIndex = outputImageIterator.GetIndex();
+            if (graph->groupOf(voxelIndex[0], voxelIndex[1], voxelIndex[2]) == sourceGroup) {
                 outputImageIterator.Set(m_ForegroundPixelValue);
             }
             // Libraries differ to some degree in how they define the terminal groups. however, the tested ones
