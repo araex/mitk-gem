@@ -53,19 +53,19 @@ public:
         return (short) graph->what_segment(vertex);
     }
 
-    int groupOfSource(){
+    int groupOfSource() const{
         return (short) GraphType::SOURCE;
     }
 
-    int groupOfSink(){
+    int groupOfSink() const{
         return (short) GraphType::SINK;
     }
 
-    unsigned int getNumberOfVertices(){
+    unsigned int getNumberOfVertices() const{
         return graph->get_node_num();
     }
 
-    unsigned int getNumberOfEdges(){
+    unsigned int getNumberOfEdges() const{
         return graph->get_arc_num();
     }
 
