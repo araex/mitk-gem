@@ -109,14 +109,21 @@ namespace itk {
         // This prevents duplicate edges (i.e. we cannot add an edge to all 6-connected neighbors of every pixel or
         // almost every edge would be duplicated.
         std::vector<typename IteratorType::OffsetType> neighbors;
-        typename IteratorType::OffsetType bottom = {{0, 1, 0}};
-        neighbors.push_back(bottom);
-        typename IteratorType::OffsetType right = {{1, 0, 0}};
-        neighbors.push_back(right);
-        typename IteratorType::OffsetType front = {{0, 0, 1}};
-        neighbors.push_back(front);
 
-        typename IteratorType::OffsetType center = {{0, 0, 0}};
+		typename IteratorType::OffsetType left = {{-1, 0, 0}};
+		neighbors.push_back(left);
+		typename IteratorType::OffsetType right = {{1, 0, 0}};
+		neighbors.push_back(right);
+		typename IteratorType::OffsetType top = {{0, -1, 0}};
+		neighbors.push_back(top);
+		typename IteratorType::OffsetType bottom = {{0, 1, 0}};
+		neighbors.push_back(bottom);
+		typename IteratorType::OffsetType back = {{0, 0, -1}};
+		neighbors.push_back(back);
+		typename IteratorType::OffsetType front = {{0, 0, 1}};
+		neighbors.push_back(front);
+
+		typename IteratorType::OffsetType center = {{0, 0, 0}};
 
         IteratorType iterator(radius, images.input, images.input->GetLargestPossibleRegion());
         iterator.ClearActiveList();
@@ -125,63 +132,75 @@ namespace itk {
         iterator.ActivateOffset(front);
         iterator.ActivateOffset(center);
 
-        for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator) {
-            typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
 
-            for (unsigned int i = 0; i < neighbors.size(); i++) {
-                bool pixelIsValid;
-                typename InputImageType::PixelType neighborPixel  = iterator.GetPixel(neighbors[i], pixelIsValid);
 
-                // If the current neighbor is outside the image, skip it
-                if (!pixelIsValid) {
-                    continue;
-                }
+		typename InputImageType::SizeType graphSize = images.input->GetLargestPossibleRegion().GetSize();
+		unsigned int nGraphNodes(1);
 
-                // Compute the edge weight
-                double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * m_Sigma * m_Sigma));
-                assert(weight >= 0);
+		for (int iSize = 0; iSize < 3; ++iSize) {
+			nGraphNodes *= graphSize[iSize];
+		}
 
-                // Add the edge to the graph
-				itk::Index<3> nodeIndex1 = iterator.GetIndex(center);
-				itk::Index<3> nodeIndex2 = iterator.GetIndex(neighbors[i]);
+		CapacityType capacities(neighbors.size() + 2, std::vector<WeightType>(nGraphNodes, 0));
+		unsigned int iVoxel(0);
+		for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++iVoxel) {
+			typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
+			// Add the edge to the graph
+			itk::Index<3> currentNodeIndex = iterator.GetIndex(center);
+
+			// Fill the source
+			if (images.foreground->GetPixel(currentNodeIndex) > itk::NumericTraits<typename ForegroundImageType::PixelType>::Zero)
+				capacities[0][iVoxel] =  std::numeric_limits<float>::max();
+			if (images.background->GetPixel(currentNodeIndex) > itk::NumericTraits<typename BackgroundImageType::PixelType>::Zero)
+				capacities[1][iVoxel] =  std::numeric_limits<float>::max();
+
+			for (unsigned int i = 0; i < neighbors.size(); i++) {
+				bool pixelIsValid;
+				typename InputImageType::PixelType neighborPixel  = iterator.GetPixel(neighbors[i], pixelIsValid);
+
+				// If the current neighbor is outside the image, skip it
+				if (!pixelIsValid) {
+					continue;
+				}
+
+				// Compute the edge weight
+				double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * m_Sigma * m_Sigma));
+				assert(weight >= 0);
+
 
                 //Determine which direction is used
-                if (m_BoundaryDirectionType == BrightDark) {
-                    if (centerPixel > neighborPixel)
-                        graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
-													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
-													weight, 1.0);
-                    else
-						graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
-													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
-													1.0, weight);
-                } else if (m_BoundaryDirectionType == DarkBright) {
-                    if (centerPixel > neighborPixel)
-						graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
-													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
-													1.0, weight);
-                    else
-						graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
-													nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
-													weight, 1.0);
-                } else {
-					graph->addBidirectionalEdge(nodeIndex1[0], nodeIndex1[1], nodeIndex1[2],
-												nodeIndex2[0], nodeIndex2[1], nodeIndex2[2],
-												weight, weight);
-                }
+				switch (m_BoundaryDirectionType)
+				{
+					case BrightDark:{
+						if (centerPixel > neighborPixel)
+							capacities[i + 2][iVoxel] = weight;
+						else
+							capacities[i + 2][iVoxel] = 1.0;
+					}
+
+					case DarkBright:{
+						if (centerPixel > neighborPixel)
+							capacities[i + 2][iVoxel] = 1.0;
+						else
+							capacities[i + 2][iVoxel] = weight;
+					}
+
+					default:
+						capacities[i + 2][iVoxel] = weight;
+				}
+
             }
             progress.CompletedPixel();
         }
 
-        // set the terminal connection capacity to max float
-        for (unsigned int i = 0; i < sources.size(); i++) {
-			itk::Index<3> sourceIndex = sources[i];
-            graph->addTerminalEdges(sourceIndex[0], sourceIndex[1], sourceIndex[2], std::numeric_limits<float>::max(), 0);
-        }
-        for (unsigned int i = 0; i < sinks.size(); i++) {
-			itk::Index<3> sinkIndex = sinks[i];
-			graph->addTerminalEdges(sinkIndex[0], sinkIndex[1], sinkIndex[2], 0, std::numeric_limits<float>::max());
-        }
+		graph->SetCapacities(capacities[0].data(),
+							 capacities[1].data(),
+							 capacities[2].data(),
+							 capacities[3].data(),
+							 capacities[4].data(),
+							 capacities[5].data(),
+							 capacities[6].data(),
+							 capacities[7].data());
     }
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>

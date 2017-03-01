@@ -10,18 +10,18 @@
 #ifndef IMAGEGRAPHCUT3DSEGMENTATION_MAXFLOWFRIDCUT_H
 #define IMAGEGRAPHCUT3DSEGMENTATION_MAXFLOWFRIDCUT_H
 
-#include "lib/gridcut/include/GridCut/GridGraph_3D_6C.h"
+#include "lib/gridcut/include/GridCut/GridGraph_3D_6C_MT.h"
 
 /*
  * Wraps grid cut library
  */
 class MaxFlowGridCut {
 public:
-	typedef GridGraph_3D_6C<float,float,float> GraphType;
+	typedef GridGraph_3D_6C_MT<float,float,float> GraphType;
 
 	MaxFlowGridCut(unsigned int dimension1, unsigned int dimension2, unsigned int dimension3)
 	{
-		graph = new GraphType(dimension1, dimension2, dimension3);
+		graph = new GraphType(dimension1, dimension2, dimension3, 8, 50);
 
 		int numberOfVertices = dimension1 * dimension2 * dimension3;
 		int numberOfEdges = calculateNumberOfEdges(dimension1, dimension2, dimension3);
@@ -33,15 +33,26 @@ public:
 	void addBidirectionalEdge(int x1, int y1 , int z1, int x2, int y2, int z2, float weight, float reverseWeight) {
 		int nodeIdCenter = graph->node_id(x1 ,y1 , z1);
 		int nodeIdNeighbor = graph->node_id(x2 ,y2 , z2);
-		graph->set_neighbor_cap(nodeIdCenter, x2 - x1, y2 - y1, z2- z1, weight);
-		graph->set_neighbor_cap(nodeIdNeighbor, x1 - x2, y1 - y2, z1- z2, reverseWeight);
+//		graph->set_neighbor_cap(nodeIdCenter, x2 - x1, y2 - y1, z2- z1, weight);
+//		graph->set_neighbor_cap(nodeIdNeighbor, x1 - x2, y1 - y2, z1- z2, reverseWeight);
 	}
 
 	void addTerminalEdges(int x, int y, int z, float sourceWeight, float sinkWeight){
 		int nodeId = graph->node_id(x ,y , z);
-		graph->set_terminal_cap(nodeId, sourceWeight, sinkWeight);
+//		graph->set_terminal_cap(nodeId, sourceWeight, sinkWeight);
 	}
 
+	void SetCapacities(const float* cap_s,
+						const float* cap_t,
+						const float* cap_lee,
+						const float* cap_gee,
+						const float* cap_ele,
+						const float* cap_ege,
+						const float* cap_eel,
+						const float* cap_eeg)
+	{
+		graph->set_caps(cap_s, cap_t, cap_lee, cap_gee, cap_ele, cap_ege, cap_eel, cap_eeg);
+	}
 	// start the calculation
 	void calculateMaxFlow(){
 		graph->compute_maxflow();

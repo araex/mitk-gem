@@ -112,6 +112,9 @@ namespace itk {
         typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
         typedef MaxFlowGridCut GraphType;
 
+		typedef float WeightType;
+		typedef std::vector< std::vector<WeightType > > CapacityType;
+
         ImageGraphCut3DFilter();
 
         virtual ~ImageGraphCut3DFilter();
