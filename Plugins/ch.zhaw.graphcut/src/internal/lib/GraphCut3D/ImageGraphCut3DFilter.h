@@ -24,9 +24,6 @@
 // STL
 #include <vector>
 
-// Graph
-#include "MaxFlowGraphKolmogorov.hxx"
-
 namespace itk {
     template<typename TInput, typename TForeground, typename TBackground, typename TOutput>
     class ITK_EXPORT ImageGraphCut3DFilter : public ImageToImageFilter<TInput, TOutput> {
@@ -37,7 +34,7 @@ namespace itk {
         typedef SmartPointer<Self> Pointer;
         typedef SmartPointer<const Self> ConstPointer;
 
-        itkNewMacro(Self);
+//        itkNewMacro(Self);
 
         itkTypeMacro(ImageGraphCut3DFilter, ImageToImageFilter);
         itkStaticConstMacro(NDimension, unsigned int, TInput::ImageDimension);
@@ -50,6 +47,8 @@ namespace itk {
 
         typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
         typedef std::vector<itk::Index<3> > IndexContainerType;     // container for sinks / sources
+        typedef float WeightType;
+
         typedef enum {
             NoDirection, BrightDark, DarkBright
         } BoundaryDirectionType;
@@ -92,11 +91,10 @@ namespace itk {
             this->SetNthInput(2, const_cast<BackgroundImageType *>(image));
         }
 
+
         void SetVerboseOutput(bool b) {
             m_PrintTimer = b;
         }
-
-
     protected:
         struct ImageContainer {
             typename InputImageType::ConstPointer input;
@@ -109,7 +107,7 @@ namespace itk {
         typedef itk::Vector<typename InputImageType::PixelType, 1> ListSampleMeasurementVectorType;
         typedef itk::Statistics::ListSample<ListSampleMeasurementVectorType> SampleType;
         typedef itk::Statistics::SampleToHistogramFilter<SampleType, HistogramType> SampleToHistogramFilterType;
-        typedef MaxFlowGraphKolmogorov GraphType;
+
 
         ImageGraphCut3DFilter();
 
@@ -117,15 +115,17 @@ namespace itk {
 
         void GenerateData() override;
 
-        void InitializeGraph(GraphType *, const ImageContainer, ProgressReporter &progress);
+        virtual void FillGraph(const ImageContainer, ProgressReporter &progress) = 0;
 
-        void CutGraph(GraphType *, ImageContainer, ProgressReporter &progress);
+        virtual void SolveGraph() = 0;
+
+        virtual void CutGraph(ImageContainer, ProgressReporter &progress) = 0;
 
         // convert masks to >0 indices
         template<typename TIndexImage>
         std::vector<itk::Index<3> > getPixelsLargerThanZero(const TIndexImage *const) const;
 
-        // convert 3d itk indices to a continously numbered indices
+        // convert 3d itk indices to a continuously numbered indices
         unsigned int ConvertIndexToVertexDescriptor(const itk::Index<3>, typename InputImageType::RegionType);
 
         // image getters

@@ -14,7 +14,8 @@
 #include <itkImage.h>
 #include <itkCommand.h>
 
-#include "lib/GraphCut3D/ImageGraphCut3DFilter.h"
+#include "lib/GraphCut3D/ImageGridCutFilter.hxx"
+#include "lib/GraphCut3D/ImageKolmogorovFilter.hxx"
 #include "Worker.h"
 
 class ProgressObserverCommand : public itk::Command {
@@ -66,7 +67,7 @@ public:
     typedef itk::Image<BinaryPixelType, 3> OutputImageType;
 
     // typedef for pipeline
-    typedef itk::ImageGraphCut3DFilter<InputImageType, MaskImageType, MaskImageType, OutputImageType> GraphCutFilterType;
+    typedef itk::ImageKolmogorovFilter<InputImageType, MaskImageType, MaskImageType, OutputImageType> GraphCutFilterType;
 
     GraphcutWorker();
 
