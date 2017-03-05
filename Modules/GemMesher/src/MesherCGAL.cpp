@@ -38,7 +38,7 @@ namespace
         if (in.bad())
         {
             std::cerr << "Error: Cannot read input" << std::endl;
-            return EXIT_FAILURE;
+            return;
         }
 
         // Create domain
