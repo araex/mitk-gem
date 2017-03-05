@@ -10,21 +10,21 @@
 #ifndef __ImageKolmogorovBoost_hxx_
 #define __ImageKolmogorovBoost_hxx_
 
-#include "ImageKolmogorovBoostFilter.h"
+#include "ImageGraphCut3DKolmogorovBoostBase.h"
 
 namespace itk{
 	template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-	ImageKolmogorovBoostFilter<TImage, TForeground, TBackground, TOutput>
-	::ImageKolmogorovBoostFilter(){
+	ImageGraphCut3DKolmogorovBoostBase<TImage, TForeground, TBackground, TOutput>
+	::ImageGraphCut3DKolmogorovBoostBase(){
 	}
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-    ImageKolmogorovBoostFilter<TImage, TForeground, TBackground, TOutput>
-    ::~ImageKolmogorovBoostFilter(){
+    ImageGraphCut3DKolmogorovBoostBase<TImage, TForeground, TBackground, TOutput>
+    ::~ImageGraphCut3DKolmogorovBoostBase(){
     }
 
 	template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-	void ImageKolmogorovBoostFilter<TImage, TForeground, TBackground, TOutput>
+	void ImageGraphCut3DKolmogorovBoostBase<TImage, TForeground, TBackground, TOutput>
 	::FillGraph(const ImageContainer images, ProgressReporter &progress){
         InitializeGraph(images);
         IndexContainerType sources = this->template getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
@@ -110,7 +110,7 @@ namespace itk{
 	};
 
 	template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
-	void ImageKolmogorovBoostFilter<TImage, TForeground, TBackground, TOutput>
+	void ImageGraphCut3DKolmogorovBoostBase<TImage, TForeground, TBackground, TOutput>
 	::CutGraph(ImageContainer images, ProgressReporter &progress){
 
         // Iterate over the output image, querying the graph for the association of each pixel

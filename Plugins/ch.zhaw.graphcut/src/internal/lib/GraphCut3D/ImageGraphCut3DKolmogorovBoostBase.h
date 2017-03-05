@@ -7,22 +7,22 @@
  *  Some rights reserved.
  */
 
-#ifndef __ImageKolmogorovBoostFilter_h_
-#define __ImageKolmogorovBoostFilter_h_
+#ifndef __ImageGraphCut3DKolmogorovBoostBase_h_
+#define __ImageGraphCut3DKolmogorovBoostBase_h_
 
 #include "ImageGraphCut3DFilter.h"
 namespace itk{
-
+	//! Base Class for the Kolmogorov maxflow & boost GraphCut solvers
 	template<typename TInput, typename TForeground, typename TBackground, typename TOutput>
-	class ImageKolmogorovBoostFilter : public ImageGraphCut3DFilter<TInput, TForeground, TBackground, TOutput>{
+	class ImageGraphCut3DKolmogorovBoostBase : public ImageGraphCut3DFilter<TInput, TForeground, TBackground, TOutput>{
 	public:
 		// ITK related defaults
-		typedef ImageKolmogorovBoostFilter Self;
+		typedef ImageGraphCut3DKolmogorovBoostBase Self;
 		typedef ImageGraphCut3DFilter<TInput, TForeground, TBackground, TOutput> SuperClass;
 		typedef SmartPointer<Self> Pointer;
 		typedef SmartPointer<const Self> ConstPointer;
 
-		itkTypeMacro(ImageKolmogorovBoostFilter, ImageToImageFilter);
+		itkTypeMacro(ImageGraphCut3DKolmogorovBoostBase, ImageGraphCut3DFilter);
 
 		typedef typename SuperClass::InputImageType InputImageType;
 
@@ -35,9 +35,9 @@ namespace itk{
 		typedef typename SuperClass::ImageContainer ImageContainer;
 
         virtual void InitializeGraph(const ImageContainer) = 0;
-		virtual void FillGraph(const ImageContainer, ProgressReporter &progress);
+		virtual void FillGraph(const ImageContainer, ProgressReporter &progress) override;
 
-        virtual void CutGraph(ImageContainer, ProgressReporter &progress);
+        virtual void CutGraph(ImageContainer, ProgressReporter &progress) override;
 		virtual void addBidirectionalEdge(const unsigned int source, const unsigned int target, const float weight, const float reverseWeight) = 0;
 
         virtual void addTerminalEdges(const unsigned int node, const float sourceWeight, const float sinkWeight) = 0;
@@ -51,20 +51,20 @@ namespace itk{
         virtual unsigned int getNumberOfEdges()= 0;
 
     protected:
-        ImageKolmogorovBoostFilter();
+        ImageGraphCut3DKolmogorovBoostBase();
 
-        virtual ~ImageKolmogorovBoostFilter();
+        virtual ~ImageGraphCut3DKolmogorovBoostBase();
 
 	private:
-        ImageKolmogorovBoostFilter(const Self &); // intentionally not implemented
+        ImageGraphCut3DKolmogorovBoostBase(const Self &); // intentionally not implemented
 		void operator=(const Self &); // intentionally not implemented
 	};
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 
-#include "ImageKolmogorovBoostFilter.hxx"
+#include "ImageGraphCut3DKolmogorovBoostBase.hxx"
 
 #endif
 
-#endif //__ImageKolmogorovBoostFilter_h_
+#endif //__ImageGraphCut3DKolmogorovBoostBase_h_

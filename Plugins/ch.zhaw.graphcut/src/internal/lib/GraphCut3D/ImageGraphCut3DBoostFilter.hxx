@@ -7,30 +7,30 @@
  *  Some rights reserved.
  */
 
-#ifndef __ImageBoostFilter_h_
-#define __ImageBoostFilter_h_
+#ifndef __ImageGraphCut3DBoostFilter_h_
+#define __ImageGraphCut3DBoostFilter_h_
 
 #include <boost/assign/list_of.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 
-#include "ImageKolmogorovBoostFilter.h"
+#include "ImageImageGraphCut3DKolmogorovBoostBase.h"
 /*
  * Wraps kolmogorovs graph library
  */
 namespace itk{
-
+    //! GraphCut solver using boosts maxflow implementation
 	template<typename TInput, typename TForeground, typename TBackground, typename TOutput>
-	class ImageBoostFilter : public ImageKolmogorovBoostFilter<TInput, TForeground, TBackground, TOutput>{
+	class ImageGraphCut3DBoostFilter : public ImageGraphCut3DKolmogorovBoostBase<TInput, TForeground, TBackground, TOutput>{
 	public:
 		// ITK related defaults
-		typedef ImageBoostFilter Self;
-		typedef ImageKolmogorovBoostFilter<TInput, TForeground, TBackground, TOutput> SuperClass;
+		typedef ImageGraphCut3DBoostFilter Self;
+		typedef ImageGraphCut3DKolmogorovBoostBase<TInput, TForeground, TBackground, TOutput> SuperClass;
 		typedef SmartPointer<Self> Pointer;
 		typedef SmartPointer<const Self> ConstPointer;
 
 		itkNewMacro(Self);
-		itkTypeMacro(ImageBoostBoostFilter, ImageToImageFilter);
+		itkTypeMacro(ImageGraphCut3DBoostFilter, ImageGraphCut3DKolmogorovBoostBase);
 
         typedef typename SuperClass::InputImageType InputImageType;
 
@@ -141,20 +141,20 @@ namespace itk{
         std::vector<WeightType> capacity;
         std::vector<int> groups;
 
-        ImageBoostFilter(): currentEdgeIndex(-1), reverseEdges() , capacity()
+        ImageGraphCut3DBoostFilter(): currentEdgeIndex(-1), reverseEdges() , capacity()
         {
            m_Graph = new GraphType();
         };
 
-        virtual ~ImageBoostFilter(){
+        virtual ~ImageGraphCut3DBoostFilter(){
             delete m_Graph;
         };
         GraphType* m_Graph;
     private:
-        ImageBoostFilter(const Self &); // intentionally not implemented
+        ImageGraphCut3DBoostFilter(const Self &); // intentionally not implemented
         void operator=(const Self &); // intentionally not implemented
     };
 } // namespace itk
 
 
-#endif //__ImageBoostFilter_h_
+#endif //__ImageGraphCut3DBoostFilter_h_

@@ -8,8 +8,7 @@
  */
 
 #include "ImageGridCutFilter.h"
-#include "ImageKolmogorovFilter.hxx"
-#include "ImageBoostFilter.hxx"
+#include "ImageGraphCut3DKolmogorovFilter.hxx"
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
@@ -72,7 +71,7 @@ int main(int argc, char *argv[]) {
     backgroundMaskReader->SetFileName(backgroundFilename);
 
     // Set up the graph cut
-    typedef itk::ImageKolmogorovFilter<ImageType, ForegroundMaskType, BackgroundMaskType, OutputImageType> GraphCutFilterType;
+    typedef itk::ImageGraphCut3DKolmogorovFilter<ImageType, ForegroundMaskType, BackgroundMaskType, OutputImageType> GraphCutFilterType;
     GraphCutFilterType::Pointer graphCutFilter = GraphCutFilterType::New();
     graphCutFilter->SetInputImage(reader->GetOutput());
     graphCutFilter->SetForegroundImage(foregroundMaskReader->GetOutput());

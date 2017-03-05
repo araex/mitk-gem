@@ -25,7 +25,7 @@ public:
 	typedef SmartPointer<const Self> ConstPointer;
 	itkNewMacro(Self);
 
-	itkTypeMacro(ImageGridCutFilter, ImageToImageFilter);
+	itkTypeMacro(ImageGridCutFilter, ImageGraphCut3DFilter);
 
     typedef typename SuperClass::InputImageType InputImageType;
 

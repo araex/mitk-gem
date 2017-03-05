@@ -63,7 +63,6 @@ namespace itk {
         typename SampleToHistogramFilterType::Pointer backgroundHistogramFilter = SampleToHistogramFilterType::New();
 
         // get the total image size
-        typename InputImageType::SizeType size = images.inputRegion.GetSize();
         timer.Stop("ITK init");
 
         // create graph
