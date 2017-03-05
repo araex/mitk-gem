@@ -30,7 +30,7 @@ using namespace std;
 
 namespace
 {
-    int cgalMesh(double &size, double &ratio, std::istream &in, std::ostream &out)
+    void cgalMesh(float size, float ratio, std::istream &in, std::ostream &out)
     {
         // Create input polyhedron
         Polyhedron polyhedron;
@@ -52,8 +52,6 @@ namespace
 
         // Output
         c3t3.output_to_medit(out);
-
-        return 0;
     }
 }
 
@@ -84,9 +82,7 @@ void MesherCGAL::compute(void)
 
     // Generate tetrahedron mesh
     stringstream medit;
-    double size = 2;
-    double ratio = 3;
-    cgalMesh(size, ratio, off, medit);
+    cgalMesh(m_options.fEdgeSize, m_options.fRadiusEdgeRatio, off, medit);
 
     // Convert from medit format to vtu
     int nvert, ncell, ix;

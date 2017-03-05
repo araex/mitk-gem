@@ -60,6 +60,12 @@ void VolumeMeshView::CreateQtPartControl(QWidget *parent) {
     m_TetgenOptionGrid.addOption("-a", "Applies a maximum tetrahedron volume constraint. Assumes uniform mesh density on the surface.", &tetgenbehavior::fixedvolume);
     m_Controls.settingsGroup->layout()->addWidget(&m_TetgenOptionGrid);
 
+    // CGAL options
+    m_Controls.settingsCGAL->hide();
+    gem::MesherCGAL::SOptions optionsCGAL;
+    m_Controls.spinBoxSize->setValue(optionsCGAL.fEdgeSize);
+    m_Controls.spinBoxRadiusEdgeRatio->setValue(optionsCGAL.fRadiusEdgeRatio);
+
     // signals
     connect(m_Controls.generateButton, SIGNAL(clicked()), this, SLOT(generateButtonClicked()));
     connect(this, SIGNAL(invalidMeshingResultDetected()), this, SLOT(meshingFailed()));
@@ -78,7 +84,10 @@ void VolumeMeshView::generateButtonClicked() {
         }
         else
         {
-            spMesher = std::make_shared<gem::MesherCGAL>();
+            gem::MesherCGAL::SOptions options;
+            options.fEdgeSize = m_Controls.spinBoxSize->value();
+            options.fRadiusEdgeRatio = m_Controls.spinBoxRadiusEdgeRatio->value();
+            spMesher = std::make_shared<gem::MesherCGAL>(options);
         }
 
         auto work = [spMesher, surface, this](){

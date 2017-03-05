@@ -174,6 +174,63 @@ QScrollArea{
            </layout>
           </widget>
          </item>
+         <item>
+          <widget class="QGroupBox" name="settingsCGAL">
+           <property name="title">
+            <string>Settings</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Edge size</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="spinBoxSize">
+                <property name="minimum">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>2.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Radius-edge ratio</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="spinBoxRadiusEdgeRatio">
+                <property name="minimum">
+                 <double>0.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>3.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -234,6 +291,22 @@ QScrollArea{
     <hint type="destinationlabel">
      <x>124</x>
      <y>112</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioCGAL</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>settingsCGAL</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>267</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>189</x>
+     <y>155</y>
     </hint>
    </hints>
   </connection>
