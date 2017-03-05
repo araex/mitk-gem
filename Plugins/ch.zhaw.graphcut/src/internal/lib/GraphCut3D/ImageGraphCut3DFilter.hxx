@@ -91,7 +91,7 @@ namespace itk {
 
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     void ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::InitializeGraph(GraphType *graph, ImageContainer images, ProgressReporter &progress) {
+    ::InitializeGraph(GraphType *graph, const ImageContainer images, ProgressReporter &progress) {
         IndexContainerType sources = getPixelsLargerThanZero<ForegroundImageType>(images.foreground);
         IndexContainerType sinks = getPixelsLargerThanZero<BackgroundImageType>(images.background);
 
@@ -100,7 +100,7 @@ namespace itk {
         itk::Size<3> radius;
         radius.Fill(1);
 
-        typedef itk::ShapedNeighborhoodIterator<InputImageType> IteratorType;
+        typedef itk::ConstShapedNeighborhoodIterator<InputImageType> IteratorType;
 
         // Traverses the image adding the following bidirectional edges:
         // 1. currentPixel <-> pixel below it
@@ -202,7 +202,7 @@ namespace itk {
     template<typename TImage, typename TForeground, typename TBackground, typename TOutput>
     template<typename TIndexImage>
     std::vector<itk::Index<3> > ImageGraphCut3DFilter<TImage, TForeground, TBackground, TOutput>
-    ::getPixelsLargerThanZero(const TIndexImage *const image) {
+    ::getPixelsLargerThanZero(const TIndexImage *const image) const{
         std::vector<itk::Index<3> > pixelsWithValueLargerThanZero;
 
         itk::ImageRegionConstIterator<TIndexImage> regionIterator(image, image->GetLargestPossibleRegion());
