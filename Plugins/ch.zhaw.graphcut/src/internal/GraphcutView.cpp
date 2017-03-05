@@ -137,7 +137,7 @@ void GraphcutView::workerIsDone(itk::DataObject::Pointer data, unsigned int work
 
     // cast the image back to mitk
     GraphcutWorker::OutputImageType *resultImageItk = dynamic_cast<GraphcutWorker::OutputImageType *>(data.GetPointer());
-    mitk::Image::Pointer resultImage = mitk::GrabItkImageMemory(resultImageItk);
+    mitk::Image::Pointer resultImage = mitk::GrabItkImageMemory(resultImageItk, nullptr, nullptr, false);
 
     // create the node and store the result
     mitk::DataNode::Pointer newNode = mitk::DataNode::New();

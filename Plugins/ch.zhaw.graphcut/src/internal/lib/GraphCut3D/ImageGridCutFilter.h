@@ -39,11 +39,11 @@ public:
     typedef typename std::vector< std::vector<WeightType > > CapacityType;
     typedef GridGraph_3D_6C_MT<WeightType,WeightType,WeightType> GraphType;
 
-	virtual void FillGraph(const ImageContainer, ProgressReporter &progress);
-    virtual void SolveGraph(){
+	virtual void FillGraph(const ImageContainer, ProgressReporter &progress) override;
+    virtual void SolveGraph() override {
         m_Graph->compute_maxflow();
     }
-	virtual void CutGraph(ImageContainer, ProgressReporter &progress);
+	virtual void CutGraph(ImageContainer, ProgressReporter &progress) override;
 
     void SetCapacities(const float* cap_s,
                        const float* cap_t,

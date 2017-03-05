@@ -1,0 +1,1 @@
+#cmakedefine GRIDCUT_LIBRARY_AVAILABLE 1
