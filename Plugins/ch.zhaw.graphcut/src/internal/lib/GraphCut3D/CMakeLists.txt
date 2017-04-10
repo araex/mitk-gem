@@ -17,7 +17,8 @@ if( "${ITK_VERSION_MAJOR}" LESS 4 )
 endif( "${ITK_VERSION_MAJOR}" LESS 4 )
 
 # Set include directory
-set(ImageGraphCut3DSegmentation_include_dirs ${ImageGraphCut3DSegmentation_include_dirs} ${CMAKE_CURRENT_SOURCE_DIR})
+set(GridCutDir ${CMAKE_CURRENT_SOURCE_DIR}/lib/gridcut/include)
+set(ImageGraphCut3DSegmentation_include_dirs ${ImageGraphCut3DSegmentation_include_dirs} ${CMAKE_CURRENT_SOURCE_DIR} ${GridCutDir})
 
 # Build the graph cut library
 add_subdirectory(lib/kolmogorov-3.03)
