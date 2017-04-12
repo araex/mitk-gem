@@ -40,31 +40,17 @@ public:
 
 	virtual void FillGraph(const ImageContainer, ProgressReporter &progress) override;
     virtual void SolveGraph() override {
-        m_Graph->compute_maxflow();
+        m_Graph->perform_random(20);
     }
 	virtual void CutGraph(ImageContainer, ProgressReporter &progress) override;
 
-    void SetCapacities(const float* cap_s,
-                       const float* cap_t,
-                       const float* cap_lee,
-                       const float* cap_gee,
-                       const float* cap_ele,
-                       const float* cap_ege,
-                       const float* cap_eel,
-                       const float* cap_eeg)
-    {
-        m_Graph->set_caps(cap_s, cap_t, cap_lee, cap_gee, cap_ele, cap_ege, cap_eel, cap_eeg);
-    }
-
-    virtual inline int groupOf(const int x, const int y, const int z) const{
-        return (short) m_Graph->get_segment(m_Graph->node_id(x, y, z));
-    }
 
 protected:
 
 	ImageMultiLabelGridCutFilter();
     virtual ~ImageMultiLabelGridCutFilter();
 
+    std::vector<unsigned int> mLabelIndex;
     GraphType* m_Graph;
 
 private:

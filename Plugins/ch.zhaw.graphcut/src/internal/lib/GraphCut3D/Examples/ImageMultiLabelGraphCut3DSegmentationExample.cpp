@@ -44,9 +44,9 @@ int main(int argc, char *argv[]) {
             << "boundaryDirection: " << boundaryDirection << std::endl;
 
     // Define all image types
-    typedef itk::Image<short, 3> ImageType;
-    typedef itk::Image<short, 3> MultiLabelMaskType;
-    typedef itk::Image<short, 3> OutputImageType;
+    typedef itk::Image<float, 3> ImageType;
+    typedef itk::Image<unsigned short int, 3> MultiLabelMaskType;
+    typedef itk::Image<unsigned short int, 3> OutputImageType;
 
     // Read the image
     std::cout << "*** Reading image ***" << std::endl;

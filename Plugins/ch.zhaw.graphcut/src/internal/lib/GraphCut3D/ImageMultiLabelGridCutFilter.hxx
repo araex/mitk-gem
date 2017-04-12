@@ -15,11 +15,11 @@ namespace itk {
 	template<typename TInput, typename TMultiLabel, typename TOutput>
 	ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
 	::ImageMultiLabelGridCutFilter() {
-        WeightType * m_DataCosts = new WeightType;
-        WeightType** m_SmoothnessCosts = new WeightType*;
+        WeightType * dataCosts = new WeightType;
+        WeightType** smoothnessCosts = new WeightType*;
         int width, height, depth;
         short int numLabels;
-		m_Graph = new GraphType(1, 1, 1, 1, m_DataCosts, m_SmoothnessCosts, 1, 1);
+		m_Graph = new GraphType(1, 1, 1, 1, dataCosts, smoothnessCosts, 1, 1);
 	}
 
 	template<typename TInput, typename TMultiLabel, typename TOutput>
@@ -42,106 +42,108 @@ namespace itk {
 		typedef itk::ConstShapedNeighborhoodIterator<InputImageType> IteratorType;
 
 		// Traverses the image adding the following bidirectional edges:
-		// 1. currentPixel <-> pixel below it
-		// 2. currentPixel <-> pixel to the right of it
+		// 1. currentPixel <-> pixel to the right of it
+		// 2. currentPixel <-> pixel below it
 		// 3. currentPixel <-> pixel in front of it
 		// This prevents duplicate edges (i.e. we cannot add an edge to all 6-connected neighbors of every pixel or
 		// almost every edge would be duplicated.
-		std::vector<typename IteratorType::OffsetType> neighbors;
-
-		typename IteratorType::OffsetType left = {{-1, 0, 0}};
-		neighbors.push_back(left);
-		typename IteratorType::OffsetType right = {{1, 0, 0}};
-		neighbors.push_back(right);
-		typename IteratorType::OffsetType top = {{0, -1, 0}};
-		neighbors.push_back(top);
-		typename IteratorType::OffsetType bottom = {{0, 1, 0}};
-		neighbors.push_back(bottom);
-		typename IteratorType::OffsetType back = {{0, 0, -1}};
-		neighbors.push_back(back);
-		typename IteratorType::OffsetType front = {{0, 0, 1}};
-		neighbors.push_back(front);
+        std::vector<typename IteratorType::OffsetType> neighbors;
+        typename IteratorType::OffsetType right = {{1, 0, 0}};
+        neighbors.push_back(right);
+        typename IteratorType::OffsetType bottom = {{0, 1, 0}};
+        neighbors.push_back(bottom);
+        typename IteratorType::OffsetType front = {{0, 0, 1}};
+        neighbors.push_back(front);
 
 		typename IteratorType::OffsetType center = {{0, 0, 0}};
 
 		IteratorType iterator(radius, images.input, images.input->GetLargestPossibleRegion());
 		iterator.ClearActiveList();
-		iterator.ActivateOffset(bottom);
-		iterator.ActivateOffset(right);
+        iterator.ActivateOffset(right);
+        iterator.ActivateOffset(bottom);
 		iterator.ActivateOffset(front);
 		iterator.ActivateOffset(center);
 
+        // Iterate over the multiLabel image to get the number of labels
+        // A vector containing for each label a vector of image coordinates belonging to this label
+        typename std::vector<std::vector<typename TMultiLabel::IndexType>> labels;
+        itk::ImageRegionConstIterator<MultiLabelImageType > multiLabelImageIterator(images.multiLabel, this->GetMultiLabelImage()->GetLargestPossibleRegion());
+        multiLabelImageIterator.GoToBegin();
+        while (!multiLabelImageIterator.IsAtEnd()) {
+            auto currentPixelValue = multiLabelImageIterator.Get();
+            // Only consider the non zeros voxels
+            if(currentPixelValue > itk::NumericTraits<typename MultiLabelImageType::PixelType>::Zero){
+                std::vector<unsigned int>::iterator correspondingLabel = std::find(mLabelIndex.begin(), mLabelIndex.end(), currentPixelValue);
+                if(correspondingLabel == mLabelIndex.end()) {
+                    mLabelIndex.push_back(currentPixelValue);
+                    labels.resize(mLabelIndex.size());
+                    correspondingLabel = std::find(mLabelIndex.begin(), mLabelIndex.end(), currentPixelValue);
+                }
+                auto currentLabelIndex = multiLabelImageIterator.GetIndex();
+                // Add the index of the current pixel for the label it belongs to
+                labels[correspondingLabel - mLabelIndex.begin()].push_back(currentLabelIndex);
+            }
+            ++multiLabelImageIterator;
+        }
 
+        unsigned int nLabels = mLabelIndex.size();
 
 		typename InputImageType::SizeType graphSize = images.input->GetLargestPossibleRegion().GetSize();
+
 		unsigned int nGraphNodes(1);
 
-		for (int iSize = 0; iSize < 3; ++iSize) {
+        unsigned int dim(graphSize.GetSizeDimension());
+		for (int iSize = 0; iSize < dim; ++iSize) {
 			nGraphNodes *= graphSize[iSize];
 		}
 
-		CapacityType capacities(neighbors.size() + 2, std::vector<WeightType>(nGraphNodes, 0));
-		unsigned int iVoxel(0);
+        WeightType * dataCosts = new WeightType[nGraphNodes * nLabels];
+        for (int iDatacost = 0; iDatacost < nGraphNodes * nLabels; ++iDatacost) {
+            dataCosts[iDatacost] = 1000; //std::numeric_limits<float>::max();
+        }
+        for (int iLabel = 0; iLabel < nLabels; ++iLabel) {
+            auto indexArray = labels[iLabel]; // an array of 3d image coordinates for the iLabel
+            for (int iVoxel = 0; iVoxel < indexArray.size(); ++iVoxel) {
+                assert(images.multiLabel->ComputeOffset(indexArray[iVoxel]) == this->ConvertIndexToVertexDescriptor(indexArray[iVoxel], images.multiLabel->GetLargestPossibleRegion()));
+                dataCosts[images.multiLabel->ComputeOffset(indexArray[iVoxel]) * nLabels + iLabel] =  0;
+            }
+        }
+
+        WeightType** smoothnessCosts = new WeightType*[nGraphNodes * dim];
+        unsigned int iVoxel(0);
 		for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++iVoxel) {
 			typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
 			// Add the edge to the graph
 			itk::Index<3> currentNodeIndex = iterator.GetIndex(center);
+            auto linearIndex = images.multiLabel->ComputeOffset(currentNodeIndex);
+            for (int iConnectivity = 0; iConnectivity < neighbors.size(); ++iConnectivity) {
+                smoothnessCosts[linearIndex * neighbors.size() + iConnectivity] = new WeightType[ nLabels * nLabels];
+            }
+            for (int iLabel = 0; iLabel < nLabels; ++iLabel) {
+                for(int iOtherLabel = 0; iOtherLabel < nLabels; iOtherLabel++) {
+                    for (unsigned int iNeighbor = 0; iNeighbor < neighbors.size(); iNeighbor++) {
+                        bool pixelIsValid;
+                        typename InputImageType::PixelType neighborPixel = iterator.GetPixel(neighbors[iNeighbor],
+                                                                                             pixelIsValid);
 
-			// Fill the source
-			if (images.foreground->GetPixel(currentNodeIndex) > itk::NumericTraits<typename ForegroundImageType::PixelType>::Zero)
-				capacities[0][iVoxel] =  std::numeric_limits<float>::max();
-			if (images.background->GetPixel(currentNodeIndex) > itk::NumericTraits<typename BackgroundImageType::PixelType>::Zero)
-				capacities[1][iVoxel] =  std::numeric_limits<float>::max();
+                        // If the current neighbor is outside the image, skip it
+                        if (!pixelIsValid || iLabel == iOtherLabel) {
+                            continue;
+                        }
 
-			for (unsigned int i = 0; i < neighbors.size(); i++) {
-				bool pixelIsValid;
-				typename InputImageType::PixelType neighborPixel  = iterator.GetPixel(neighbors[i], pixelIsValid);
-
-				// If the current neighbor is outside the image, skip it
-				if (!pixelIsValid) {
-					continue;
-				}
-
-				// Compute the edge weight
-				double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->m_Sigma * this->m_Sigma));
-				assert(weight >= 0);
+                        // Compute the edge weight
+                        double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->m_Sigma * this->m_Sigma));
+                        weight = 1000 * weight + 1;
+                        assert(weight >= 0);
+                        smoothnessCosts[linearIndex * neighbors.size() + iNeighbor][iLabel + iOtherLabel * nLabels] = weight;
+                    }
+                }
+            }
 
 
-				//Determine which direction is used
-				switch (this->m_BoundaryDirectionType)
-				{
-					case SuperClass::BrightDark:{
-						if (centerPixel > neighborPixel)
-							capacities[i + 2][iVoxel] = weight;
-						else
-							capacities[i + 2][iVoxel] = 1.0;
-					}
-
-					case SuperClass::DarkBright:{
-						if (centerPixel > neighborPixel)
-							capacities[i + 2][iVoxel] = 1.0;
-						else
-							capacities[i + 2][iVoxel] = weight;
-					}
-
-					default:
-						capacities[i + 2][iVoxel] = weight;
-				}
-
-			}
 			progress.CompletedPixel();
 		}
-
-		SetCapacities(capacities[0].data(),
-					  capacities[1].data(),
-					  capacities[2].data(),
-					  capacities[3].data(),
-					  capacities[4].data(),
-					  capacities[5].data(),
-					  capacities[6].data(),
-					  capacities[7].data());
-
-        m_Graph = new GraphType(dimensions[0],dimensions[1],dimensions[2], m_Data,1, this->GetNumberOfThreads(), 100);
+        m_Graph = new GraphType(dimensions[0],dimensions[1],dimensions[2], nLabels, dataCosts, smoothnessCosts, this->GetNumberOfThreads(), 100);
 
     }
 
@@ -153,21 +155,18 @@ namespace itk {
 		itk::ImageRegionIterator<OutputImageType> outputImageIterator(images.output, images.outputRegion);
 		outputImageIterator.GoToBegin();
 
-		int sourceGroup = groupOfSource();
-		while (!outputImageIterator.IsAtEnd()) {
-			itk::Index<3> voxelIndex = outputImageIterator.GetIndex();
-			if (groupOf(voxelIndex[0], voxelIndex[1], voxelIndex[2]) == sourceGroup) {
-				outputImageIterator.Set(this->m_ForegroundPixelValue);
-			}
-				// Libraries differ to some degree in how they define the terminal groups. however, the tested ones
-				// (kolmogorvs MAXFLOW, boost graph, IBFS) use a fixed value for the source group and define other
-				// values as background.
-			else {
-				outputImageIterator.Set(this->m_BackgroundPixelValue);
-			}
+
+        typename MultiLabelImageType::PixelType* labeling = m_Graph->get_labeling();
+        std::vector<short int> vecLab;
+
+        while (!outputImageIterator.IsAtEnd()) {
+            itk::Index<3> voxelIndex = outputImageIterator.GetIndex();
+            auto linearIndex = images.output->ComputeOffset(voxelIndex);
+            outputImageIterator.Set(mLabelIndex[labeling[linearIndex]]);
 			++outputImageIterator;
 			progress.CompletedPixel();
 		}
+        auto toto = std::unique(vecLab.begin(), vecLab.end());
 	}
 }
 #endif //__ImageMultiLabelGridCutFilter_hxx_
