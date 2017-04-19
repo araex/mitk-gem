@@ -99,7 +99,10 @@ namespace itk {
 
         WeightType * dataCosts = new WeightType[nGraphNodes * nLabels];
         for (int iDatacost = 0; iDatacost < nGraphNodes * nLabels; ++iDatacost) {
-            dataCosts[iDatacost] = 1000; //std::numeric_limits<float>::max();
+            if (std::numeric_limits<WeightType>::max()<std::numeric_limits<float>::max())
+                dataCosts[iDatacost] = std::numeric_limits<WeightType >::max() - 1;
+            else
+                dataCosts[iDatacost] = 1000;
         }
         for (int iLabel = 0; iLabel < nLabels; ++iLabel) {
             auto indexArray = labels[iLabel]; // an array of 3d image coordinates for the iLabel
@@ -132,8 +135,13 @@ namespace itk {
                         }
 
                         // Compute the edge weight
-                        double weight = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->m_Sigma * this->m_Sigma));
-                        weight = 1000 * weight + 1;
+                        double weightTmp = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->m_Sigma * this->m_Sigma));
+                        WeightType weight;
+                        if (std::numeric_limits<WeightType>::max()<std::numeric_limits<float>::max())
+                            weight = (std::numeric_limits<WeightType>::max() - 1) * weightTmp + 1;
+                        else
+                            weight = 1000 * weightTmp + 1;
+
                         assert(weight >= 0);
                         smoothnessCosts[linearIndex * neighbors.size() + iNeighbor][iLabel + iOtherLabel * nLabels] = weight;
                     }

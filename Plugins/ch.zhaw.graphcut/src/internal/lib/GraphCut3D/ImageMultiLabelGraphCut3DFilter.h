@@ -46,7 +46,7 @@ namespace itk {
 
         typedef itk::Statistics::Histogram<short, itk::Statistics::DenseFrequencyContainer2> HistogramType;
         typedef std::vector<itk::Index<3> > IndexContainerType;     // container for sinks / sources
-        typedef float WeightType;
+        typedef unsigned char WeightType;
 
         typedef enum {
             NoDirection, BrightDark, DarkBright
