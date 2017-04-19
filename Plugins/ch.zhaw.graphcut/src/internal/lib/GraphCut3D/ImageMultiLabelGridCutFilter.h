@@ -40,7 +40,7 @@ public:
 
 	virtual void FillGraph(const ImageContainer, ProgressReporter &progress) override;
     virtual void SolveGraph() override {
-        m_Graph->perform(20);
+        m_Graph->perform(50);
     }
 	virtual void CutGraph(ImageContainer, ProgressReporter &progress) override;
 
