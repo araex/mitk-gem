@@ -51,6 +51,7 @@ protected:
     virtual ~ImageMultiLabelGridCutFilter();
 
     std::vector<unsigned int> mLabelIndex;
+    std::vector<std::vector<WeightType>> mWeights; // store here the smooth cost weights because the alpha expansion class does not do it
     GraphType* m_Graph;
 
 private:

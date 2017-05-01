@@ -112,15 +112,17 @@ namespace itk {
             }
         }
 
-        WeightType** smoothnessCosts = new WeightType*[nGraphNodes * dim];
+        WeightType** smoothnessCosts = new WeightType*[nGraphNodes * neighbors.size()];
+        // store the weight in a std vector because the pointers in the smoothnessCosts array are not released in the gridCut library
+        mWeights.resize(nGraphNodes * neighbors.size());
         unsigned int iVoxel(0);
 		for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++iVoxel) {
 			typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
 			// Add the edge to the graph
 			itk::Index<3> currentNodeIndex = iterator.GetIndex(center);
             auto linearIndex = images.multiLabel->ComputeOffset(currentNodeIndex);
-            for (int iConnectivity = 0; iConnectivity < neighbors.size(); ++iConnectivity) {
-                smoothnessCosts[linearIndex * neighbors.size() + iConnectivity] = new WeightType[ nLabels * nLabels];
+            for (int iNeighbor = 0; iNeighbor< neighbors.size(); ++iNeighbor) {
+                mWeights[linearIndex * neighbors.size() + iNeighbor].resize(nLabels * nLabels);
             }
             for (int iLabel = 0; iLabel < nLabels; ++iLabel) {
                 for(int iOtherLabel = 0; iOtherLabel < nLabels; iOtherLabel++) {
@@ -136,18 +138,20 @@ namespace itk {
 
                         // Compute the edge weight
                         double weightTmp = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->m_Sigma * this->m_Sigma));
-                        WeightType weight;
+                        WeightType weight(0);
                         if (std::numeric_limits<WeightType>::max()<std::numeric_limits<float>::max())
                             weight = (std::numeric_limits<WeightType>::max() - 1) * weightTmp + 1;
                         else
                             weight = 1000 * weightTmp + 1;
 
                         assert(weight >= 0);
-                        smoothnessCosts[linearIndex * neighbors.size() + iNeighbor][iLabel + iOtherLabel * nLabels] = weight;
+                        mWeights[linearIndex * neighbors.size() + iNeighbor][iLabel + iOtherLabel * nLabels] = weight;
                     }
                 }
             }
-
+            for (int iNeighbor = 0; iNeighbor < neighbors.size(); ++iNeighbor) {
+                smoothnessCosts[linearIndex * neighbors.size() + iNeighbor] = mWeights[linearIndex * neighbors.size() + iNeighbor].data();
+            }
 
 			progress.CompletedPixel();
 		}
