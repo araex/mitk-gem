@@ -17,8 +17,6 @@ namespace itk {
 	::ImageMultiLabelGridCutFilter() {
         WeightType * dataCosts = new WeightType;
         WeightType** smoothnessCosts = new WeightType*;
-        int width, height, depth;
-        short int numLabels;
 		m_Graph = new GraphType(1, 1, 1, 1, dataCosts, smoothnessCosts, 1, 1);
 	}
 
@@ -93,20 +91,24 @@ namespace itk {
 		unsigned int nGraphNodes(1);
 
         unsigned int dim(graphSize.GetSizeDimension());
-		for (int iSize = 0; iSize < dim; ++iSize) {
+		for (unsigned int iSize = 0; iSize < dim; ++iSize) {
 			nGraphNodes *= graphSize[iSize];
 		}
 
         WeightType * dataCosts = new WeightType[nGraphNodes * nLabels];
-        for (int iDatacost = 0; iDatacost < nGraphNodes * nLabels; ++iDatacost) {
-            if (std::numeric_limits<WeightType>::max()<std::numeric_limits<float>::max())
-                dataCosts[iDatacost] = std::numeric_limits<WeightType >::max() - 1;
-            else
-                dataCosts[iDatacost] = 1000;
+
+        WeightType dataCostTmp;
+        if (std::numeric_limits<WeightType>::max()<std::numeric_limits<float>::max())
+            dataCostTmp = std::numeric_limits<WeightType >::max() - 1;
+        else
+            dataCostTmp = 1000;
+
+        for (unsigned int iDatacost = 0; iDatacost < nGraphNodes * nLabels; ++iDatacost) {
+            dataCosts[iDatacost] = dataCostTmp;
         }
-        for (int iLabel = 0; iLabel < nLabels; ++iLabel) {
+        for (unsigned int iLabel = 0; iLabel < nLabels; ++iLabel) {
             auto indexArray = labels[iLabel]; // an array of 3d image coordinates for the iLabel
-            for (int iVoxel = 0; iVoxel < indexArray.size(); ++iVoxel) {
+            for (unsigned int iVoxel = 0; iVoxel < indexArray.size(); ++iVoxel) {
                 assert(images.multiLabel->ComputeOffset(indexArray[iVoxel]) == this->ConvertIndexToVertexDescriptor(indexArray[iVoxel], images.multiLabel->GetLargestPossibleRegion()));
                 dataCosts[images.multiLabel->ComputeOffset(indexArray[iVoxel]) * nLabels + iLabel] =  0;
             }
@@ -121,11 +123,11 @@ namespace itk {
 			// Add the edge to the graph
 			itk::Index<3> currentNodeIndex = iterator.GetIndex(center);
             auto linearIndex = images.multiLabel->ComputeOffset(currentNodeIndex);
-            for (int iNeighbor = 0; iNeighbor< neighbors.size(); ++iNeighbor) {
+            for (unsigned int iNeighbor = 0; iNeighbor< neighbors.size(); ++iNeighbor) {
                 mWeights[linearIndex * neighbors.size() + iNeighbor].resize(nLabels * nLabels);
             }
-            for (int iLabel = 0; iLabel < nLabels; ++iLabel) {
-                for(int iOtherLabel = 0; iOtherLabel < nLabels; iOtherLabel++) {
+            for (unsigned int iLabel = 0; iLabel < nLabels; ++iLabel) {
+                for(unsigned int iOtherLabel = 0; iOtherLabel < nLabels; iOtherLabel++) {
                     for (unsigned int iNeighbor = 0; iNeighbor < neighbors.size(); iNeighbor++) {
                         bool pixelIsValid;
                         typename InputImageType::PixelType neighborPixel = iterator.GetPixel(neighbors[iNeighbor],
@@ -149,7 +151,7 @@ namespace itk {
                     }
                 }
             }
-            for (int iNeighbor = 0; iNeighbor < neighbors.size(); ++iNeighbor) {
+            for (unsigned int iNeighbor = 0; iNeighbor < neighbors.size(); ++iNeighbor) {
                 smoothnessCosts[linearIndex * neighbors.size() + iNeighbor] = mWeights[linearIndex * neighbors.size() + iNeighbor].data();
             }
 
