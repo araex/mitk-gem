@@ -165,7 +165,6 @@ namespace itk {
 
 
         typename MultiLabelImageType::PixelType* labeling = m_Graph->get_labeling();
-        std::vector<short int> vecLab;
 
         while (!outputImageIterator.IsAtEnd()) {
             itk::Index<3> voxelIndex = outputImageIterator.GetIndex();
@@ -174,7 +173,6 @@ namespace itk {
 			++outputImageIterator;
 			progress.CompletedPixel();
 		}
-        auto toto = std::unique(vecLab.begin(), vecLab.end());
 	}
 }
 #endif //__ImageMultiLabelGridCutFilter_hxx_
