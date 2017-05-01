@@ -153,8 +153,8 @@ include(mitkFunctionGetVersion)
 # Set project specific options and variables (NOT available during superbuild)
 #-----------------------------------------------------------------------------
 
-set(${PROJECT_NAME}_VERSION_MAJOR "2016")
-set(${PROJECT_NAME}_VERSION_MINOR "11")
+set(${PROJECT_NAME}_VERSION_MAJOR "2017")
+set(${PROJECT_NAME}_VERSION_MINOR "5")
 set(${PROJECT_NAME}_VERSION_PATCH "0")
 set(${PROJECT_NAME}_VERSION_STRING "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
