@@ -15,15 +15,11 @@ namespace itk {
     template<typename TInput, typename TMultiLabel, typename TOutput>
     ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
     ::ImageMultiLabelGridCutFilter() {
-        WeightType * dataCosts = new WeightType;
-        WeightType** smoothnessCosts = new WeightType*;
-        m_Graph = new GraphType(1, 1, 1, 1, dataCosts, smoothnessCosts, 1, 1);
     }
 
     template<typename TInput, typename TMultiLabel, typename TOutput>
     ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
     ::~ImageMultiLabelGridCutFilter() {
-        delete m_Graph;
     }
 
     template<typename TInput, typename TMultiLabel, typename TOutput>
@@ -157,7 +153,7 @@ namespace itk {
 
             progress.CompletedPixel();
         }
-        m_Graph = new GraphType(dimensions[0],dimensions[1],dimensions[2], nLabels, dataCosts, smoothnessCosts, this->GetNumberOfThreads(), 100);
+        m_Graph = std::make_unique<GraphType>(dimensions[0],dimensions[1],dimensions[2], nLabels, dataCosts, smoothnessCosts, this->GetNumberOfThreads(), 100);
 
     }
 
