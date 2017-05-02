@@ -93,14 +93,14 @@ namespace itk {
 
         WeightType * dataCosts = new WeightType[nGraphNodes * nLabels];
 
-        WeightType dataCostTmp;
+        WeightType weightFactor;
         if (std::numeric_limits<WeightType>::max()<std::numeric_limits<float>::max())
-            dataCostTmp = std::numeric_limits<WeightType >::max() - 1;
+            weightFactor = std::numeric_limits<WeightType >::max() - 1;
         else
-            dataCostTmp = 1000;
+            weightFactor = 1000;
 
         for (unsigned int iDatacost = 0; iDatacost < nGraphNodes * nLabels; ++iDatacost) {
-            dataCosts[iDatacost] = dataCostTmp;
+            dataCosts[iDatacost] = std::numeric_limits<WeightType >::max();
         }
         for (unsigned int iLabel = 0; iLabel < nLabels; ++iLabel) {
             auto indexArray = labels[iLabel]; // an array of 3d image coordinates for the iLabel
@@ -137,10 +137,7 @@ namespace itk {
                         // Compute the edge weight
                         double weightTmp = exp(-pow(centerPixel - neighborPixel, 2) / (2.0 * this->m_Sigma * this->m_Sigma));
                         WeightType weight(0);
-                        if (std::numeric_limits<WeightType>::max()<std::numeric_limits<float>::max())
-                            weight = (std::numeric_limits<WeightType>::max() - 1) * weightTmp + 1;
-                        else
-                            weight = 1000 * weightTmp + 1;
+                        weight = weightFactor * weightTmp + 1;
 
                         assert(weight >= 0);
                         mWeights[linearIndex * neighbors.size() + iNeighbor][iLabel + iOtherLabel * nLabels] = weight;
