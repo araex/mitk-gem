@@ -12,39 +12,39 @@
 
 #include "ImageMultiLabelGridCutFilter.h"
 namespace itk {
-	template<typename TInput, typename TMultiLabel, typename TOutput>
-	ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
-	::ImageMultiLabelGridCutFilter() {
+    template<typename TInput, typename TMultiLabel, typename TOutput>
+    ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
+    ::ImageMultiLabelGridCutFilter() {
         WeightType * dataCosts = new WeightType;
         WeightType** smoothnessCosts = new WeightType*;
-		m_Graph = new GraphType(1, 1, 1, 1, dataCosts, smoothnessCosts, 1, 1);
-	}
+        m_Graph = new GraphType(1, 1, 1, 1, dataCosts, smoothnessCosts, 1, 1);
+    }
 
-	template<typename TInput, typename TMultiLabel, typename TOutput>
-	ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
-	::~ImageMultiLabelGridCutFilter() {
-		delete m_Graph;
-	}
+    template<typename TInput, typename TMultiLabel, typename TOutput>
+    ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
+    ::~ImageMultiLabelGridCutFilter() {
+        delete m_Graph;
+    }
 
-	template<typename TInput, typename TMultiLabel, typename TOutput>
-	void ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
-	::FillGraph(const ImageContainer images, ProgressReporter &progress){
-		typename InputImageType::SizeType dimensions;
-		dimensions = this->GetInputImage()->GetLargestPossibleRegion().GetSize();
+    template<typename TInput, typename TMultiLabel, typename TOutput>
+    void ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
+    ::FillGraph(const ImageContainer images, ProgressReporter &progress){
+        typename InputImageType::SizeType dimensions;
+        dimensions = this->GetInputImage()->GetLargestPossibleRegion().GetSize();
 
-		// We are only using a 6-connected structure, so the kernel (iteration neighborhood) must only be 3x3x3
-		// (specified by a radius of 1)
-		itk::Size<3> radius;
-		radius.Fill(1);
+        // We are only using a 6-connected structure, so the kernel (iteration neighborhood) must only be 3x3x3
+        // (specified by a radius of 1)
+        itk::Size<3> radius;
+        radius.Fill(1);
 
-		typedef itk::ConstShapedNeighborhoodIterator<InputImageType> IteratorType;
+        typedef itk::ConstShapedNeighborhoodIterator<InputImageType> IteratorType;
 
-		// Traverses the image adding the following bidirectional edges:
-		// 1. currentPixel <-> pixel to the right of it
-		// 2. currentPixel <-> pixel below it
-		// 3. currentPixel <-> pixel in front of it
-		// This prevents duplicate edges (i.e. we cannot add an edge to all 6-connected neighbors of every pixel or
-		// almost every edge would be duplicated.
+        // Traverses the image adding the following bidirectional edges:
+        // 1. currentPixel <-> pixel to the right of it
+        // 2. currentPixel <-> pixel below it
+        // 3. currentPixel <-> pixel in front of it
+        // This prevents duplicate edges (i.e. we cannot add an edge to all 6-connected neighbors of every pixel or
+        // almost every edge would be duplicated.
         std::vector<typename IteratorType::OffsetType> neighbors;
         typename IteratorType::OffsetType right = {{1, 0, 0}};
         neighbors.push_back(right);
@@ -53,14 +53,14 @@ namespace itk {
         typename IteratorType::OffsetType front = {{0, 0, 1}};
         neighbors.push_back(front);
 
-		typename IteratorType::OffsetType center = {{0, 0, 0}};
+        typename IteratorType::OffsetType center = {{0, 0, 0}};
 
-		IteratorType iterator(radius, images.input, images.input->GetLargestPossibleRegion());
-		iterator.ClearActiveList();
+        IteratorType iterator(radius, images.input, images.input->GetLargestPossibleRegion());
+        iterator.ClearActiveList();
         iterator.ActivateOffset(right);
         iterator.ActivateOffset(bottom);
-		iterator.ActivateOffset(front);
-		iterator.ActivateOffset(center);
+        iterator.ActivateOffset(front);
+        iterator.ActivateOffset(center);
 
         // Iterate over the multiLabel image to get the number of labels
         // A vector containing for each label a vector of image coordinates belonging to this label
@@ -86,14 +86,14 @@ namespace itk {
 
         unsigned int nLabels = mLabelIndex.size();
 
-		typename InputImageType::SizeType graphSize = images.input->GetLargestPossibleRegion().GetSize();
+        typename InputImageType::SizeType graphSize = images.input->GetLargestPossibleRegion().GetSize();
 
-		unsigned int nGraphNodes(1);
+        unsigned int nGraphNodes(1);
 
         unsigned int dim(graphSize.GetSizeDimension());
-		for (unsigned int iSize = 0; iSize < dim; ++iSize) {
-			nGraphNodes *= graphSize[iSize];
-		}
+        for (unsigned int iSize = 0; iSize < dim; ++iSize) {
+            nGraphNodes *= graphSize[iSize];
+        }
 
         WeightType * dataCosts = new WeightType[nGraphNodes * nLabels];
 
@@ -118,10 +118,10 @@ namespace itk {
         // store the weight in a std vector because the pointers in the smoothnessCosts array are not released in the gridCut library
         mWeights.resize(nGraphNodes * neighbors.size());
         unsigned int iVoxel(0);
-		for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++iVoxel) {
-			typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
-			// Add the edge to the graph
-			itk::Index<3> currentNodeIndex = iterator.GetIndex(center);
+        for (iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator, ++iVoxel) {
+            typename InputImageType::PixelType centerPixel = iterator.GetPixel(center);
+            // Add the edge to the graph
+            itk::Index<3> currentNodeIndex = iterator.GetIndex(center);
             auto linearIndex = images.multiLabel->ComputeOffset(currentNodeIndex);
             for (unsigned int iNeighbor = 0; iNeighbor< neighbors.size(); ++iNeighbor) {
                 mWeights[linearIndex * neighbors.size() + iNeighbor].resize(nLabels * nLabels);
@@ -155,19 +155,19 @@ namespace itk {
                 smoothnessCosts[linearIndex * neighbors.size() + iNeighbor] = mWeights[linearIndex * neighbors.size() + iNeighbor].data();
             }
 
-			progress.CompletedPixel();
-		}
+            progress.CompletedPixel();
+        }
         m_Graph = new GraphType(dimensions[0],dimensions[1],dimensions[2], nLabels, dataCosts, smoothnessCosts, this->GetNumberOfThreads(), 100);
 
     }
 
-	template<typename TInput, typename TMultiLabel, typename TOutput>
-	void ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
-	::CutGraph(ImageContainer images, ProgressReporter &progress){
+    template<typename TInput, typename TMultiLabel, typename TOutput>
+    void ImageMultiLabelGridCutFilter <TInput, TMultiLabel, TOutput>
+    ::CutGraph(ImageContainer images, ProgressReporter &progress){
 
-		// Iterate over the output image, querying the graph for the association of each pixel
-		itk::ImageRegionIterator<OutputImageType> outputImageIterator(images.output, images.outputRegion);
-		outputImageIterator.GoToBegin();
+        // Iterate over the output image, querying the graph for the association of each pixel
+        itk::ImageRegionIterator<OutputImageType> outputImageIterator(images.output, images.outputRegion);
+        outputImageIterator.GoToBegin();
 
 
         typename MultiLabelImageType::PixelType* labeling = m_Graph->get_labeling();
@@ -176,9 +176,9 @@ namespace itk {
             itk::Index<3> voxelIndex = outputImageIterator.GetIndex();
             auto linearIndex = images.output->ComputeOffset(voxelIndex);
             outputImageIterator.Set(mLabelIndex[labeling[linearIndex]]);
-			++outputImageIterator;
-			progress.CompletedPixel();
-		}
-	}
+            ++outputImageIterator;
+            progress.CompletedPixel();
+        }
+    }
 }
 #endif //__ImageMultiLabelGridCutFilter_hxx_
