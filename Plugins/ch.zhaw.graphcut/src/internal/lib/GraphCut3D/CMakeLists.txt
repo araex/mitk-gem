@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD 14)
 
 project(ImageGraphCut3DSegmentation)
 

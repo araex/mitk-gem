@@ -12,6 +12,9 @@
 
 #include "ImageMultiLabelGraphCut3DFilter.h"
 #include "lib/gridcut/examples/include/AlphaExpansion/AlphaExpansion_3D_6C_MT.h"
+#include <memory>
+#include <type_traits>
+#include <utility>
 
 namespace itk{
 
@@ -51,7 +54,8 @@ protected:
     virtual ~ImageMultiLabelGridCutFilter();
 
     std::vector<unsigned int> mLabelIndex;
-    GraphType* m_Graph;
+    std::vector<std::vector<WeightType>> mWeights; // store here the smooth cost weights because the alpha expansion class does not do it
+	std::unique_ptr<GraphType> m_Graph;
 
 private:
 	ImageMultiLabelGridCutFilter(const Self &); // intentionally not implemented
