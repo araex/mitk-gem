@@ -17,19 +17,26 @@ You can find binaries of the MITK-GEM application on our [downloads](https://sim
 If you'd like to build MITK-GEM from source, follow the instructions below.
 
 # Dependencies
-- CMake >=3.2 cmake-gui is recommended.
-- QT 5.4 or 5.5. ** QT 5.6 is not supported! **
+- CMake >=3.2. cmake-gui is recommended.
+- QT 5.5. ** QT 5.6 is not supported! **
+
+# Supported compilers
+The versions of supported compilers are:
+- MSVC 2012 Update 4 ** MSVC 2015 is not supported! **
+- GNU 4.7.3
+- Clang 3.4
+- AppleClang 5.0
+Newer versions might work, but have not been tested.
 
 # Prerequisites
 ## Ubuntu (>= 14.04 LTS)
-- Install dependencies: `sudo apt-get install git build-essential cmake-gui libxt-dev libtiff4-dev libwrap0-dev libgmp3-dev`
+- Install dependencies: `sudo apt-get install git build-essential cmake-gui libxt-dev libtiff4-dev libwrap0-dev libgmp3-dev libcgal-dev mesa-common-dev freeglut3-dev`
 - [Qt 5.5](http://download.qt.io/archive/qt/5.5/)
 
 ### Ubuntu 12.04 LTS
 Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.4 in order to build MITK-GEM. A manual update is required.
-
-- Install dependencies: `sudo apt-get install git build-essential libxt-dev libtiff4-dev libwrap0-dev libgmp3-dev`
 - Install [CMake 3.2 or later](http://www.cmake.org/download/)
+- Install dependencies: `sudo apt-get install git build-essential libxt-dev libtiff4-dev libwrap0-dev libgmp3-dev libcgal-dev mesa-common-dev freeglut3-dev`
 - [Qt 5.5](http://download.qt.io/archive/qt/5.5/)
 
 ## Mac OSX
@@ -45,7 +52,7 @@ Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.4 in order to buil
 - [CMake 3.2 or later](http://www.cmake.org/download/)
 - [GMP](https://gmplib.org/#DOWNLOAD). We recommend getting a prebuilt version using the [CGAL installer](https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.9/CGAL-4.9-Setup.exe)
 
-# Build instructions 
+# Build instructions
 ## Linux & OSX
 1. Download the source code `git clone https://github.com/araex/mitk-gem src`
 2. Create a new directory for the build `mkdir build`
@@ -56,6 +63,13 @@ Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.4 in order to buil
 ## Windows
 Follow the instructions here http://www.mitk.org/wiki/Developer_Tutorial_(Microsoft_Windows)".
 Remember to save the source and the build in a ** very short ** top-level directory.
+
+## Optional features
+### Using GridCut
+[GridCut](http://www.gridcut.com/) is an alternative min-cut / max-flow solver to use instead of [maxflow](https://pub.ist.ac.at/~vnk/software.html) in the GraphCut3D plugin. We've seen significant performance increase  in both speed and memory efficiency. For licensing reasons we cannot redistribute GridCut (neither in the source nor binary release), so you have to download and install it manually:
+1. Go to the [GridCut website](http://www.gridcut.com/) and download the source code.
+2. Copy the contents of the .zip archive to mitk-gem source code directory `Plugins/ch.zhaw.graphcut/src/internal/lib/GraphCut3D/lib/gridcut`
+3. Build `make -j 8`
 
 # FAQ
 For questions regarding the usage of MITK-GEM, refer to our [application FAQ](http://araex.github.io/mitk-gem-site/#faq).
