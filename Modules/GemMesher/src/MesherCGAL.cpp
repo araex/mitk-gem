@@ -1,5 +1,6 @@
 #include "MesherCGAL.h"
 
+#include "internal/MeshHelpers.h"
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 
@@ -104,8 +105,9 @@ void MesherCGAL::compute(void)
     }
 
     auto mesh = m_spUGrid;
-    mesh->SetPoints(pts);
-    mesh->Allocate();
+    auto meshTetra = vtkSmartPointer<vtkUnstructuredGrid>::New();
+    meshTetra->SetPoints(pts);
+    meshTetra->Allocate();
 
     do
     {
@@ -119,6 +121,7 @@ void MesherCGAL::compute(void)
         medit >> ids[0] >> ids[1] >> ids[2] >> ids[3] >> ix;
         for (int j = 0; j < 4; j++)
             ids[j]--;
-        mesh->InsertNextCell(VTK_TETRA, 4, ids);
+        meshTetra->InsertNextCell(VTK_TETRA, 4, ids);
     }
+    tetraToQuad(meshTetra, mesh);
 }
