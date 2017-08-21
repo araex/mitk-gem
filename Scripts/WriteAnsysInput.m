@@ -1,21 +1,38 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% WriteAnsysInput.m, vers. 1.0, 04.05.2017
+% WriteAnsysInput.m, vers. 1.1, 17.08.2017
 % Copyright, Benedikt Helgason and ETH-Zurich, Switzerland.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%This function writes Ansys Mechanical input files in APDL language
+%This function writes Ansys Mechanical input files in APDL language.
 %
 %The function creates several files.
-%RunAnsysModelX.inp (X = A, B, C, D or E). This is the Ansys master file
-%AnsysMeshX.cdb (X = A, B, C, D or E). This is the Ansys mesh file
+%RunAnsysModelX.inp (X = A, B, C, D or E). This is the Ansys master file.
+%
+%AnsysMeshX.cdb (X = A, B, C, D or E). This is the Ansys mesh file.
+%
 %MaterialPropsX.inp (X = A, B, C, D or E). This is the Ansys material
-%property file
+%property file.
+%
 %PlotModulusX.inp (X = A, B, C, D or E). This is a file for plotting the
-%material property distribution in Ansys
+%material property distribution in Ansys.
+%
 %SimpleBCs.inp. This Ansys input file allows the Ansys master file to run
 %a simple load case so that material property distribution can be plotted.
+%This is commented out in this MATLAB script but you can switch it on if
+%you are analyzing a different dataset from that in the MITK-GEM tutorial.
+%
+%SimpleSWFBCs.inp. This Ansys input file allows the Ansys master file to run
+%a simple sideways fall load case to estimate whole bone femoral strength.
+%You should switch it off if you are not analyzing the dataset used in the
+%MITK-GEM tutorial.
+%
+%PosProcess.inp. This Ansys input file asseses whole bone femoral strength
+%for the sample model generated in the MITK-GEM tutorial. BE AWARE THAT
+%THIS APPROACH FOR ASSESSING WHOLE BONE STRENGTH HAS NOT VALIDATED ANS IS
+%ONLY INCLUDED HERE FOR DEMONSTRATION PURPOSES.
+%
 %
 %You can run the Ansys master script in Ansys Classic Mechanical with the
 %command *USE,RunAnsysModelX.inp where X = A, B, C, D or E
@@ -54,7 +71,7 @@
 %models into Ansys. This is just provided by the WriteAnsysInput.m function
 %to allow for easy plotting of the material property distribution after
 %the model has been solved. You do that in Ansys classic mechanical by
-%going into /POST1 and plot Body Temperatures which are equal to the 
+%going into /POST1 and plot Body Temperatures which are equal to the
 %E-modulus for all the material mapping methods.
 %
 %There is also a simple boundary condition script (SimpleBCS.inp)
@@ -65,16 +82,16 @@
 %
 %For material mapping methods C and D, a initial simulation step is
 %included in the RunAnsysModelC.inp and RunAnsysModelD.inp where
-%temperature (equal to Young´s modulus) is assigned to all the nodes. This
+%temperature (equal to Young's modulus) is assigned to all the nodes. This
 %initial step, with no mechanical load, is used to make sure that ANSYS
 %does not ramp the temperature load with the ANSYS timesteps. This ensures
-%that the full temperature is applied to the nodes (and thus the Young´s
+%that the full temperature is applied to the nodes (and thus the Young's
 %modulus) when the mechanical load is applied to the model in the second
 %loading step.
 %
 %Below is one example for input variables for WriteAnsysInput for the case
 %that your MITK-GEM text file (in this case: material mapped mesh.txt) is
-%in same directory as the WriteAnsysInput.m script. 
+%in same directory as the WriteAnsysInput.m script.
 %WriteAnsysInput(['material mapped mesh.txt'],'A',500,[],[],[])
 %WriteAnsysInput(['material mapped mesh.txt'],'B',500,[],[],[])
 %WriteAnsysInput(['material mapped mesh.txt'],'C',[],16446,[],[])
@@ -115,9 +132,9 @@ fprintf('*\n')
 while length(tline)<6 || ~strcmpi(tline(1:12),'#BEGIN NODES')
     tline=fgetl(fid0);
 end
-tline=fgetl(fid0); % Reading 1 more header lines
-tline=fgetl(fid0); % Reading 1 more header lines
-NODES = cell2mat(textscan(fid0, '%f,%f,%f,%f,%f\r\n'));
+tline=fgetl(fid0); % Reading 1 more header line
+tline=fgetl(fid0); % Reading 1 more header line
+NODES = cell2mat(textscan(fid0, '%f,%f,%f,%f,%f', 'EndOfLine','\r\n'));
 fgetl(fid0); % Reading '#END NODES'
 
 
@@ -129,9 +146,9 @@ fprintf('*\n')
 while length(tline)<6 || ~strcmpi(tline(1:15),'#BEGIN ELEMENTS')
     tline=fgetl(fid0);
 end
-tline=fgetl(fid0); % Reading 1 more header lines
-tline=fgetl(fid0); % Reading 1 more header lines
-ELEMENTS = cell2mat(textscan(fid0, '%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n'));
+tline=fgetl(fid0); % Reading 1 more header line
+tline=fgetl(fid0); % Reading 1 more header line
+ELEMENTS = cell2mat(textscan(fid0, '%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f', 'EndOfLine','\r\n'));
 fgetl(fid0); % Reading '#END ELEMENTS'
 
 % ******************READ SURFACES*****************
@@ -142,8 +159,8 @@ fprintf('*\n')
 while length(tline)<6 || ~strcmpi(tline(1:14),'#BEGIN SURFACE')
     tline=fgetl(fid0);
 end
-tline=fgetl(fid0); % Reading 1 more header lines
-SURFACES = cell2mat(textscan(fid0, '%f,%f,%f,%f,%f,%f,%f\r\n'));
+tline=fgetl(fid0); % Reading 1 more header line
+SURFACES = cell2mat(textscan(fid0, '%f,%f,%f,%f,%f,%f,%f', 'EndOfLine','\r\n'));
 fgetl(fid0); % Reading '#END SURFACE'
 fclose(fid0);
 
@@ -169,12 +186,12 @@ switch Method
     case 'E'
         %Write the Method E material file
         El_E = ELEMENTS(:,12);
-        
+
         if (isempty(EminShell))
-            error('*****Min Cortical Young´s modulus needs to greater than 0*****')
+            error('*****Min Cortical Young's modulus needs to greater than 0*****')
         end
         if (EminShell <= 0)
-            error('*****Min Cortical Young´s modulus needs to greater than 0*****')
+            error('*****Min Cortical Young's modulus needs to greater than 0*****')
         end
         if isempty(ShellTh)
             error('*****Shell thickness needs to be larger than 0 for method E*****')
@@ -186,7 +203,7 @@ switch Method
         WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
 end
 
-    
+
 %----------- WRITE AnsysMeshX.CDB ----------
 %----------- WRITE AnsysMeshX.CDB ----------
 % X refers to A, B, C, D or E
@@ -258,9 +275,20 @@ WritePlotScript(Method);
 %----------- WRITE SimpleBCs.inp ----------
 %----------- WRITE SimpleBCs.inp ----------
 % X refers to A, B, C, D or E
-WriteSimpleBCs(Method);
+WriteSimpleBCs;
 
 
+
+%----------- WRITE SimpleSWFBCs.inp ----------
+%----------- WRITE SimpleSWFBCs.inp ----------
+% X refers to A, B, C, D or E
+WriteSimpleSWFBCs;
+
+
+
+%----------- WRITE PostProcess.inp ----------
+%----------- WRITE PostProcess.inp ----------
+WritePostProcess;
 
 
 %----------- Functions used by WriteAnsysInput.m ----------
@@ -302,7 +330,7 @@ function [El_Mat,E_Mat] = WriteMatFile(El_E,NumOfMats,Method,EminShell,Ecort,She
     %The length is equal to NumOfMats minus the number of material cards
     %not used.
     %Switch this on if you want to exclude material cards in your model
-    %not used by any elements. If you don´t switch this on the number of
+    %not used by any elements. If you don't switch this on the number of
     %material cards in your model will be equal to the NumOfMats.
     %E_Mat(~UsedMat)=[];
 
@@ -326,7 +354,7 @@ function [El_Mat,E_Mat] = WriteMatFile(El_E,NumOfMats,Method,EminShell,Ecort,She
     fprintf(fid0,'ASSIGNING MATERIAL PROPERTIES. PLEASE WAIT...\r\n');
     fprintf(fid0,'/NOPR         !Disable output\r\n');
     fprintf(fid0,'\r\n!These material properties defined in Matlab!\r\n');
- 
+
     for j = 1:length(E_Mat)
         fprintf(fid0,['\r\n!*---------------MATERIAL %u '...
             '(Used by %u elements)------------------\r\n'],j,MatEls(j));
@@ -335,7 +363,7 @@ function [El_Mat,E_Mat] = WriteMatFile(El_E,NumOfMats,Method,EminShell,Ecort,She
     end
     fclose(fid0);
     end
-    
+
     if strcmp(Method,'C') | strcmp(Method,'D')
         nodeTEMPS = NODES(:,5);
         fid0 = fopen(MatFile,'w');
@@ -347,7 +375,7 @@ function [El_Mat,E_Mat] = WriteMatFile(El_E,NumOfMats,Method,EminShell,Ecort,She
         fprintf(fid0,'tem = \r\n');
         fprintf(fid0,'*DIM,factor,array,NNN\r\n');
         %We define a 10 MPa min modules, otherwise Ansys will complain
-        %about negative or zero Young´s modulus being used.
+        %about negative or zero Young's modulus being used.
         fprintf(fid0,'*SET,tem,-50000,10,2392,4735,7077,8000,8500,9000,max_NodeE,50000\r\n');
         fprintf(fid0,'factor(1) = 1.0*10/max_NodeE\r\n');
         fprintf(fid0,'factor(10) = 1.0*max_NodeE/max_NodeE\r\n');
@@ -366,18 +394,17 @@ function [El_Mat,E_Mat] = WriteMatFile(El_E,NumOfMats,Method,EminShell,Ecort,She
 
         fprintf(fid0,'ALLSEL,ALL\r\n');
         fprintf(fid0,'/GOPR     !Enable output\r\n');
-        
+
         %Writing the Nodal temperature file
         if strcmp(Method,'C')
             TempFile = 'NodalTempsC.inp';
         end
         if strcmp(Method,'D')
-            %surfaceNODES = unique(SURFACES(:,2:7)+1);
             surfaceNODES = unique(SURFACES(:,2:7));
             nodeTEMPS(surfaceNODES) = Ecort;
             TempFile = 'NodalTempsD.inp';
         end
-        
+
         disp(['*****GENERATING ',TempFile,'*****'])
         disp('*')
         fid0 = fopen(TempFile,'w');
@@ -387,11 +414,11 @@ function [El_Mat,E_Mat] = WriteMatFile(El_E,NumOfMats,Method,EminShell,Ecort,She
         fprintf(fid0,'ASSIGNING MATERIAL PROPERTIES. PLEASE WAIT...\r\n');
         fprintf(fid0,'/NOPR         !Disable output\r\n');
         fprintf(fid0,'\r\n!These material properties defined in Matlab!\r\n');
-       
+
         fprintf(fid0,'E_cort = \r\n');
-        fprintf(fid0,'E_cort = %.15G\r\n',Ecort);   
+        fprintf(fid0,'E_cort = %.15G\r\n',Ecort);
         fprintf(fid0,'bfdele,all,all\r\n');
-        
+
         for i = 1:length(NODES(:,1))
             fprintf(fid0,'bf,%u,temp,%.15G\r\n',NODES(i,1),nodeTEMPS(i));
         end
@@ -411,7 +438,7 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
     fprintf(fid0,'MP,EX,%u,%.15G\r\n',NumOfMats+1,EminShell);
     fprintf(fid0,'MP,NUXY,%u,0.30\r\n',NumOfMats+1);
     fclose(fid0);
-    
+
     %Writing the shell element mesh to file
     disp(['*****GENERATING ShellMeshE.cdb*****'])
     disp('*')
@@ -428,7 +455,7 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
     fprintf(fid0,'EBLOCK,%u\r\n',8);
     fprintf(fid0,'(13i9)\n');
     NES = length(SURFACES(:,1));
-    
+
     %Length of El_Mat is = number of elements
     %El_Mat contains the material number for each element
     surf_El_Mat = (NumOfMats+1)*ones(NES,1);
@@ -445,16 +472,16 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
     %Field 4 - The material number.
     %Field 5 - The element coordinate system number.
     %Fields 6-15 - The node numbers. The next line will have the additional node numbers if there are more than ten.
-    
+
     %The order of the surface nodes in the TXT file is not the same as
     %the order that ANSYS needs. This is fixed with the ind variable.
     ind = [1 3 2 6 5 4];
     reSURFACES = SURFACES(:,2:7);
     reSURFACES = reSURFACES(:,ind);
-    reSURFACES = [reSURFACES(:,1:2) reSURFACES(:,3) reSURFACES(:,3) reSURFACES(:,4:5) reSURFACES(:,3) reSURFACES(:,6)];    
+    reSURFACES = [reSURFACES(:,1:2) reSURFACES(:,3) reSURFACES(:,3) reSURFACES(:,4:5) reSURFACES(:,3) reSURFACES(:,6)];
     surf_el_input = [[NE+1:NE+NES]', SecNr*ones(NES,1), RealNr*ones(NES,1), surf_El_Mat, ...
         zeros(NES,1),  reSURFACES];
- 
+
     for i = 1:NES
         fprintf(fid0,'%9i%9i%9i%9i%9i%9i%9i%9i%9i%9i%9i%9i%9i\r\n',surf_el_input(i,:));
     end
@@ -462,12 +489,12 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
     fprintf(fid0,'ALLSEL,ALL\r\n');
 
     fprintf(fid0,'ESEL,S,TYPE,,2\r\n');
-    
+
     fprintf(fid0,'CM,ShellElements,ELEM\r\n');
-    fprintf(fid0,'ALLSEL,ALL\r\n');   
+    fprintf(fid0,'ALLSEL,ALL\r\n');
     fclose(fid0);
 
- 
+
  %******************Writing RunAnsysModelX.inp************
  % X refers to A, B, C, D or E
  function WriteMasterScript(Method);
@@ -488,6 +515,7 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
             fprintf(fid0,'eplot,all\r\n');
             fprintf(fid0,'/SOLU\r\n');
             fprintf(fid0,'SOLVE\r\n');
+            fprintf(fid0,'*USE,PostProcess.inp\r\n');
             fclose(fid0);
         case 'B'
             disp(['*****GENERATING RunAnsysModelB.inp*****'])
@@ -499,11 +527,13 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
             fprintf(fid0,'*USE,AnsysMeshB.cdb\r\n');
             fprintf(fid0,'*USE,MaterialPropsB.inp\r\n');
             fprintf(fid0,'*USE,PlotModulusB.inp\r\n');
-            fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            %fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            fprintf(fid0,'*USE,SimpleSWFBCs.inp\r\n');
             fprintf(fid0,'allsel,all\r\n');
             fprintf(fid0,'eplot,all\r\n');
             fprintf(fid0,'/SOLU\r\n');
             fprintf(fid0,'SOLVE\r\n');
+            fprintf(fid0,'*USE,PostProcess.inp\r\n');
             fclose(fid0);
         case 'C'
             disp(['*****GENERATING RunAnsysModelC.inp*****'])
@@ -517,7 +547,7 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
             fprintf(fid0,'*USE,NodalTempsC.inp\r\n');
             fprintf(fid0,'allsel,all\r\n');
             fprintf(fid0,'eplot,all\r\n');
-            
+
             fprintf(fid0,'!**********FIRST LOADING STEP**********!\r\n');
             fprintf(fid0,'!*** WE START by solving an initial step with no load but temperature\r\n');
             fprintf(fid0,'!*** This results in no deformation but assigns the E-modulus to the nodes\r\n');
@@ -526,31 +556,33 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
             fprintf(fid0,'TIME,1.0\r\n');
             fprintf(fid0,'NSUBST,1,100,1	!No. of substeps, max, min\r\n');
             fprintf(fid0,'OUTRES,ALL,-res\r\n');
-            fprintf(fid0,'RESCONTROL,DEFINE,ALL,LAST	!Write restart file for last substep of each load step\r\n');				
+            fprintf(fid0,'RESCONTROL,DEFINE,ALL,LAST	!Write restart file for last substep of each load step\r\n');
             fprintf(fid0,'allsel,all\r\n');
 
             fprintf(fid0,'!*** SOLVE TEMPERATURE ONLY STEP\r\n');
             fprintf(fid0,'SOLVE\r\n');
             fprintf(fid0,'SAVE,,,,ALL\r\n');
-            fprintf(fid0,'PARSAV,ALL,Z_Params,parm		!Save parameters\r\n');		
+            fprintf(fid0,'PARSAV,ALL,Z_Params,parm		!Save parameters\r\n');
             fprintf(fid0,'FINISH\r\n');
-            
+
             fprintf(fid0,'!**********SECOND LOADING STEP**********!\r\n');
             fprintf(fid0,'!*** NOW WE START solving the main load case (displacements applied)\r\n');
             fprintf(fid0,'/SOLU\r\n');
             fprintf(fid0,'ANTYPE,0,REST,,,CONTINUE	!Restart at end of previous load step\r\n');
             fprintf(fid0,'PARRES,NEW,Z_Params,parm	!Restore parameters lost from restart\r\n');
-            fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            %fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            fprintf(fid0,'*USE,SimpleSWFBCs.inp\r\n');
             fprintf(fid0,'TIME,2.0\r\n');
             fprintf(fid0,'NSUBST,1,100,1	!No. of substeps, max, min\r\n');
             fprintf(fid0,'OUTRES,ALL,-1		!Write all results to db (1 per load step)\r\n');
             fprintf(fid0,'RESCONTROL,DEFINE,ALL,LAST	! Write restart file for last substep of each load step\r\n');
 
-            fprintf(fid0,'SOLVE\r\n');					
+            fprintf(fid0,'SOLVE\r\n');
             fprintf(fid0,'SAVE,,,,ALL\r\n');
             fprintf(fid0,'FINISH\r\n');
             fprintf(fid0,'!**************************************!\r\n');
             fprintf(fid0,'*USE,PlotModulusC.inp\r\n');
+            fprintf(fid0,'*USE,PostProcess.inp\r\n');
             fclose(fid0);
         case 'D'
             disp(['*****GENERATING RunAnsysModelD.inp*****'])
@@ -564,7 +596,7 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
             fprintf(fid0,'*USE,NodalTempsD.inp\r\n');
             fprintf(fid0,'allsel,all\r\n');
             fprintf(fid0,'eplot,all\r\n');
-            
+
             fprintf(fid0,'!**********FIRST LOADING STEP**********!\r\n');
             fprintf(fid0,'!*** WE START by solving an initial step with no load but temperature\r\n');
             fprintf(fid0,'!*** This results in no deformation but assigns the E-modulus to the nodes\r\n');
@@ -573,33 +605,35 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
             fprintf(fid0,'TIME,1.0\r\n');
             fprintf(fid0,'NSUBST,1,100,1	!No. of substeps, max, min\r\n');
             fprintf(fid0,'OUTRES,ALL,-res\r\n');
-            fprintf(fid0,'RESCONTROL,DEFINE,ALL,LAST	!Write restart file for last substep of each load step\r\n');				
+            fprintf(fid0,'RESCONTROL,DEFINE,ALL,LAST	!Write restart file for last substep of each load step\r\n');
             fprintf(fid0,'allsel,all\r\n');
 
             fprintf(fid0,'!*** SOLVE TEMPERATURE ONLY STEP\r\n');
             fprintf(fid0,'SOLVE\r\n');
             fprintf(fid0,'SAVE,,,,ALL\r\n');
-            fprintf(fid0,'PARSAV,ALL,Z_Params,parm		!Save parameters\r\n');		
+            fprintf(fid0,'PARSAV,ALL,Z_Params,parm		!Save parameters\r\n');
             fprintf(fid0,'FINISH\r\n');
-            
+
             fprintf(fid0,'!**********SECOND LOADING STEP**********!\r\n');
             fprintf(fid0,'!*** NOW WE START solving the main load case (displacements applied)\r\n');
             fprintf(fid0,'/SOLU\r\n');
             fprintf(fid0,'ANTYPE,0,REST,,,CONTINUE	!Restart at end of previous load step\r\n');
             fprintf(fid0,'PARRES,NEW,Z_Params,parm	!Restore parameters lost from restart\r\n');
-            fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            %fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            fprintf(fid0,'*USE,SimpleSWFBCs.inp\r\n');
             fprintf(fid0,'TIME,2.0\r\n');
             fprintf(fid0,'NSUBST,1,100,1	!No. of substeps, max, min\r\n');
             fprintf(fid0,'OUTRES,ALL,-1		!Write all results to db (1 per load step)\r\n');
             fprintf(fid0,'RESCONTROL,DEFINE,ALL,LAST	! Write restart file for last substep of each load step\r\n');
 
-            fprintf(fid0,'SOLVE\r\n');					
+            fprintf(fid0,'SOLVE\r\n');
             fprintf(fid0,'SAVE,,,,ALL\r\n');
             fprintf(fid0,'FINISH\r\n');
             fprintf(fid0,'!**************************************!\r\n');
             fprintf(fid0,'*USE,PlotModulusD.inp\r\n');
+            fprintf(fid0,'*USE,PostProcess.inp\r\n');
             fclose(fid0);
-            
+
         case 'E'
             disp(['*****GENERATING RunAnsysModelE.inp*****'])
             disp('*')
@@ -612,15 +646,17 @@ function WriteShellFile(EminShell,ShellTh,NumOfMats,El_Mat,E_Mat,SURFACES,NODES)
             fprintf(fid0,'*USE,ShellMeshE.cdb\r\n');
             fprintf(fid0,'*USE,ShellMaterialsE.inp\r\n');
             fprintf(fid0,'*USE,PlotModulusE.inp\r\n');
-            fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            %fprintf(fid0,'*USE,SimpleBCs.inp\r\n');
+            fprintf(fid0,'*USE,SimpleSWFBCs.inp\r\n');
             fprintf(fid0,'allsel,all\r\n');
             fprintf(fid0,'eplot,all\r\n');
             fprintf(fid0,'/SOLU\r\n');
             fprintf(fid0,'SOLVE\r\n');
+            fprintf(fid0,'*USE,PostProcess.inp\r\n');
             fclose(fid0);
     end
-        
-    
+
+
 %******************Writing SimpleBCs.inp************
 function WriteSimpleBCs;
     fid0 = fopen('SimpleBCs.inp','w');
@@ -631,8 +667,41 @@ function WriteSimpleBCs;
     fprintf(fid0,'D,all,all\r\n');
     fprintf(fid0,'allsel,all\r\n');
     fclose(fid0);
-    
-    
+
+
+%******************Writing SimpleSWFBCs.inp************
+function WriteSimpleSWFBCs;
+    fid0 = fopen('SimpleSWFBCs.inp','w');
+    fprintf(fid0,'allsel,all\r\n');
+
+    fprintf(fid0,'!***SELECTING the support nodes at the distal end***\r\n');
+    fprintf(fid0,'NSEL,S,EXT\r\n');
+    fprintf(fid0,'*GET,MinShaftZ,NODE,0,MNLOC,Z\r\n');
+    fprintf(fid0,'NSEL,R,LOC,Z,MinShaftZ-0.5,MinShaftZ+0.5\r\n');
+    fprintf(fid0,'CM,ContNodShaft,NODE\r\n');
+    fprintf(fid0,'D,ALL,UZ,0\r\n');
+    fprintf(fid0,'allsel,all\r\n');
+
+    fprintf(fid0,'!***SELECTING the support nodes at the femoral head***\r\n');
+    fprintf(fid0,'NSEL,S,EXT\r\n');
+    fprintf(fid0,'*GET,MinHeadX,NODE,0,MNLOC,X\r\n');
+    fprintf(fid0,'NSEL,R,LOC,X,MinHeadX-0.5,MinHeadX+5.0\r\n');
+    fprintf(fid0,'CM,ContNodHead,NODE\r\n');
+    fprintf(fid0,'D,ALL,UX,0\r\n');
+    fprintf(fid0,'allsel,all\r\n');
+
+    fprintf(fid0,'!***SELECTING the support nodes at the greater trochanter***\r\n');
+    fprintf(fid0,'NSEL,S,EXT\r\n');
+    fprintf(fid0,'*GET,MaxGTX,NODE,0,MXLOC,X\r\n');
+    fprintf(fid0,'NSEL,R,LOC,X,MaxGTX-5.0,MaxGTX+0.5\r\n');
+    fprintf(fid0,'CM,ContNodGT,NODE\r\n');
+    fprintf(fid0,'D,ALL,UX,-1.0\r\n');
+    fprintf(fid0,'D,ALL,UY,0.0\r\n');
+
+    fprintf(fid0,'allsel,all\r\n');
+
+
+
 %******************Writing PlotModulusX.in************
 % X refers to A, B, C, D or E
 function WritePlotScript(Method);
@@ -690,7 +759,7 @@ function WritePlotScript(Method);
             fprintf(fid0,'*VSCFUN,e_ave,MEAN,E_el\r\n');
             fprintf(fid0,'allsel,all\r\n');
             fclose(fid0);
-            
+
         case {'C','D'}
             if strcmp(Method,'C')
                 disp(['*****GENERATING PlotModulusC.inp*****'])
@@ -733,4 +802,117 @@ function WritePlotScript(Method);
             fprintf(fid0,'E_ave_vol = el_t_vol/volume_tot\r\n');
             fprintf(fid0,'allsel,all\r\n');
             fclose(fid0);
-        end
+    end
+
+
+
+%******************Writing PostProcess.inp************
+function WritePostProcess;
+    fid0 = fopen('PostProcess.inp','w');
+    fprintf(fid0,'!***THIS IS JUST A SAMPLE Post Processing script***\r\n');
+    fprintf(fid0,'!***included here for demonstration purposes***\r\n');
+    fprintf(fid0,'/POST1\r\n');
+    fprintf(fid0,'allsel,all\r\n');
+
+    fprintf(fid0,'!FIND THE LOAD APPLIED at the GT\r\n');
+    fprintf(fid0,'CMSEL,S,ContNodGT\r\n');
+    fprintf(fid0,'nnn = \r\n');
+    fprintf(fid0,'*GET,nnn,NODE,NUM,COUNT\r\n');
+
+    fprintf(fid0,'SET,LAST\r\n');
+    fprintf(fid0,'CMSEL,S,ContNodGT,NODE\r\n');
+    fprintf(fid0,'C=0\r\n');
+    fprintf(fid0,'dum =\r\n');
+    fprintf(fid0,'dum = 0\r\n');
+    fprintf(fid0,'*DO,j,1,nnn\r\n');
+        fprintf(fid0,'C=NDNEXT(C)\r\n');
+        fprintf(fid0,'*GET,dumX,NODE,C,RF,FX\r\n');
+        fprintf(fid0,'dum = dum + dumX\r\n');
+    fprintf(fid0,'*ENDDO\r\n');
+    fprintf(fid0,'RForceEP = \r\n');
+    fprintf(fid0,'RForceEP = abs(dum)\r\n');
+
+    fprintf(fid0,'IgnoreRad = \r\n');
+    fprintf(fid0,'IgnoreRad = 15\r\n');
+    fprintf(fid0,'NSEL,S,LOC,Z,MinShaftZ-IgnoreRad,MinShaftZ+IgnoreRad\r\n');
+    fprintf(fid0,'CM,UnselShaft,NODE\r\n');
+    fprintf(fid0,'NSEL,S,LOC,X,MinHeadX-IgnoreRad,MinHeadX+IgnoreRad\r\n');
+    fprintf(fid0,'CM,UnselFH,NODE\r\n');
+    fprintf(fid0,'NSEL,S,LOC,X,MaxGTX-IgnoreRad,MaxGTX+IgnoreRad\r\n');
+    fprintf(fid0,'CM,UnselGT,NODE\r\n');
+
+    fprintf(fid0,'NSEL,ALL\r\n');
+    fprintf(fid0,'NSEL,U,,,UnselShaft\r\n');
+    fprintf(fid0,'NSEL,U,,,UnselFH\r\n');
+    fprintf(fid0,'NSEL,U,,,UnselGT\r\n');
+    fprintf(fid0,'CM,PostProNodes,NODE\r\n');
+
+    fprintf(fid0,'!WE output the results of the last time step\r\n');
+    fprintf(fid0,'SET,LAST\r\n');
+    fprintf(fid0,'ESEL,S,ENAME,,187\r\n');
+
+    fprintf(fid0,'*GET,NE_bein,ELEM,NUM,COUNT\r\n');
+    fprintf(fid0,'ce =\r\n');
+    fprintf(fid0,'ce = 0\r\n');
+    fprintf(fid0,'ce = elnext(ce)\r\n');
+    fprintf(fid0,'pp = NELEM(ce,1)\r\n');
+    fprintf(fid0,'NSEL,S,,,pp\r\n');
+    fprintf(fid0,'*DO,i_bein,1,NE_bein\r\n');
+        fprintf(fid0,'p1 = NELEM(ce,1)\r\n');
+        fprintf(fid0,'p2 = NELEM(ce,2)\r\n');
+        fprintf(fid0,'p3 = NELEM(ce,3)\r\n');
+        fprintf(fid0,'p4 = NELEM(ce,4)\r\n');
+        fprintf(fid0,'NSEL,A,,,p1\r\n');
+        fprintf(fid0,'NSEL,A,,,p2\r\n');
+        fprintf(fid0,'NSEL,A,,,p3\r\n');
+        fprintf(fid0,'NSEL,A,,,p4\r\n');
+        fprintf(fid0,'ce = elnext(ce)\r\n');
+    fprintf(fid0,'*ENDDO\r\n');
+    fprintf(fid0,'!ALL cornernodes in the bone elements\r\n');
+    fprintf(fid0,'CM,horn_pkt,NODE\r\n');
+
+    fprintf(fid0,'!ALL external corner nodes\r\n');
+    fprintf(fid0,'NSEL,S,EXT\r\n');
+    fprintf(fid0,'NSEL,R,,,horn_pkt\r\n');
+    fprintf(fid0,'CM,ext_horn_pkt,NODE\r\n');
+    fprintf(fid0,'NSEL,U,,,UnselShaft\r\n');
+    fprintf(fid0,'NSEL,U,,,UnselFH\r\n');
+    fprintf(fid0,'NSEL,U,,,UnselGT\r\n');
+    fprintf(fid0,'CM,ext_horn_pkt_cropped,NODE\r\n');
+
+    fprintf(fid0,'NSEL,S,,,ext_horn_pkt_cropped\r\n');
+    fprintf(fid0,'*GET,n_ext,NODE,NUM,COUNT\r\n');
+    fprintf(fid0,'e_ext_out =\r\n');
+    fprintf(fid0,'*DIM,e_ext_out1,ARRAY,n_ext\r\n');
+    fprintf(fid0,'*DIM,e_ext_out3,ARRAY,n_ext\r\n');
+    fprintf(fid0,'*DIM,NodeNr,ARRAY,n_ext\r\n');
+    fprintf(fid0,'c_ext = 0\r\n');
+    fprintf(fid0,'*DO,i_ext,1,n_ext\r\n');
+    fprintf(fid0,'c_ext = NDNEXT(c_ext)\r\n');
+    fprintf(fid0,'NodeNr(i_ext) = c_ext\r\n');
+    fprintf(fid0,'*GET,dum1,node,c_ext,epto,1\r\n');
+    fprintf(fid0,'*GET,dum3,node,c_ext,epto,3\r\n');
+    fprintf(fid0,'e_ext_out1(i_ext) = dum1\r\n');
+    fprintf(fid0,'e_ext_out3(i_ext) = dum3\r\n');
+    fprintf(fid0,'*ENDDO\r\n');
+
+    fprintf(fid0,'*VSCFUN,maxEP1,MAX,e_ext_out1\r\n');
+    fprintf(fid0,'*VSCFUN,LOCmaxEP1,LMAX,e_ext_out1\r\n');
+    fprintf(fid0,'NodeMaxStrain = e_ext_out1(LOCmaxEP1)\r\n');
+    fprintf(fid0,'*VSCFUN,minEP3,MIN,e_ext_out3\r\n');
+    fprintf(fid0,'*VSCFUN,LOCminEP3,LMIN,e_ext_out3\r\n');
+    fprintf(fid0,'NodeMinStrain = e_ext_out3(LOCminEP3)\r\n');
+
+    fprintf(fid0,'WholeBoneStrength1 = \r\n');
+    fprintf(fid0,'WholeBoneStrength3 = \r\n');
+    fprintf(fid0,'WholeBoneStrength1 = RForceEP*0.0073/abs(maxEP1)\r\n');
+    fprintf(fid0,'WholeBoneStrength3 = RForceEP*0.0104/abs(minEP3)\r\n');
+    fprintf(fid0,'*IF,WholeBoneStrength1,GT,WholeBoneStrength3,THEN \r\n');
+        fprintf(fid0,'WholeBoneStrength = WholeBoneStrength3\r\n');
+    fprintf(fid0,'*ELSE\r\n');
+        fprintf(fid0,'WholeBoneStrength = WholeBoneStrength1\r\n');
+    fprintf(fid0,'*ENDIF\r\n');
+    fprintf(fid0,'/EFACET,1\r\n');
+    fprintf(fid0,'/EDGE,1,0,45\r\n');
+    fprintf(fid0,'/GLINE,1,-1\r\n');
+    fprintf(fid0,'PLNSOL, EPTO,3, 0,1.0\r\n');
