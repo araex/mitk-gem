@@ -188,10 +188,10 @@ switch Method
         El_E = ELEMENTS(:,12);
 
         if (isempty(EminShell))
-            error('*****Min Cortical Young's modulus needs to greater than 0*****')
+            error('*****Min Cortical Young''s modulus needs to greater than 0*****')
         end
         if (EminShell <= 0)
-            error('*****Min Cortical Young's modulus needs to greater than 0*****')
+            error('*****Min Cortical Young''s modulus needs to greater than 0*****')
         end
         if isempty(ShellTh)
             error('*****Shell thickness needs to be larger than 0 for method E*****')
