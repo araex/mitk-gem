@@ -6,6 +6,8 @@ set(external_projects
   MITK
   )
 
+set (CMAKE_CXX_STANDARD 14)
+
 set(EXTERNAL_MITK_DIR "${MITK_DIR}" CACHE PATH "Path to MITK build directory")
 mark_as_advanced(EXTERNAL_MITK_DIR)
 if(EXTERNAL_MITK_DIR)

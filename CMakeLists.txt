@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 # Change project and application name to your own
 set(MY_PROJECT_NAME MITK-GEM)
 set(MY_APP_NAME MITK-GEM)
+set (CMAKE_CXX_STANDARD 14)
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified

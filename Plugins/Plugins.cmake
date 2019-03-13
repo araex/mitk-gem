@@ -4,7 +4,6 @@ set(PROJECT_PLUGINS
         Plugins/ch.zhaw.materialmapping:ON
         Plugins/ch.zhaw.padding:ON
         Plugins/ch.zhaw.resample:ON
-        Plugins/ch.zhaw.ugvisualization:ON
         Plugins/ch.zhaw.volumemesh:ON
         Plugins/ch.zhaw.voxel2mesh:ON
         )

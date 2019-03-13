@@ -1,5 +1,6 @@
 #include "MesherCGAL.h"
 
+#include <boost/iterator.hpp> 
 #include "internal/MeshHelpers.h"
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>

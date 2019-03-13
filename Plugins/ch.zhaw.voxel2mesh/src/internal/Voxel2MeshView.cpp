@@ -24,6 +24,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 // Qt
 #include <QMessageBox>
+#include <QStyle>
 
 //mitk image
 #include <mitkImage.h>

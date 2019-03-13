@@ -71,6 +71,7 @@ Makefile*
 
 # IDE
 .idea
+.vscode
 
 # GridCut library
 Plugins/ch.zhaw.graphcut/src/internal/lib/GraphCut3D/lib/gridcut/*

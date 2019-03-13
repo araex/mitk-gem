@@ -6,6 +6,7 @@ mitk_create_plugin(
   EXPORT_DIRECTIVE GRAPHCUT_EXPORT
   EXPORTED_INCLUDE_SUFFIXES src
   MODULE_DEPENDS MitkQtWidgetsExt
+  WARNINGS_NO_ERRORS
 )
 
 # check for gridCut library
