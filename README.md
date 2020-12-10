@@ -31,24 +31,24 @@ Newer versions might work, but have not been tested.
 # Prerequisites
 ## Ubuntu (>= 14.04 LTS)
 - Install dependencies: `sudo apt-get install git build-essential cmake-gui libxt-dev libtiff4-dev libwrap0-dev libgmp3-dev libcgal-dev mesa-common-dev freeglut3-dev`
-- [Qt 5.5](http://download.qt.io/archive/qt/5.5/)
+- [Qt 5.5](https://download.qt.io/new_archive/qt/5.5/)
 
 ### Ubuntu 12.04 LTS
 Ubuntu 12.04 bundles cmake version 2.8.7, but you will need 3.4 in order to build MITK-GEM. A manual update is required.
 - Install [CMake 3.2 or later](http://www.cmake.org/download/)
 - Install dependencies: `sudo apt-get install git build-essential libxt-dev libtiff4-dev libwrap0-dev libgmp3-dev libcgal-dev mesa-common-dev freeglut3-dev`
-- [Qt 5.5](http://download.qt.io/archive/qt/5.5/)
+- [Qt 5.5](https://download.qt.io/new_archive/qt/5.5/)
 
 ## Mac OSX
 - Apple Xcode https://developer.apple.com/xcode/ with activated command line tools. To do so, open Xcode, go to Preferences -> Downloads -> Components -> Command Line Tools.
 - Most recent version of the Xcode command line tools `xcode-select --install`.
-- [Qt 5.5](http://download.qt.io/archive/qt/5.5/)
+- [Qt 5.5](https://download.qt.io/new_archive/qt/5.5/)
 - [CMake 3.2 or later](http://www.cmake.org/download/)
 - [GMP](https://gmplib.org/#DOWNLOAD). We recommend using [homebrew](http://brew.sh/) `brew install gmp`
 
 ## Windows
 - MSVC 2012v4 or MSVC 2013 (e.g. Visual Studio 2013 Community Edition). ** MSVC 2015 IS NOT SUPPORTED**
-- [QT 5.5 msvc2013](http://download.qt.io/archive/qt/5.5/) ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build.
+- [QT 5.5 msvc2013](https://download.qt.io/new_archive/qt/5.5/) ** WITH OpenGL ENABLED **. When using the Qt binary installer, pick the `msvc2013 64-bit OpenGL` build.
 - [CMake 3.2 or later](http://www.cmake.org/download/)
 - [GMP](https://gmplib.org/#DOWNLOAD). We recommend getting a prebuilt version using the [CGAL installer](https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.9/CGAL-4.9-Setup.exe)
 
